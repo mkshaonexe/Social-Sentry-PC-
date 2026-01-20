@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Drawing; // For Icon
+using System.IO;
+using System.Windows;
+using Forms = System.Windows.Forms; // Alias to avoid ambiguity
 
 namespace Social_Sentry
 {
@@ -7,6 +11,9 @@ namespace Social_Sentry
         private readonly Services.UsageTrackerService _usageTracker;
         private readonly ViewModels.MainViewModel _viewModel;
         private readonly Social_Sentry.Data.DatabaseService _databaseService;
+        
+        private Forms.NotifyIcon? _notifyIcon;
+        private bool _isExplicitExit = false;
 
         public MainWindow()
         {
@@ -42,6 +49,62 @@ namespace Social_Sentry
             _usageTracker.Start();
 
             Closing += MainWindow_Closing;
+
+            InitializeTrayIcon();
+        }
+
+        private void InitializeTrayIcon()
+        {
+            _notifyIcon = new Forms.NotifyIcon();
+            _notifyIcon.Text = "Social Sentry";
+            
+            // Try to load icon from Images/AppLogo.png and convert to Icon
+            try 
+            {
+                string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "AppLogo.png");
+                if (File.Exists(iconPath))
+                {
+                    using (var bitmap = new Bitmap(iconPath))
+                    {
+                        // Get Hicon creates a handle to an icon. We must be careful with GDI+ handles but for single instance it's okay.
+                        // Ideally we clone it or manage handle destroy, but .NET Icon.FromHandle wraps it.
+                        _notifyIcon.Icon = Icon.FromHandle(bitmap.GetHicon());
+                    }
+                }
+                else
+                {
+                    // Fallback to system icon if file missing
+                    _notifyIcon.Icon = SystemIcons.Shield; 
+                }
+            }
+            catch
+            {
+                _notifyIcon.Icon = SystemIcons.Shield; // Safe fallback
+            }
+
+            _notifyIcon.Visible = true;
+            _notifyIcon.DoubleClick += (s, e) => ShowWindow();
+            
+            // Context Menu
+            var contextMenu = new Forms.ContextMenuStrip();
+            contextMenu.Items.Add("Open Social Sentry", null, (s, e) => ShowWindow());
+            contextMenu.Items.Add("Exit", null, (s, e) => ExitApplication());
+            _notifyIcon.ContextMenuStrip = contextMenu;
+        }
+
+        private void ShowWindow()
+        {
+            Show();
+            WindowState = WindowState.Normal;
+            Activate();
+        }
+
+        private void ExitApplication()
+        {
+            _isExplicitExit = true;
+            _notifyIcon?.Dispose();
+            _notifyIcon = null;
+            Application.Current.Shutdown();
         }
 
         private void OnTrackingToggled(bool isEnabled)
@@ -58,20 +121,32 @@ namespace Social_Sentry
 
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            _usageTracker.Stop();
-            
-            // Kill the watchdog to prevent restart
-            try 
+            if (!_isExplicitExit)
             {
-                var watchdogs = System.Diagnostics.Process.GetProcessesByName("SocialSentry.Watchdog");
-                foreach (var wd in watchdogs)
-                {
-                    wd.Kill();
-                }
+                // Minimize to tray instead of closing
+                e.Cancel = true;
+                Hide();
+                
+                // Optional: Show balloon tip
+                // _notifyIcon?.ShowBalloonTip(2000, "Social Sentry", "Running in background", Forms.ToolTipIcon.Info);
             }
-            catch (Exception ex)
+            else
             {
-                System.Diagnostics.Debug.WriteLine($"Error killing watchdog: {ex.Message}");
+                 _usageTracker.Stop();
+            
+                 // Kill the watchdog to prevent restart
+                 try 
+                 {
+                     var watchdogs = System.Diagnostics.Process.GetProcessesByName("SocialSentry.Watchdog");
+                     foreach (var wd in watchdogs)
+                     {
+                         wd.Kill();
+                     }
+                 }
+                 catch (Exception ex)
+                 {
+                     System.Diagnostics.Debug.WriteLine($"Error killing watchdog: {ex.Message}");
+                 }
             }
         }
     }
