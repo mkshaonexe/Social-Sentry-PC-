@@ -17,6 +17,11 @@ namespace Social_Sentry.Views
 
         private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
+            var vm = DataContext as CategoryViewModel;
+            if (vm != null)
+            {
+                vm.LoadCategories();
+            }
             DrawChart();
         }
 

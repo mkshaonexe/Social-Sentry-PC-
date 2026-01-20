@@ -16,8 +16,10 @@ namespace Social_Sentry.ViewModels
             LoadCategories();
         }
 
-        private void LoadCategories()
+        public void LoadCategories()
         {
+            Categories.Clear();
+
             // Get all apps from usage tracker
             var apps = _usageTracker.GetTopApps();
             
@@ -49,7 +51,11 @@ namespace Social_Sentry.ViewModels
                 a.Name.Contains("powerpoint", System.StringComparison.OrdinalIgnoreCase) ||
                 a.Name.Contains("notepad", System.StringComparison.OrdinalIgnoreCase) ||
                 a.Name.Contains("jetbrains", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("eclipse", System.StringComparison.OrdinalIgnoreCase)
+                a.Name.Contains("eclipse", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("brave", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("chrome", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("edge", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("firefox", System.StringComparison.OrdinalIgnoreCase)
             ).Select(a => a.Name).ToList();
 
             Categories.Add(new CategoryGroup
