@@ -26,10 +26,10 @@
                 <TextBlock Text="Dashboard" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center"/>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Border Background="{StaticResource CardBackgroundColor}" CornerRadius="8" Padding="12,6" Margin="0,0,8,0">
+                    <Border Background="{StaticResource CardBackgroundBrush}" CornerRadius="8" Padding="12,6" Margin="0,0,8,0">
                         <TextBlock Text="Screen Time" Foreground="{StaticResource SecondaryTextBrush}"/>
                     </Border>
-                    <Border Background="{StaticResource CardBackgroundColor}" CornerRadius="8" Padding="12,6">
+                    <Border Background="{StaticResource CardBackgroundBrush}" CornerRadius="8" Padding="12,6">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="📅 Today" Foreground="{StaticResource PrimaryTextBrush}"/>
                         </StackPanel>
@@ -144,7 +144,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Icon Placeholder -->
-                                <Border Width="40" Height="40" Background="{StaticResource CardBackgroundColor}" CornerRadius="8" Margin="0,0,16,0">
+                                <Border Width="40" Height="40" Background="{StaticResource CardBackgroundBrush}" CornerRadius="8" Margin="0,0,16,0">
                                     <TextBlock Text="App" Foreground="{StaticResource SecondaryTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10"/>
                                 </Border>
 

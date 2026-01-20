@@ -20,7 +20,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-        <Border Grid.Column="0" Background="{StaticResource CardBackgroundColor}" Padding="16">
+        <Border Grid.Column="0" Background="{StaticResource CardBackgroundBrush}" Padding="16">
             <StackPanel>
                 <!-- Logo Area -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,32">
