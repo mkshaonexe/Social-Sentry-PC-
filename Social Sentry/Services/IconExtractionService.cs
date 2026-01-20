@@ -66,6 +66,32 @@ namespace Social_Sentry.Services
             try
             {
                 // Try to find a running process with this name
+                if (processName.Equals("Social Sentry", StringComparison.OrdinalIgnoreCase) || 
+                    processName.Equals("Social Sentry.exe", StringComparison.OrdinalIgnoreCase))
+                {
+                     try 
+                     {
+                         // Use the specific AppLogo.png for our own app
+                         var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "AppLogo.png");
+                         if (File.Exists(logoPath))
+                         {
+                             var bitmap = new BitmapImage();
+                             bitmap.BeginInit();
+                             bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                             bitmap.UriSource = new Uri(logoPath, UriKind.Absolute);
+                             bitmap.EndInit();
+                             bitmap.Freeze();
+                             
+                             _iconCache[processName] = bitmap;
+                             return bitmap;
+                         }
+                     }
+                     catch (Exception ex)
+                     {
+                         Debug.WriteLine($"Failed to load custom Social Sentry logo: {ex.Message}");
+                     }
+                }
+
                 var processes = Process.GetProcessesByName(processName.Replace(".exe", ""));
                 if (processes.Length > 0)
                 {
