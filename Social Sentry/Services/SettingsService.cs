@@ -121,6 +121,7 @@ namespace Social_Sentry.Services
 
     public class UserSettings
     {
+        public bool IsFirstRun { get; set; } = true;
         public bool StartWithWindows { get; set; }
         public bool StartMinimized { get; set; }
         public bool ShowNotifications { get; set; } = true;

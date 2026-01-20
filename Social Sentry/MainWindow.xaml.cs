@@ -16,6 +16,23 @@ namespace Social_Sentry
             _usageTracker = new Services.UsageTrackerService(_databaseService);
             _viewModel = new ViewModels.MainViewModel(_usageTracker, _databaseService);
 
+            // First Run Auto-Setup
+            var settingsService = new Services.SettingsService();
+            var settings = settingsService.LoadSettings();
+
+            if (settings.IsFirstRun)
+            {
+                // 1. Enable Start with Windows in Registry
+                settingsService.SetStartWithWindows(true);
+                
+                // 2. Update Settings object
+                settings.StartWithWindows = true;
+                settings.IsFirstRun = false;
+                
+                // 3. Save
+                settingsService.SaveSettings(settings); // This is now encrypted
+            }
+
             DataContext = _viewModel;
 
             // Subscribe to tracking toggle
