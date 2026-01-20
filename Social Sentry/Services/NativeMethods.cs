@@ -76,7 +76,9 @@ namespace Social_Sentry.Services
         public const ushort VK_CONTROL = 0x11;
         public const ushort VK_MENU = 0x12;
         public const ushort VK_LEFT = 0x25;
-        public const ushort VK_W = 0x57; 
+        public const ushort VK_W = 0x57;
+        public const ushort VK_A = 0x41;
+        public const ushort VK_BACK = 0x08; 
 
         // Event Hook Constants
         public const uint EVENT_SYSTEM_FOREGROUND = 0x0003;

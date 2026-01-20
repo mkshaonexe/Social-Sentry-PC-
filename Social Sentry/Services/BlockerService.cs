@@ -136,16 +136,59 @@ namespace Social_Sentry.Services
             // 1. Navigate Back (Alt + Left Arrow)
             SimulateGoBack();
 
+            // 2. Clear Text (Ctrl + A -> Backspace) to remove keyword if typed
+            SimulateTextClear();
+
             // Wait a moment for the browser to process the input and navigate back
             // BEFORE we steal focus with the overlay.
             await Task.Delay(300);
 
-            // 2. Show Overlay
+            // 3. Show Overlay
             ShowOverlay("Restricted Content Detected", () => 
             {
                 // ON UNLOCK: Add to allow list for 5 minutes
                 _temporarilyAllowed[key] = DateTime.Now.AddMinutes(5);
             });
+        }
+
+        private void SimulateTextClear()
+        {
+            // Simulate CTRL + A (Select All)
+            NativeMethods.INPUT[] inputsSelect = new NativeMethods.INPUT[4];
+
+            // Ctrl Down
+            inputsSelect[0].type = NativeMethods.INPUT_KEYBOARD;
+            inputsSelect[0].U.ki.wVk = NativeMethods.VK_CONTROL;
+            
+            // A Down
+            inputsSelect[1].type = NativeMethods.INPUT_KEYBOARD;
+            inputsSelect[1].U.ki.wVk = NativeMethods.VK_A;
+
+            // A Up
+            inputsSelect[2].type = NativeMethods.INPUT_KEYBOARD;
+            inputsSelect[2].U.ki.wVk = NativeMethods.VK_A;
+            inputsSelect[2].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            // Ctrl Up
+            inputsSelect[3].type = NativeMethods.INPUT_KEYBOARD;
+            inputsSelect[3].U.ki.wVk = NativeMethods.VK_CONTROL;
+            inputsSelect[3].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            NativeMethods.SendInput((uint)inputsSelect.Length, inputsSelect, NativeMethods.INPUT.Size);
+
+            // Simulate BACKSPACE (Delete Selection)
+            NativeMethods.INPUT[] inputsDelete = new NativeMethods.INPUT[2];
+
+            // Backspace Down
+            inputsDelete[0].type = NativeMethods.INPUT_KEYBOARD;
+            inputsDelete[0].U.ki.wVk = NativeMethods.VK_BACK;
+
+            // Backspace Up
+            inputsDelete[1].type = NativeMethods.INPUT_KEYBOARD;
+            inputsDelete[1].U.ki.wVk = NativeMethods.VK_BACK;
+            inputsDelete[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            NativeMethods.SendInput((uint)inputsDelete.Length, inputsDelete, NativeMethods.INPUT.Size);
         }
 
         private void SimulateGoBack()
