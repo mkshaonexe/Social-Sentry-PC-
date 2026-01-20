@@ -26,10 +26,10 @@
                 <TextBlock Text="Dashboard" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center"/>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Border Background="#333" CornerRadius="8" Padding="12,6" Margin="0,0,8,0">
+                    <Border Background="{StaticResource CardBackgroundColor}" CornerRadius="8" Padding="12,6" Margin="0,0,8,0">
                         <TextBlock Text="Screen Time" Foreground="{StaticResource SecondaryTextBrush}"/>
                     </Border>
-                    <Border Background="#333" CornerRadius="8" Padding="12,6">
+                    <Border Background="{StaticResource CardBackgroundColor}" CornerRadius="8" Padding="12,6">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="📅 Today" Foreground="{StaticResource PrimaryTextBrush}"/>
                         </StackPanel>
@@ -101,9 +101,9 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel>
-                        <TextBlock Text="Complete StayFree Setup (0/2)" Foreground="#FFD700" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                        <TextBlock Text="1. Pair this app with StayFree on another platform." Foreground="#CCC" TextWrapping="Wrap" Margin="0,0,0,4"/>
-                        <TextBlock Text="2. Create your first Usage Limit." Foreground="#CCC" TextWrapping="Wrap"/>
+                        <TextBlock Text="Complete Social Sentry Setup (0/2)" Foreground="{StaticResource AccentColor}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <TextBlock Text="1. Pair this app with Social Sentry on another platform." Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                        <TextBlock Text="2. Create your first Usage Limit." Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -144,8 +144,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Icon Placeholder -->
-                                <Border Width="40" Height="40" Background="#333" CornerRadius="8" Margin="0,0,16,0">
-                                    <TextBlock Text="App" Foreground="#777" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10"/>
+                                <Border Width="40" Height="40" Background="{StaticResource CardBackgroundColor}" CornerRadius="8" Margin="0,0,16,0">
+                                    <TextBlock Text="App" Foreground="{StaticResource SecondaryTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10"/>
                                 </Border>
 
                                 <!-- Details -->
@@ -170,14 +170,14 @@
                                              </Border.RenderTransform>
                                          </Border>
                                     </Grid>
-                                    <TextBlock Grid.Row="1" Text="{Binding Sessions, StringFormat='{}{0} sessions'}" Foreground="#777" FontSize="10" Margin="0,6,0,0"/>
+                                    <TextBlock Grid.Row="1" Text="{Binding Sessions, StringFormat='{}{0} sessions'}" Foreground="{StaticResource SecondaryTextBrush}" FontSize="10" Margin="0,6,0,0"/>
 
                                 </Grid>
 
                                 <!-- Time & % -->
                                 <StackPanel Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right">
                                     <TextBlock Text="{Binding Duration}" Foreground="{StaticResource PrimaryTextBrush}" HorizontalAlignment="Right"/>
-                                    <TextBlock Text="{Binding Percentage, StringFormat={}{0:P0}}" Foreground="#777" HorizontalAlignment="Right" FontSize="12"/>
+                                    <TextBlock Text="{Binding Percentage, StringFormat={}{0:P0}}" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Right" FontSize="12"/>
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>

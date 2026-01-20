@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:Social_Sentry.ViewModels"
         xmlns:views="clr-namespace:Social_Sentry.Views"
         mc:Ignorable="d"
-        Title="StayFree Clone" Height="700" Width="1000"
+        Title="Social Sentry" Height="700" Width="1000"
         Background="{StaticResource WindowBackgroundBrush}"
         WindowStartupLocation="CenterScreen">
     
@@ -20,7 +20,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-        <Border Grid.Column="0" Background="#202020" Padding="16">
+        <Border Grid.Column="0" Background="{StaticResource CardBackgroundColor}" Padding="16">
             <StackPanel>
                 <!-- Logo Area -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,32">
@@ -28,7 +28,7 @@
                          <!-- Logo Placeholder -->
                         <Path Data="M10,20 L15,25 L25,10" Stroke="{StaticResource AccentBrush}" StrokeThickness="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
-                    <TextBlock Text="StayFree" Foreground="{StaticResource PrimaryTextBrush}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <TextBlock Text="Social Sentry" Foreground="{StaticResource PrimaryTextBrush}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                     <!-- Toggle Switch Placeholder -->
                     <Border Background="#555" CornerRadius="10" Width="36" Height="20" Margin="16,0,0,0" VerticalAlignment="Center">
                         <Border Width="16" Height="16" CornerRadius="8" Background="{StaticResource AccentSecondaryBrush}" HorizontalAlignment="Right" Margin="2"/>
@@ -39,7 +39,7 @@
                 <Button Content="Dashboard" Style="{StaticResource ActiveSidebarButtonStyle}" Margin="0,0,0,8"/>
                 <Button Content="Usage Limits" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
                 <Button Content="Categories" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
-                <Button Content="StayFree for Web" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
+                <!-- <Button Content="StayFree for Web" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/> -->
 
                 <Separator Background="#333" Margin="0,16"/>
 

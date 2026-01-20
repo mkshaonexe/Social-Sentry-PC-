@@ -5,12 +5,12 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <!-- Colors -->
-        <Color x:Key="WindowBackgroundColor">#202020</Color>
-        <Color x:Key="CardBackgroundColor">#2C2C2C</Color>
+        <Color x:Key="WindowBackgroundColor">#1A1C1E</Color> <!-- Dark Ash -->
+        <Color x:Key="CardBackgroundColor">#25282B</Color>   <!-- Lighter Ash -->
         <Color x:Key="PrimaryTextColor">#FFFFFF</Color>
-        <Color x:Key="SecondaryTextColor">#9E9E9E</Color>
-        <Color x:Key="AccentColor">#00C0A3</Color>
-        <Color x:Key="AccentSecondaryColor">#7F67BE</Color>
+        <Color x:Key="SecondaryTextColor">#B0B3B8</Color>
+        <Color x:Key="AccentColor">#00E676</Color>           <!-- Vibrant Green -->
+        <Color x:Key="AccentSecondaryColor">#69F0AE</Color>  <!-- Light Green -->
 
         <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{StaticResource WindowBackgroundColor}"/>
         <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackgroundColor}"/>
@@ -53,13 +53,18 @@
         </Style>
 
         <Style x:Key="ActiveSidebarButtonStyle" TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
-            <Setter Property="Background" Value="#337F67BE"/> <!-- Tinted Accent -->
-            <Setter Property="Foreground" Value="{StaticResource AccentSecondaryBrush}"/>
+            <Setter Property="Background" Value="#1A00E676"/> <!-- Tinted Green -->
+            <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
             <Style.Triggers>
-                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#557F67BE"/>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#3300E676"/>
                 </Trigger>
             </Style.Triggers>
+        </Style>
+
+        <!-- Global Typography -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI, sans-serif"/>
         </Style>
 
     </Application.Resources>
