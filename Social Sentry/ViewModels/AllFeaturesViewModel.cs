@@ -65,6 +65,13 @@ namespace Social_Sentry.ViewModels
                     Description = "Get notified when you exceed your usage limits",
                     Icon = "🔔",
                     AccentColor = "#FFC107"
+                },
+                new FeatureItem
+                {
+                    Title = "Community",
+                    Description = "Connect, chat, and share stories with the global community",
+                    Icon = "🌍",
+                    AccentColor = "#00E676"
                 }
             };
         }

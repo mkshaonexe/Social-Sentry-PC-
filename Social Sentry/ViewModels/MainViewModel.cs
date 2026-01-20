@@ -32,6 +32,7 @@ namespace Social_Sentry.ViewModels
         public LimitViewModel LimitVM { get; }
         public UserSettingsViewModel UserSettingsVM { get; }
         public AllFeaturesViewModel AllFeaturesVM { get; }
+        public CommunityViewModel CommunityVM { get; }
 
         public ICommand NavigateCommand { get; }
         public ICommand ToggleTrackingCommand { get; }
@@ -48,6 +49,7 @@ namespace Social_Sentry.ViewModels
             LimitVM = new LimitViewModel(usageTracker, databaseService);
             UserSettingsVM = new UserSettingsViewModel();
             AllFeaturesVM = new AllFeaturesViewModel();
+            CommunityVM = new CommunityViewModel();
             
             NavigateCommand = new RelayCommand<string>(Navigate);
             ToggleTrackingCommand = new RelayCommand(ToggleTracking);
@@ -77,6 +79,9 @@ namespace Social_Sentry.ViewModels
                     break;
                 case "AllFeatures":
                     CurrentView = AllFeaturesVM;
+                    break;
+                case "Community":
+                    CurrentView = CommunityVM;
                     break;
             }
         }

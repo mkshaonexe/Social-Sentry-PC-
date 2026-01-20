@@ -1,0 +1,122 @@
+<UserControl x:Class="Social_Sentry.Views.CommunityView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Social_Sentry.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="CommunityCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#33FFFFFF"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,24">
+            <!-- Header -->
+            <TextBlock Text="Community" FontSize="28" FontWeight="Bold" 
+                       Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,8"/>
+            <TextBlock Text="Connect with others on their digital wellbeing journey" 
+                       FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,32"/>
+
+            <!-- Main Community Sections -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Global Chat Card -->
+                <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource CommunityCardStyle}" Margin="0,0,8,16">
+                    <StackPanel>
+                        <Border Width="48" Height="48" CornerRadius="10" HorizontalAlignment="Left" Margin="0,0,0,16">
+                            <Border.Background>
+                                <SolidColorBrush Color="#00E676" Opacity="0.15"/>
+                            </Border.Background>
+                            <TextBlock Text="💬" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Global Chat" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,8"/>
+                        <TextBlock Text="Join the real-time conversation with the Social Sentry community globally." 
+                                   FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap"/>
+                        <Button Content="Open Chat" Style="{StaticResource ModernButtonStyle}" HorizontalAlignment="Left" Margin="0,16,0,0" Padding="16,8"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Global Mission Card -->
+                <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource CommunityCardStyle}" Margin="8,0,0,16">
+                    <StackPanel>
+                        <Border Width="48" Height="48" CornerRadius="10" HorizontalAlignment="Left" Margin="0,0,0,16">
+                            <Border.Background>
+                                <SolidColorBrush Color="#FF9800" Opacity="0.15"/>
+                            </Border.Background>
+                            <TextBlock Text="🌍" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Global Mission" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,8"/>
+                        <TextBlock Text="Participate in collective challenges to reduce screen time and improve focus together." 
+                                   FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap"/>
+                        <Button Content="View Missions" Style="{StaticResource ModernButtonStyle}" HorizontalAlignment="Left" Margin="0,16,0,0" Padding="16,8"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Share Your Story Card -->
+                <Border Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource CommunityCardStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Width="48" Height="48" CornerRadius="10" VerticalAlignment="Top" Margin="0,0,16,0">
+                            <Border.Background>
+                                <SolidColorBrush Color="#00BCD4" Opacity="0.15"/>
+                            </Border.Background>
+                            <TextBlock Text="📖" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Share Your Story" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,8"/>
+                            <TextBlock Text="Inspired others by sharing your journey of reclaiming your time and focus. Your story can lead the way for many others." 
+                                       FontSize="13" Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap"/>
+                            <Button Content="Post My Story" Style="{StaticResource ModernButtonStyle}" HorizontalAlignment="Left" Margin="0,16,0,0" Padding="16,8"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Community Stats Section -->
+            <Border Background="{StaticResource CardBackgroundBrush}" CornerRadius="12" Padding="24" Margin="0,16,0,0">
+                <StackPanel>
+                    <TextBlock Text="Community Insights" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,16"/>
+                    <UniformGrid Columns="3">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="12.5k" FontSize="24" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Active Members" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="452" FontSize="24" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Missions Completed" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="1.2k" FontSize="24" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Stories Shared" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
