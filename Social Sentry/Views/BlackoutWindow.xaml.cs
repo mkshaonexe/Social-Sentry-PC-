@@ -24,7 +24,7 @@ namespace Social_Sentry.Views
             PinBox.Focus();
         }
 
-        private void BlackoutWindow_KeyDown(object sender, KeyEventArgs e)
+        private void BlackoutWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             // Trap navigation keys if possible within the app
             if (e.Key == Key.System && e.SystemKey == Key.F4)
@@ -44,7 +44,7 @@ namespace Social_Sentry.Views
             }
             else
             {
-                MessageBox.Show("Incorrect PIN", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show("Incorrect PIN", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Error);
                 PinBox.Password = "";
             }
         }

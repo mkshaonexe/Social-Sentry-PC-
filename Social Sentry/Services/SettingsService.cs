@@ -88,7 +88,8 @@ namespace Social_Sentry.Services
                         var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
                         // For .NET 6+, we need to get the executable path differently
                         exePath = exePath.Replace(".dll", ".exe");
-                        key.SetValue(APP_NAME, $"\"{exePath}\"");
+                        // Add --startup argument to detect silent boot startup
+                        key.SetValue(APP_NAME, $"\"{exePath}\" --startup");
                     }
                     else
                     {
@@ -124,6 +125,9 @@ namespace Social_Sentry.Services
         public bool IsFirstRun { get; set; } = true;
         public bool StartWithWindows { get; set; }
         public bool StartMinimized { get; set; }
+        public bool StartMinimizedToTray { get; set; } = true; // Start hidden in tray on boot
+        public bool ShowTrayIcon { get; set; } = true; // Toggle tray icon visibility
+        public bool RunInvisiblyInBackground { get; set; } = true; // Continue running without tray
         public bool ShowNotifications { get; set; } = true;
     }
 }

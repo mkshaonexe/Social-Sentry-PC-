@@ -81,7 +81,7 @@ namespace Social_Sentry.ViewModels
         {
             try
             {
-                var saveFileDialog = new SaveFileDialog
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
                 {
                     Filter = "JSON files (*.json)|*.json|CSV files (*.csv)|*.csv|All files (*.*)|*.*",
                     DefaultExt = "json",

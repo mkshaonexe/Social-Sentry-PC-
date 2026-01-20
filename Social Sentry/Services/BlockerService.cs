@@ -123,7 +123,7 @@ namespace Social_Sentry.Services
                 // For apps, we might prefer Suspend.
                 // For now, let's try Overlay for Reels.
                 
-                Application.Current.Dispatcher.Invoke(() => 
+                System.Windows.Application.Current.Dispatcher.Invoke(() => 
                 {
                     PerformBlockingAction(key);
                 });
