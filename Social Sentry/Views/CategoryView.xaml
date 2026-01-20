@@ -26,9 +26,9 @@
                       FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,32"/>
 
             <!-- Donut Chart Section -->
-            <Grid Height="250" Margin="0,0,0,40">
+            <Grid Height="320" Margin="0,0,0,40">
                 <!-- Canvas for manual drawing of Arcs -->
-                <Canvas x:Name="ChartCanvas" Width="200" Height="200" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Canvas x:Name="ChartCanvas" Width="280" Height="280" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 
                 <!-- Center Text -->
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -48,6 +48,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/> <!-- Dot -->
                                     <ColumnDefinition Width="*"/>    <!-- Name + Icon -->
+                                    <ColumnDefinition Width="Auto"/> <!-- Percentage -->
                                     <ColumnDefinition Width="Auto"/> <!-- Duration -->
                                 </Grid.ColumnDefinitions>
 
@@ -61,8 +62,13 @@
                                     <TextBlock Text="{Binding Icon}" FontSize="16" VerticalAlignment="Center"/>
                                 </StackPanel>
 
+                                <!-- Percentage -->
+                                <TextBlock Grid.Column="2" Text="{Binding PercentageFormatted}" 
+                                          FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" 
+                                          VerticalAlignment="Center" Margin="0,0,24,0"/>
+
                                 <!-- Duration -->
-                                <TextBlock Grid.Column="2" Text="{Binding FormattedDuration}" 
+                                <TextBlock Grid.Column="3" Text="{Binding FormattedDuration}" 
                                           FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" 
                                           VerticalAlignment="Center"/>
                             </Grid>

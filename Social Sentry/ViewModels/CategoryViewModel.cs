@@ -21,53 +21,15 @@ namespace Social_Sentry.ViewModels
             // Get all apps from usage tracker
             var apps = _usageTracker.GetTopApps();
             
-            // Social Media Category
-            var socialApps = apps.Where(a => 
-                a.Name.Contains("chrome", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("firefox", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("edge", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("whatsapp", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("telegram", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("discord", System.StringComparison.OrdinalIgnoreCase)
-            ).Select(a => a.Name).ToList();
-
-            if (socialApps.Any())
-            {
-                Categories.Add(new CategoryGroup
-                {
-                    Name = "Social Media",
-                    Icon = "💬",
-                    Color = "#4CAF50",
-                    Apps = new ObservableCollection<string>(socialApps)
-                });
-            }
-
-            // Productivity Category
-            var productivityApps = apps.Where(a => 
-                a.Name.Contains("word", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("excel", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("code", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("notepad", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("visual studio", System.StringComparison.OrdinalIgnoreCase)
-            ).Select(a => a.Name).ToList();
-
-            if (productivityApps.Any())
-            {
-                Categories.Add(new CategoryGroup
-                {
-                    Name = "Productivity",
-                    Icon = "💼",
-                    Color = "#2196F3",
-                    Apps = new ObservableCollection<string>(productivityApps)
-                });
-            }
-
-            // Entertainment Category
+            // Entertainment Category (Videos, Streaming, Gaming)
             var entertainmentApps = apps.Where(a => 
+                a.Name.Contains("youtube", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("netflix", System.StringComparison.OrdinalIgnoreCase) ||
                 a.Name.Contains("spotify", System.StringComparison.OrdinalIgnoreCase) ||
                 a.Name.Contains("vlc", System.StringComparison.OrdinalIgnoreCase) ||
                 a.Name.Contains("steam", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("netflix", System.StringComparison.OrdinalIgnoreCase)
+                a.Name.Contains("game", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("twitch", System.StringComparison.OrdinalIgnoreCase)
             ).Select(a => a.Name).ToList();
 
             if (entertainmentApps.Any())
@@ -75,14 +37,107 @@ namespace Social_Sentry.ViewModels
                 Categories.Add(new CategoryGroup
                 {
                     Name = "Entertainment",
-                    Icon = "🎮",
+                    Icon = "🎬",
                     Color = "#FF5722",
                     Apps = new ObservableCollection<string>(entertainmentApps)
                 });
             }
 
+            // Productive Category (Work, Development, Office)
+            var productiveApps = apps.Where(a => 
+                a.Name.Contains("visual studio", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("code", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("word", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("excel", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("powerpoint", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("notepad", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("jetbrains", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("eclipse", System.StringComparison.OrdinalIgnoreCase)
+            ).Select(a => a.Name).ToList();
+
+            if (productiveApps.Any())
+            {
+                Categories.Add(new CategoryGroup
+                {
+                    Name = "Productive",
+                    Icon = "💼",
+                    Color = "#2196F3",
+                    Apps = new ObservableCollection<string>(productiveApps)
+                });
+            }
+
+            // Study Category (Learning, Reading, Research)
+            var studyApps = apps.Where(a => 
+                a.Name.Contains("notion", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("onenote", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("evernote", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("coursera", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("udemy", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("khan", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("duolingo", System.StringComparison.OrdinalIgnoreCase)
+            ).Select(a => a.Name).ToList();
+
+            if (studyApps.Any())
+            {
+                Categories.Add(new CategoryGroup
+                {
+                    Name = "Study",
+                    Icon = "📚",
+                    Color = "#9C27B0",
+                    Apps = new ObservableCollection<string>(studyApps)
+                });
+            }
+
+            // Doom Scrolling Category (Mindless browsing, Social feeds)
+            var doomScrollingApps = apps.Where(a => 
+                a.Name.Contains("facebook", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("instagram", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("twitter", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("tiktok", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("reddit", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("9gag", System.StringComparison.OrdinalIgnoreCase)
+            ).Select(a => a.Name).ToList();
+
+            if (doomScrollingApps.Any())
+            {
+                Categories.Add(new CategoryGroup
+                {
+                    Name = "Doom Scrolling",
+                    Icon = "📱",
+                    Color = "#FF9800",
+                    Apps = new ObservableCollection<string>(doomScrollingApps)
+                });
+            }
+
+            // Communication Category (Messaging, Email)
+            var communicationApps = apps.Where(a => 
+                a.Name.Contains("whatsapp", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("telegram", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("discord", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("slack", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("teams", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("outlook", System.StringComparison.OrdinalIgnoreCase) ||
+                a.Name.Contains("gmail", System.StringComparison.OrdinalIgnoreCase)
+            ).Select(a => a.Name).ToList();
+
+            if (communicationApps.Any())
+            {
+                Categories.Add(new CategoryGroup
+                {
+                    Name = "Communication",
+                    Icon = "💬",
+                    Color = "#4CAF50",
+                    Apps = new ObservableCollection<string>(communicationApps)
+                });
+            }
+
             // Uncategorized
-            var categorizedApps = socialApps.Concat(productivityApps).Concat(entertainmentApps).ToHashSet();
+            var categorizedApps = entertainmentApps
+                .Concat(productiveApps)
+                .Concat(studyApps)
+                .Concat(doomScrollingApps)
+                .Concat(communicationApps)
+                .ToHashSet();
             var uncategorizedApps = apps.Where(a => !categorizedApps.Contains(a.Name)).Select(a => a.Name).ToList();
 
             if (uncategorizedApps.Any())
@@ -155,5 +210,6 @@ namespace Social_Sentry.ViewModels
         public TimeSpan TotalDuration { get; set; }
         public string FormattedDuration { get; set; } = "";
         public double Percentage { get; set; }
+        public string PercentageFormatted => $"{(int)(Percentage * 100)}%";
     }
 }

@@ -29,8 +29,8 @@ namespace Social_Sentry.Views
 
             double centerX = ChartCanvas.Width / 2;
             double centerY = ChartCanvas.Height / 2;
-            double radius = 80;
-            double thickness = 25;
+            double radius = 110;
+            double thickness = 30;
             double startAngle = -90; // Start at top
 
             // Check if we have valid percentages
