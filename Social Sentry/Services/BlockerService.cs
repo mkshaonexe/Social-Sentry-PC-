@@ -54,6 +54,7 @@ namespace Social_Sentry.Services
                 
                 _blockedUrlSegments.Clear();
                 _blockedUrlSegments.Add("/reels/");
+                _blockedUrlSegments.Add("/reel/");  // Facebook uses singular
                 _blockedUrlSegments.Add("/shorts/");
 
                 _blockedTitles.Clear();
