@@ -12,6 +12,7 @@ namespace Social_Sentry
         private readonly ActivityTracker _tracker;
         private readonly BrowserMonitor _browserMonitor;
         private readonly DatabaseService _database;
+        private readonly BlockerService _blocker; // Phase 2
         public ObservableCollection<ActivityLogItem> Logs { get; set; }
 
         public MainWindow()
@@ -20,6 +21,7 @@ namespace Social_Sentry
             _tracker = new ActivityTracker();
             _browserMonitor = new BrowserMonitor();
             _database = new DatabaseService();
+            _blocker = new BlockerService(); // Phase 2
             Logs = new ObservableCollection<ActivityLogItem>();
             LogGrid.ItemsSource = Logs;
 
@@ -38,11 +40,29 @@ namespace Social_Sentry
                     url = _browserMonitor.GetCurrentUrl(NativeMethods.GetForegroundWindow());
                 }
 
+                // Phase 2: Check Block Rules
+                bool blocked = _blocker.CheckAndBlock(e.ProcessName, e.WindowTitle, url);
+
+                if (blocked)
+                {
+                    StatusText.Text = $"BLOCKED: {e.WindowTitle}";
+                    StatusText.Foreground = System.Windows.Media.Brushes.Red;
+                    
+                    // Show Overlay
+                    var overlay = new Social_Sentry.Views.BlockOverlayWindow();
+                    overlay.Show();
+                } 
+                else 
+                {
+                     StatusText.Text = $"Monitoring: {e.ProcessName}";
+                     StatusText.Foreground = System.Windows.Media.Brushes.White;
+                }
+
                 var logItem = new ActivityLogItem
                 {
                     Timestamp = e.Timestamp.ToLongTimeString(),
                     ProcessName = e.ProcessName,
-                    WindowTitle = e.WindowTitle,
+                    WindowTitle = blocked ? "[BLOCKED] " + e.WindowTitle : e.WindowTitle,
                     Url = url
                 };
 
