@@ -131,10 +131,14 @@ namespace Social_Sentry.Services
             return false;
         }
 
-        private void PerformBlockingAction(string key)
+        private async void PerformBlockingAction(string key)
         {
             // 1. Navigate Back (Alt + Left Arrow)
             SimulateGoBack();
+
+            // Wait a moment for the browser to process the input and navigate back
+            // BEFORE we steal focus with the overlay.
+            await Task.Delay(300);
 
             // 2. Show Overlay
             ShowOverlay("Restricted Content Detected", () => 
