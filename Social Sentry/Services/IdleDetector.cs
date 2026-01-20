@@ -9,13 +9,13 @@ namespace Social_Sentry.Services
     {
         private readonly System.Timers.Timer _timer;
         private bool _isIdle;
-        private readonly uint _idleThresholdMs; // e.g., 60000ms = 1 minute
+        public uint IdleThresholdMs { get; set; }
 
         public event Action<bool>? OnIdleStateChanged;
 
         public IdleDetector(uint idleThresholdMs = 60000)
         {
-            _idleThresholdMs = idleThresholdMs;
+            IdleThresholdMs = idleThresholdMs;
             _timer = new System.Timers.Timer(1000); // Check every second
             _timer.Elapsed += CheckIdleState;
         }
@@ -47,7 +47,7 @@ namespace Social_Sentry.Services
                     // Calculate elapsed (handle potential overflow if system runs for > 49.7 days)
                     uint elapsedTicks = tickCount - lastInputTick;
 
-                    bool isNowIdle = elapsedTicks > _idleThresholdMs;
+                    bool isNowIdle = elapsedTicks > IdleThresholdMs;
 
                     if (isNowIdle != _isIdle)
                     {

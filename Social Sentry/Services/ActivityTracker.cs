@@ -8,6 +8,7 @@ namespace Social_Sentry.Services
     public class ActivityEvent
     {
         public string ProcessName { get; set; } = string.Empty;
+        public int ProcessId { get; set; } // Added ProcessId
         public string WindowTitle { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty; // Added URL property
         public DateTime Timestamp { get; set; }
@@ -20,6 +21,9 @@ namespace Social_Sentry.Services
         private IntPtr _hookHandleForeground = IntPtr.Zero;
         private IntPtr _hookHandleNameChange = IntPtr.Zero;
 
+        private System.Timers.Timer _debounceTimer;
+        private const int DebounceInterval = 250; // ms
+
         public event Action<ActivityEvent>? OnActivityChanged;
 
         private readonly BrowserMonitor _browserMonitor;
@@ -31,6 +35,16 @@ namespace Social_Sentry.Services
             _browserMonitor = new BrowserMonitor();
             _idleDetector = new IdleDetector();
             _idleDetector.OnIdleStateChanged += HandleIdleStateChanged;
+
+            _debounceTimer = new System.Timers.Timer(DebounceInterval);
+            _debounceTimer.AutoReset = false;
+            _debounceTimer.Elapsed += (s, e) => 
+            {
+                // Ensure we run on UI thread or valid context if needed, 
+                // but since CheckActivity just does Process/Window inspection, background thread is fine 
+                // as long as we don't access UI elements directly (we use P/Invoke).
+                CheckActivity();
+            };
         }
 
         public void Start()
@@ -95,25 +109,30 @@ namespace Social_Sentry.Services
             }
 
             _idleDetector.Stop();
+            _debounceTimer.Stop();
         }
 
         private void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
             if (eventType == NativeMethods.EVENT_SYSTEM_FOREGROUND)
             {
+                // Immediate update on focus change
+                _debounceTimer.Stop(); 
                 CheckActivity();
             }
             else if (eventType == NativeMethods.EVENT_OBJECT_NAMECHANGE)
             {
                 // Only process name changes for the currently active window
-                // This prevents background tabs or other apps from trigging updates unnecessarily
                 IntPtr foregroundHwnd = NativeMethods.GetForegroundWindow();
                 if (hwnd == foregroundHwnd)
                 {
-                    CheckActivity();
+                    // Debounce: reset timer
+                    _debounceTimer.Stop();
+                    _debounceTimer.Start();
                 }
             }
         }
+
 
         private void CheckActivity()
         {
@@ -149,6 +168,7 @@ namespace Social_Sentry.Services
                 OnActivityChanged?.Invoke(new ActivityEvent
                 {
                     ProcessName = processName,
+                    ProcessId = (int)processId,
                     WindowTitle = windowTitle,
                     Url = url,
                     Timestamp = DateTime.Now

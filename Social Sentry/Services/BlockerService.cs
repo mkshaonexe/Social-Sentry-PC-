@@ -2,22 +2,48 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Social_Sentry.Services
 {
     public class BlockerService
     {
-        // Simple rules list for now (Phase 2). Later verify against DB.
-        private readonly string[] _blockedKeywords = { "porn", "xxx", "sex" }; 
-        private readonly string[] _blockedUrlSegments = { "/reels/", "/shorts/" };
-        private readonly string[] _blockedTitles = { "Reels", "Shorts" };
+        private Social_Sentry.Data.DatabaseService? _dbService;
 
-        public bool CheckAndBlock(string processName, string title, string url)
+        // Simple rules list for now (Phase 2). Later verify against DB.
+        private readonly List<string> _blockedKeywords = new() { "porn", "xxx", "sex" }; 
+        private readonly List<string> _blockedUrlSegments = new() { "/reels/", "/shorts/" };
+        private readonly List<string> _blockedTitles = new() { "Reels", "Shorts" };
+        
+        public void Initialize(Social_Sentry.Data.DatabaseService dbService)
+        {
+            _dbService = dbService;
+            LoadRules();
+        }
+
+        private void LoadRules()
+        {
+            // TODO: Fetch from _dbService.GetRules()
+            // _blockedKeywords.AddRange(...);
+        }
+
+        private Views.BlackoutWindow? _currentOverlay;
+
+        public bool CheckAndBlock(string processName, string title, string url, int processId)
         {
             if (ShouldBlock(title, url))
             {
                 Debug.WriteLine($"Blocking content: {title} | {url}");
-                BlockContent();
+                // For browser content, we might prefer Overlay or Close Tab.
+                // For apps, we might prefer Suspend.
+                // For now, let's try Overlay for Reels.
+                
+                Application.Current.Dispatcher.Invoke(() => 
+                {
+                    ShowOverlay("Restricted Content Detected");
+                });
+                
+                // Also optionally key-inject to pause/stop?
                 return true;
             }
             return false;
@@ -43,8 +69,6 @@ namespace Social_Sentry.Services
             }
 
             // 3. Check Title Specifics
-            // Only if "Instagram" or "Facebook" or "YouTube" is also in title/url to avoid false positives?
-            // For now, strict block on "Reels".
             foreach (var t in _blockedTitles)
             {
                  if (lowerTitle.Contains(t.ToLower())) return true;
@@ -53,26 +77,55 @@ namespace Social_Sentry.Services
             return false;
         }
 
-        private void BlockContent()
+        public void ShowOverlay(string reason)
         {
-            // Simulate CTRL + W (Close Tab)
-            // This assumes the browser window is still active, which it should be.
+            if (_currentOverlay == null || !_currentOverlay.IsLoaded)
+            {
+                _currentOverlay = new Views.BlackoutWindow();
+                _currentOverlay.Closed += (s, e) => _currentOverlay = null;
+                _currentOverlay.Show();
+            }
             
-            // Press Ctrl
-            NativeMethods.INPUT[] inputsDown = new NativeMethods.INPUT[2];
+            // Force reset to top if already open
+            _currentOverlay.Activate();
+            _currentOverlay.Topmost = true;
+        }
+
+        public void SuspendProcess(int processId)
+        {
+            try
+            {
+                IntPtr hProcess = NativeMethods.OpenProcess(NativeMethods.PROCESS_SUSPEND_RESUME, false, processId);
+                if (hProcess != IntPtr.Zero)
+                {
+                    NativeMethods.NtSuspendProcess(hProcess);
+                    NativeMethods.CloseHandle(hProcess); // Need CloseHandle in NativeMethods? (It's standard kernel32, but check if defined)
+                    // If CloseHandle is missing, we might leak handles. 
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to suspend process: {ex.Message}");
+            }
+        }
+
+        // Keep legacy close method for now
+        private void CloseCurrentTab()
+        {
+            // Simulate CTRL + W
+             NativeMethods.INPUT[] inputsDown = new NativeMethods.INPUT[2];
             
             inputsDown[0].type = NativeMethods.INPUT_KEYBOARD;
             inputsDown[0].U.ki.wVk = NativeMethods.VK_CONTROL;
-            inputsDown[0].U.ki.dwFlags = 0; // KeyDown
+            inputsDown[0].U.ki.dwFlags = 0; 
 
-            // Press W
             inputsDown[1].type = NativeMethods.INPUT_KEYBOARD;
             inputsDown[1].U.ki.wVk = NativeMethods.VK_W;
-            inputsDown[1].U.ki.dwFlags = 0; // KeyDown
+            inputsDown[1].U.ki.dwFlags = 0; 
 
             NativeMethods.SendInput((uint)inputsDown.Length, inputsDown, NativeMethods.INPUT.Size);
 
-            // Release Keys (W then Ctrl)
+            // Release
             NativeMethods.INPUT[] inputsUp = new NativeMethods.INPUT[2];
 
             inputsUp[0].type = NativeMethods.INPUT_KEYBOARD;
@@ -84,9 +137,6 @@ namespace Social_Sentry.Services
             inputsUp[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
 
             NativeMethods.SendInput((uint)inputsUp.Length, inputsUp, NativeMethods.INPUT.Size);
-            
-            // Optional: Send a notification or sound?
-            // System.Media.SystemSounds.Hand.Play();
         }
     }
 }

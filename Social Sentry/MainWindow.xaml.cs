@@ -6,12 +6,14 @@ namespace Social_Sentry
     {
         private readonly Services.UsageTrackerService _usageTracker;
         private readonly ViewModels.MainViewModel _viewModel;
+        private readonly Social_Sentry.Data.DatabaseService _databaseService;
 
         public MainWindow()
         {
             InitializeComponent();
             
-            _usageTracker = new Services.UsageTrackerService();
+            _databaseService = new Social_Sentry.Data.DatabaseService();
+            _usageTracker = new Services.UsageTrackerService(_databaseService);
             _viewModel = new ViewModels.MainViewModel(_usageTracker);
 
             DataContext = _viewModel;

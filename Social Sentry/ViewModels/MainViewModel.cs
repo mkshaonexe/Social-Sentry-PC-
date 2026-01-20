@@ -4,7 +4,7 @@ namespace Social_Sentry.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private object _currentView;
+        private object _currentView = null!;
         private bool _isTrackingEnabled = true;
         private readonly Services.UsageTrackerService _usageTracker;
 

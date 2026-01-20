@@ -13,6 +13,9 @@ namespace Social_Sentry.Services
         // Get the title of a window
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+        
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool CloseHandle(IntPtr hObject);
 
         // Get the process ID of a window
         [DllImport("user32.dll")]
@@ -97,5 +100,30 @@ namespace Social_Sentry.Services
             public uint cbSize;
             public uint dwTime;
         }
+
+
+        // Process Suspension
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr NtSuspendProcess(IntPtr ProcessHandle);
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr NtResumeProcess(IntPtr ProcessHandle);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr OpenProcess(uint processAccess, bool bInheritHandle, int processId);
+
+        public const uint PROCESS_ALL_ACCESS = 0x1F0FFF;
+        public const uint PROCESS_SUSPEND_RESUME = 0x0800;
+
+
+        // Window Position & Z-Order
+        [DllImport("user32.dll")]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+        public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        public const uint SWP_NOSIZE = 0x0001;
+        public const uint SWP_NOMOVE = 0x0002;
+        public const uint SWP_SHOWWINDOW = 0x0040;
+
     }
 }

@@ -7,7 +7,7 @@ namespace Social_Sentry.ViewModels
     {
         private readonly Services.UsageTrackerService _usageTracker;
 
-        private ObservableCollection<AppUsageItem> _topApps;
+        private ObservableCollection<AppUsageItem> _topApps = null!;
         public ObservableCollection<AppUsageItem> TopApps
         {
             get => _topApps;
@@ -21,7 +21,7 @@ namespace Social_Sentry.ViewModels
             set => SetProperty(ref _totalUsageTime, value);
         }
 
-        private ObservableCollection<ChartDataPoint> _chartData;
+        private ObservableCollection<ChartDataPoint> _chartData = null!;
         public ObservableCollection<ChartDataPoint> ChartData
         {
             get => _chartData;
