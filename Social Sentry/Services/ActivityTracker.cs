@@ -14,22 +14,49 @@ namespace Social_Sentry.Services
 
     public class ActivityTracker
     {
-        private readonly System.Timers.Timer _timer;
-        private string _lastProcessName = string.Empty;
-        private string _lastWindowTitle = string.Empty;
+        private NativeMethods.WinEventDelegate? _winEventDelegate;
+        private IntPtr _hookHandle = IntPtr.Zero;
 
         public event Action<ActivityEvent>? OnActivityChanged;
 
         public ActivityTracker()
         {
-            _timer = new System.Timers.Timer(1000); // Check every 1 second
-            _timer.Elapsed += CheckActivity;
+            // No timer needed
         }
 
-        public void Start() => _timer.Start();
-        public void Stop() => _timer.Stop();
+        public void Start()
+        {
+            if (_hookHandle != IntPtr.Zero) return;
 
-        private void CheckActivity(object? sender, ElapsedEventArgs e)
+            _winEventDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
+            _hookHandle = NativeMethods.SetWinEventHook(
+                NativeMethods.EVENT_SYSTEM_FOREGROUND, 
+                NativeMethods.EVENT_SYSTEM_FOREGROUND, 
+                IntPtr.Zero, 
+                _winEventDelegate, 
+                0, 
+                0, 
+                NativeMethods.WINEVENT_OUTOFCONTEXT);
+            
+            // Initial check
+            CheckActivity();
+        }
+
+        public void Stop()
+        {
+            if (_hookHandle != IntPtr.Zero)
+            {
+                NativeMethods.UnhookWinEvent(_hookHandle);
+                _hookHandle = IntPtr.Zero;
+            }
+        }
+
+        private void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        {
+            CheckActivity();
+        }
+
+        private void CheckActivity()
         {
             try
             {
@@ -46,10 +73,6 @@ namespace Social_Sentry.Services
                 NativeMethods.GetWindowText(hWnd, sb, sb.Capacity);
                 string windowTitle = sb.ToString();
 
-                // Only invoke event if something changed to reduce noise (or keep 1s heartbeat if needed for time tracking)
-                // For now, we'll fire every second to accumulate time, or we can handle logic in UI.
-                // Let's fire if it changes OR strictly every interval for accurate counting in the DB.
-                
                 OnActivityChanged?.Invoke(new ActivityEvent
                 {
                     ProcessName = processName,
@@ -59,7 +82,6 @@ namespace Social_Sentry.Services
             }
             catch (Exception ex)
             {
-                // Process might exit found between GetWindowThreadProcessId and GetProcessById
                 Debug.WriteLine($"Error tracking activity: {ex.Message}");
             }
         }

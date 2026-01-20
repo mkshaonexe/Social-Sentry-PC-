@@ -41,16 +41,17 @@ namespace Social_Sentry.Data
             }
         }
 
-        public void LogActivity(string processName, string windowTitle, string url)
+        public void LogActivity(string processName, string windowTitle, string url, double durationSeconds)
         {
             using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
             {
                 connection.Open();
 
-                // Simple insert. optimized logic would update the last row if same activity.
+                // Batching/Coalescing logic is now handled by the caller (MainWindow session manager).
+                // We just record the final calculated duration.
                 string insertCommand = @"
                     INSERT INTO ActivityLog (Timestamp, ProcessName, WindowTitle, Url, DurationSeconds)
-                    VALUES (@timestamp, @processName, @windowTitle, @url, 1)";
+                    VALUES (@timestamp, @processName, @windowTitle, @url, @duration)";
 
                 using (var command = new SqliteCommand(insertCommand, connection))
                 {
@@ -58,6 +59,7 @@ namespace Social_Sentry.Data
                     command.Parameters.AddWithValue("@processName", processName);
                     command.Parameters.AddWithValue("@windowTitle", windowTitle);
                     command.Parameters.AddWithValue("@url", url ?? string.Empty);
+                    command.Parameters.AddWithValue("@duration", (int)durationSeconds); // Store as integer seconds
 
                     command.ExecuteNonQuery();
                 }
