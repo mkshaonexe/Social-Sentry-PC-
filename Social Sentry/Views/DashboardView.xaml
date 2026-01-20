@@ -164,11 +164,7 @@
                                     <Grid Grid.Row="1" Height="4">
                                         <Border Background="#333" CornerRadius="2"/>
                                         <!-- Fill -->
-                                         <Border Background="{StaticResource AccentBrush}" CornerRadius="2" HorizontalAlignment="Left">
-                                             <Border.Width>
-                                                 <!-- Simple binding hack for width relative to container isn't easy in pure XAML without converter or code behind unless using Grid column widths.
-                                                      We'll leave it full width for now or use a LayoutTransform scaling if we can bind scale to Percentage. -->
-                                             </Border.Width>
+                                         <Border Background="{StaticResource AccentBrush}" CornerRadius="2" HorizontalAlignment="Stretch">
                                              <Border.RenderTransform>
                                                  <ScaleTransform ScaleX="{Binding Percentage}"/>
                                              </Border.RenderTransform>
