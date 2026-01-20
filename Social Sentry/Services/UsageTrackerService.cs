@@ -127,6 +127,7 @@ namespace Social_Sentry.Services
                 Name = u.ProcessName,
                 // Format: 1h 30m or 45m or 30s
                 Duration = FormatDuration(u.Duration),
+                RawDuration = u.Duration,
                 Percentage = u.Duration.TotalSeconds / totalSeconds,
                 Sessions = u.SessionCount,
                 Icon = _iconExtractionService.GetProcessIcon(u.ProcessName) // Extract real icon

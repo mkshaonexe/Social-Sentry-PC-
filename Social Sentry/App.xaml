@@ -93,12 +93,12 @@
                             </Trigger>
                             
                             <!-- Selected State (Using Tag as boolean) -->
-                            <Trigger Property="Tag" Value="True">
+                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
                                 <Setter Property="Background" Value="#1A00E676"/>
                                 <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
                                 <Setter TargetName="Indicator" Property="Opacity" Value="1"/>
                                 <Setter Property="FontWeight" Value="SemiBold"/>
-                                <Trigger.EnterActions>
+                                <DataTrigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard>
                                             <DoubleAnimation Storyboard.TargetName="Indicator"
@@ -111,8 +111,8 @@
                                             </DoubleAnimation>
                                         </Storyboard>
                                     </BeginStoryboard>
-                                </Trigger.EnterActions>
-                            </Trigger>
+                                </DataTrigger.EnterActions>
+                            </DataTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
