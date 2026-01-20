@@ -37,7 +37,15 @@ namespace Social_Sentry.Views
             double totalPercentage = 0;
             foreach(var cat in vm.Categories) totalPercentage += cat.Percentage;
             
-            if (totalPercentage <= 0.001) return; // No data
+            if (totalPercentage <= 0.001)
+            {
+                // No data - draw empty grey ring
+                var path = CreateArc(centerX, centerY, radius, 0, 359.99, thickness, "#1E1E1E"); // Dark grey
+                // Or slightly lighter to be visible against background
+                path = CreateArc(centerX, centerY, radius, 0, 359.99, thickness, "#2D2D2D");
+                ChartCanvas.Children.Add(path);
+                return; 
+            }
 
             foreach (var category in vm.Categories)
             {

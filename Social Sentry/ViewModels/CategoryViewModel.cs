@@ -32,16 +32,13 @@ namespace Social_Sentry.ViewModels
                 a.Name.Contains("twitch", System.StringComparison.OrdinalIgnoreCase)
             ).Select(a => a.Name).ToList();
 
-            if (entertainmentApps.Any())
+            Categories.Add(new CategoryGroup
             {
-                Categories.Add(new CategoryGroup
-                {
-                    Name = "Entertainment",
-                    Icon = "🎬",
-                    Color = "#FF5722",
-                    Apps = new ObservableCollection<string>(entertainmentApps)
-                });
-            }
+                Name = "Entertainment",
+                Icon = "🎬",
+                Color = "#FF5722",
+                Apps = new ObservableCollection<string>(entertainmentApps)
+            });
 
             // Productive Category (Work, Development, Office)
             var productiveApps = apps.Where(a => 
@@ -55,16 +52,13 @@ namespace Social_Sentry.ViewModels
                 a.Name.Contains("eclipse", System.StringComparison.OrdinalIgnoreCase)
             ).Select(a => a.Name).ToList();
 
-            if (productiveApps.Any())
+            Categories.Add(new CategoryGroup
             {
-                Categories.Add(new CategoryGroup
-                {
-                    Name = "Productive",
-                    Icon = "💼",
-                    Color = "#2196F3",
-                    Apps = new ObservableCollection<string>(productiveApps)
-                });
-            }
+                Name = "Productive",
+                Icon = "💼",
+                Color = "#2196F3",
+                Apps = new ObservableCollection<string>(productiveApps)
+            });
 
             // Study Category (Learning, Reading, Research)
             var studyApps = apps.Where(a => 
@@ -77,16 +71,13 @@ namespace Social_Sentry.ViewModels
                 a.Name.Contains("duolingo", System.StringComparison.OrdinalIgnoreCase)
             ).Select(a => a.Name).ToList();
 
-            if (studyApps.Any())
+            Categories.Add(new CategoryGroup
             {
-                Categories.Add(new CategoryGroup
-                {
-                    Name = "Study",
-                    Icon = "📚",
-                    Color = "#9C27B0",
-                    Apps = new ObservableCollection<string>(studyApps)
-                });
-            }
+                Name = "Study",
+                Icon = "📚",
+                Color = "#9C27B0",
+                Apps = new ObservableCollection<string>(studyApps)
+            });
 
             // Doom Scrolling Category (Mindless browsing, Social feeds)
             var doomScrollingApps = apps.Where(a => 
@@ -98,16 +89,13 @@ namespace Social_Sentry.ViewModels
                 a.Name.Contains("9gag", System.StringComparison.OrdinalIgnoreCase)
             ).Select(a => a.Name).ToList();
 
-            if (doomScrollingApps.Any())
+            Categories.Add(new CategoryGroup
             {
-                Categories.Add(new CategoryGroup
-                {
-                    Name = "Doom Scrolling",
-                    Icon = "📱",
-                    Color = "#FF9800",
-                    Apps = new ObservableCollection<string>(doomScrollingApps)
-                });
-            }
+                Name = "Doom Scrolling",
+                Icon = "📱",
+                Color = "#FF9800",
+                Apps = new ObservableCollection<string>(doomScrollingApps)
+            });
 
             // Communication Category (Messaging, Email)
             var communicationApps = apps.Where(a => 
@@ -120,16 +108,13 @@ namespace Social_Sentry.ViewModels
                 a.Name.Contains("gmail", System.StringComparison.OrdinalIgnoreCase)
             ).Select(a => a.Name).ToList();
 
-            if (communicationApps.Any())
+            Categories.Add(new CategoryGroup
             {
-                Categories.Add(new CategoryGroup
-                {
-                    Name = "Communication",
-                    Icon = "💬",
-                    Color = "#4CAF50",
-                    Apps = new ObservableCollection<string>(communicationApps)
-                });
-            }
+                Name = "Communication",
+                Icon = "💬",
+                Color = "#4CAF50",
+                Apps = new ObservableCollection<string>(communicationApps)
+            });
 
             // Uncategorized
             var categorizedApps = entertainmentApps
