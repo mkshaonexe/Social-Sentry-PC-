@@ -47,7 +47,8 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="100"/>
                     <DataGridTextColumn Header="Process" Binding="{Binding ProcessName}" Width="150" FontWeight="SemiBold"/>
-                    <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" Width="*"/>
+                    <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" Width="200"/>
+                    <DataGridTextColumn Header="URL" Binding="{Binding Url}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

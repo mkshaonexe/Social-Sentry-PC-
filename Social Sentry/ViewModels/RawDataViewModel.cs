@@ -24,7 +24,8 @@ namespace Social_Sentry.ViewModels
                 {
                     Timestamp = evt.Timestamp.ToString("HH:mm:ss"),
                     ProcessName = evt.ProcessName,
-                    WindowTitle = evt.WindowTitle
+                    WindowTitle = evt.WindowTitle,
+                    Url = evt.Url
                 });
 
                 // Keep list size manageable
@@ -41,5 +42,6 @@ namespace Social_Sentry.ViewModels
         public string Timestamp { get; set; } = "";
         public string ProcessName { get; set; } = "";
         public string WindowTitle { get; set; } = "";
+        public string Url { get; set; } = "";
     }
 }

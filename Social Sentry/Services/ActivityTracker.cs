@@ -9,6 +9,7 @@ namespace Social_Sentry.Services
     {
         public string ProcessName { get; set; } = string.Empty;
         public string WindowTitle { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty; // Added URL property
         public DateTime Timestamp { get; set; }
     }
 
@@ -19,9 +20,11 @@ namespace Social_Sentry.Services
 
         public event Action<ActivityEvent>? OnActivityChanged;
 
+        private readonly BrowserMonitor _browserMonitor;
+
         public ActivityTracker()
         {
-            // No timer needed
+            _browserMonitor = new BrowserMonitor();
         }
 
         public void Start()
@@ -73,10 +76,23 @@ namespace Social_Sentry.Services
                 NativeMethods.GetWindowText(hWnd, sb, sb.Capacity);
                 string windowTitle = sb.ToString();
 
+                string url = string.Empty;
+
+                if (_browserMonitor.IsBrowser(processName))
+                {
+                    url = _browserMonitor.GetCurrentUrl(hWnd);
+                    // For debugging/logging verify we got something
+                    if (!string.IsNullOrEmpty(url))
+                    {
+                        Debug.WriteLine($"Captured URL: {url}");
+                    }
+                }
+
                 OnActivityChanged?.Invoke(new ActivityEvent
                 {
                     ProcessName = processName,
                     WindowTitle = windowTitle,
+                    Url = url,
                     Timestamp = DateTime.Now
                 });
             }
