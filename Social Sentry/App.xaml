@@ -65,7 +65,7 @@
                                 <Border x:Name="Indicator"
                                         Width="4" 
                                         Height="20"
-                                        Background="{StaticResource AccentColor}"
+                                        Background="{StaticResource AccentBrush}"
                                         CornerRadius="2"
                                         HorizontalAlignment="Left"
                                         Opacity="0"
