@@ -124,17 +124,50 @@ namespace Social_Sentry.Services
                 
                 Application.Current.Dispatcher.Invoke(() => 
                 {
-                    ShowOverlay("Restricted Content Detected", () => 
-                    {
-                        // ON UNLOCK: Add to allow list for 5 minutes
-                        _temporarilyAllowed[key] = DateTime.Now.AddMinutes(5);
-                    });
+                    PerformBlockingAction(key);
                 });
-                
-                // Also optionally key-inject to pause/stop?
                 return true;
             }
             return false;
+        }
+
+        private void PerformBlockingAction(string key)
+        {
+            // 1. Navigate Back (Alt + Left Arrow)
+            SimulateGoBack();
+
+            // 2. Show Overlay
+            ShowOverlay("Restricted Content Detected", () => 
+            {
+                // ON UNLOCK: Add to allow list for 5 minutes
+                _temporarilyAllowed[key] = DateTime.Now.AddMinutes(5);
+            });
+        }
+
+        private void SimulateGoBack()
+        {
+            // Simulate ALT + LEFT ARROW
+            NativeMethods.INPUT[] inputs = new NativeMethods.INPUT[4];
+
+            // Alt Down
+            inputs[0].type = NativeMethods.INPUT_KEYBOARD;
+            inputs[0].U.ki.wVk = NativeMethods.VK_MENU; 
+
+            // Left Down
+            inputs[1].type = NativeMethods.INPUT_KEYBOARD;
+            inputs[1].U.ki.wVk = NativeMethods.VK_LEFT; 
+
+            // Left Up
+            inputs[2].type = NativeMethods.INPUT_KEYBOARD;
+            inputs[2].U.ki.wVk = NativeMethods.VK_LEFT;
+            inputs[2].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            // Alt Up
+            inputs[3].type = NativeMethods.INPUT_KEYBOARD;
+            inputs[3].U.ki.wVk = NativeMethods.VK_MENU;
+            inputs[3].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            NativeMethods.SendInput((uint)inputs.Length, inputs, NativeMethods.INPUT.Size);
         }
 
         private bool ShouldBlock(string title, string url)

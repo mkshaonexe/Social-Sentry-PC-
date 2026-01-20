@@ -74,6 +74,8 @@ namespace Social_Sentry.Services
         public const int INPUT_KEYBOARD = 1;
         public const uint KEYEVENTF_KEYUP = 0x0002;
         public const ushort VK_CONTROL = 0x11;
+        public const ushort VK_MENU = 0x12;
+        public const ushort VK_LEFT = 0x25;
         public const ushort VK_W = 0x57; 
 
         // Event Hook Constants

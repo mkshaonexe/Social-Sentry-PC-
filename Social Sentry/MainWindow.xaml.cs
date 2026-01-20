@@ -42,6 +42,20 @@ namespace Social_Sentry
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             _usageTracker.Stop();
+            
+            // Kill the watchdog to prevent restart
+            try 
+            {
+                var watchdogs = System.Diagnostics.Process.GetProcessesByName("SocialSentry.Watchdog");
+                foreach (var wd in watchdogs)
+                {
+                    wd.Kill();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error killing watchdog: {ex.Message}");
+            }
         }
     }
 }
