@@ -8,11 +8,13 @@ namespace Social_Sentry.Services
     public class SettingsService
     {
         private readonly string _settingsPath;
+        private readonly EncryptionService _encryptionService;
         private const string APP_NAME = "SocialSentry";
         private const string REGISTRY_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
 
         public SettingsService()
         {
+            _encryptionService = new EncryptionService();
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var appFolder = Path.Combine(appDataPath, "SocialSentry");
             Directory.CreateDirectory(appFolder);
@@ -25,7 +27,25 @@ namespace Social_Sentry.Services
             {
                 if (File.Exists(_settingsPath))
                 {
-                    var json = File.ReadAllText(_settingsPath);
+                    // For backward compatibility: try reading as plain text first
+                    // or check if it looks encrypted (Base64). 
+                    // Simpler approach: Try decrypt. If fail, try deserialize raw.
+                    var content = File.ReadAllText(_settingsPath);
+                    
+                    string json;
+                    try 
+                    {
+                        // Try to decrypt assuming it's encrypted
+                        json = _encryptionService.Decrypt(content);
+                    }
+                    catch 
+                    {
+                        // Fallback implies it was plain text (old version)
+                        json = content; 
+                    }
+
+                    // If decryption returned "[Encrypted Data]" or failure, it might be just bad data, 
+                    // but allow trying to parse what we got.
                     return JsonSerializer.Deserialize<UserSettings>(json) ?? new UserSettings();
                 }
             }
@@ -45,7 +65,10 @@ namespace Social_Sentry.Services
                 { 
                     WriteIndented = true 
                 });
-                File.WriteAllText(_settingsPath, json);
+                
+                // Encrypt the entire JSON blob
+                var encrypted = _encryptionService.Encrypt(json);
+                File.WriteAllText(_settingsPath, encrypted);
             }
             catch (Exception ex)
             {

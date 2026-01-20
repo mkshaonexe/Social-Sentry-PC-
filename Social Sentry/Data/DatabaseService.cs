@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using Social_Sentry.Services; // Namespace handling
 using System;
 using System.IO;
 
@@ -7,9 +8,12 @@ namespace Social_Sentry.Data
     public class DatabaseService
     {
         private readonly string _dbPath;
+        private readonly EncryptionService _encryptionService; 
 
         public DatabaseService()
         {
+            _encryptionService = new EncryptionService();
+
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string folder = Path.Combine(appData, "SocialSentry");
             if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
@@ -98,16 +102,23 @@ namespace Social_Sentry.Data
                 {
                     while (reader.Read())
                     {
-                        rules.Add(new Models.Rule
+                        var rule = new Models.Rule
                         {
                             Id = reader.GetInt32(0),
                             Type = reader.GetString(1),
-                            Value = reader.GetString(2),
-                            Category = reader.IsDBNull(3) ? "" : reader.GetString(3),
+                            // Decrypt potential sensitive user input
+                            Value = _encryptionService.Decrypt(reader.GetString(2)),
+                            Category = reader.IsDBNull(3) ? "" : _encryptionService.Decrypt(reader.GetString(3)),
                             Action = reader.GetString(4),
                             LimitSeconds = reader.IsDBNull(5) ? 0 : reader.GetInt32(5),
                             ScheduleJson = reader.IsDBNull(6) ? "" : reader.GetString(6)
-                        });
+                        };
+
+                        // Safety check: if decryption failed heavily, might return empty string
+                        if (!string.IsNullOrEmpty(rule.Value))
+                        {
+                            rules.Add(rule);
+                        }
                     }
                 }
             }
@@ -126,8 +137,9 @@ namespace Social_Sentry.Data
                 using (var command = new SqliteCommand(commandText, connection))
                 {
                     command.Parameters.AddWithValue("@type", rule.Type);
-                    command.Parameters.AddWithValue("@value", rule.Value);
-                    command.Parameters.AddWithValue("@category", rule.Category);
+                    // Encrypt Value and Category
+                    command.Parameters.AddWithValue("@value", _encryptionService.Encrypt(rule.Value));
+                    command.Parameters.AddWithValue("@category", _encryptionService.Encrypt(rule.Category));
                     command.Parameters.AddWithValue("@action", rule.Action);
                     command.Parameters.AddWithValue("@limit", rule.LimitSeconds);
                     command.Parameters.AddWithValue("@schedule", rule.ScheduleJson);
@@ -156,8 +168,6 @@ namespace Social_Sentry.Data
             {
                 connection.Open();
 
-                // Batching/Coalescing logic is now handled by the caller (MainWindow session manager).
-                // We just record the final calculated duration.
                 string insertCommand = @"
                     INSERT INTO ActivityLog (Timestamp, ProcessName, WindowTitle, Url, DurationSeconds)
                     VALUES (@timestamp, @processName, @windowTitle, @url, @duration)";
@@ -165,10 +175,11 @@ namespace Social_Sentry.Data
                 using (var command = new SqliteCommand(insertCommand, connection))
                 {
                     command.Parameters.AddWithValue("@timestamp", DateTime.Now.ToString("o"));
-                    command.Parameters.AddWithValue("@processName", processName);
-                    command.Parameters.AddWithValue("@windowTitle", windowTitle);
-                    command.Parameters.AddWithValue("@url", url ?? string.Empty);
-                    command.Parameters.AddWithValue("@duration", (int)durationSeconds); // Store as integer seconds
+                    // Encrypt sensitive info
+                    command.Parameters.AddWithValue("@processName", _encryptionService.Encrypt(processName));
+                    command.Parameters.AddWithValue("@windowTitle", _encryptionService.Encrypt(windowTitle));
+                    command.Parameters.AddWithValue("@url", _encryptionService.Encrypt(url ?? string.Empty));
+                    command.Parameters.AddWithValue("@duration", (int)durationSeconds); 
 
                     command.ExecuteNonQuery();
                 }
