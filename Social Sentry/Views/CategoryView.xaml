@@ -1,0 +1,70 @@
+<UserControl x:Class="Social_Sentry.Views.CategoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Social_Sentry.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,24">
+            <!-- Header -->
+            <TextBlock Text="Categories" FontSize="28" FontWeight="Bold" 
+                      Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,24"/>
+            
+            <TextBlock Text="Organize your apps into categories to better understand your usage patterns" 
+                      FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,32"/>
+
+            <!-- Category Cards -->
+            <ItemsControl ItemsSource="{Binding Categories}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{StaticResource CardBackgroundBrush}" 
+                               CornerRadius="12" Padding="20" Margin="0,0,0,16">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <!-- Category Header -->
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                                    <Border Width="40" Height="40" CornerRadius="8" 
+                                           Background="{Binding Color}" Margin="0,0,12,0">
+                                        <TextBlock Text="{Binding Icon}" FontSize="20" 
+                                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="SemiBold"
+                                                  Foreground="{StaticResource PrimaryTextBrush}"/>
+                                        <TextBlock Text="{Binding AppCount}" FontSize="12"
+                                                  Foreground="{StaticResource SecondaryTextBrush}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                
+                                <!-- Apps in Category -->
+                                <ItemsControl Grid.Row="1" ItemsSource="{Binding Apps}" Margin="0,8,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="#0AFFFFFF" CornerRadius="8" 
+                                                   Padding="12,8" Margin="0,0,8,8">
+                                                <TextBlock Text="{Binding}" 
+                                                          Foreground="{StaticResource PrimaryTextBrush}"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
