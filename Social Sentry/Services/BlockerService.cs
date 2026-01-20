@@ -12,8 +12,8 @@ namespace Social_Sentry.Services
 
         // Simple rules list for now (Phase 2). Later verify against DB.
         private readonly List<string> _blockedKeywords = new() { "porn", "xxx", "sex" }; 
-        private readonly List<string> _blockedUrlSegments = new() { "/reels/", "/shorts/" };
-        private readonly List<string> _blockedTitles = new() { "Reels", "Shorts" };
+        private readonly List<string> _blockedUrlSegments = new() { "youtube.com/shorts", "facebook.com/reel" };
+        private readonly List<string> _blockedTitles = new(); 
         
         // 1. Add a dictionary to track allowed items and their expiration time
         private readonly Dictionary<string, DateTime> _temporarilyAllowed = new();
@@ -53,13 +53,10 @@ namespace Social_Sentry.Services
                 _blockedKeywords.Add("sex");
                 
                 _blockedUrlSegments.Clear();
-                _blockedUrlSegments.Add("/reels/");
-                _blockedUrlSegments.Add("/reel/");  // Facebook uses singular
-                _blockedUrlSegments.Add("/shorts/");
+                _blockedUrlSegments.Add("youtube.com/shorts");
+                _blockedUrlSegments.Add("facebook.com/reel"); 
 
                 _blockedTitles.Clear();
-                _blockedTitles.Add("Reels");
-                _blockedTitles.Add("Shorts");
 
                 foreach (var rule in rules)
                 {
