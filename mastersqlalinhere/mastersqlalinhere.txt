@@ -1,0 +1,26 @@
+-- Social Sentry Master SQL File
+-- This file contains the schema and initial data for the application.
+-- Use this to restore the database if it is deleted.
+
+-- Table: ActivityLog
+-- Stores every second/minute of user activity.
+CREATE TABLE IF NOT EXISTS ActivityLog (
+    LogId INTEGER PRIMARY KEY AUTOINCREMENT,
+    Timestamp TEXT NOT NULL,
+    ProcessName TEXT NOT NULL,
+    WindowTitle TEXT,
+    Url TEXT,
+    DurationSeconds INTEGER
+);
+
+-- Table: BlockRules (Future Use)
+CREATE TABLE IF NOT EXISTS BlockRules (
+    RuleId INTEGER PRIMARY KEY AUTOINCREMENT,
+    TargetType TEXT NOT NULL, -- 'App', 'Url', 'Title'
+    TargetValue TEXT NOT NULL, -- e.g. 'chrome', 'facebook.com/reels', 'Porn'
+    ActionType TEXT NOT NULL DEFAULT 'Block' -- 'Block', 'Warn', 'Kill'
+);
+
+-- Initial Data: Block Rules
+INSERT INTO BlockRules (TargetType, TargetValue, ActionType) VALUES ('Url', '/reels/', 'Block');
+INSERT INTO BlockRules (TargetType, TargetValue, ActionType) VALUES ('Url', '/shorts/', 'Block');

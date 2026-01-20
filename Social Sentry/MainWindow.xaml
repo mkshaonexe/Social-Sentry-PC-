@@ -5,8 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Social_Sentry"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Social Sentry - Windows" Height="500" Width="900"
+        Background="#1E1E1E" Foreground="White">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="Social Sentry" FontSize="24" FontWeight="Bold" Margin="0,0,20,0" Foreground="#00D1FF"/>
+            <Button x:Name="BtnStart" Content="START SENTRTY" Width="120" Click="BtnStart_Click" Background="#28A745" Foreground="White" BorderThickness="0" Margin="5"/>
+            <Button x:Name="BtnStop" Content="STOP" Width="80" Click="BtnStop_Click" Background="#DC3545" Foreground="White" BorderThickness="0" Margin="5"/>
+        </StackPanel>
+
+        <DataGrid x:Name="LogGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" Background="#252526" RowBackground="#2D2D30" Foreground="White" BorderThickness="0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="150" Foreground="Black"/>
+                <DataGridTextColumn Header="App" Binding="{Binding ProcessName}" Width="120" Foreground="Black"/>
+                <DataGridTextColumn Header="Title" Binding="{Binding WindowTitle}" Width="250" Foreground="Black"/>
+                <DataGridTextColumn Header="URL" Binding="{Binding Url}" Width="*" Foreground="Black"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TextBlock x:Name="StatusText" Grid.Row="2" Text="Ready" Margin="5"/>
     </Grid>
 </Window>
