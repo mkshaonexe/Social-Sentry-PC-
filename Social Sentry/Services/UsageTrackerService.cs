@@ -11,6 +11,7 @@ namespace Social_Sentry.Services
         private readonly ActivityTracker _activityTracker;
         private readonly BlockerService _blockerService;
         private readonly Social_Sentry.Data.DatabaseService _databaseService;
+        private readonly IconExtractionService _iconExtractionService;
 
         private DateTime _lastSwitchTime;
         private string _currentProcessName = "";
@@ -31,6 +32,7 @@ namespace Social_Sentry.Services
             _activityTracker = new ActivityTracker();
             _blockerService = new BlockerService();
             _blockerService.Initialize(_databaseService);
+            _iconExtractionService = new IconExtractionService();
 
             _activityTracker.OnActivityChanged += HandleActivityChanged;
         }
@@ -127,7 +129,7 @@ namespace Social_Sentry.Services
                 Duration = FormatDuration(u.Duration),
                 Percentage = u.Duration.TotalSeconds / totalSeconds,
                 Sessions = u.SessionCount,
-                IconPath = "" // TODO: Extract Icon
+                Icon = _iconExtractionService.GetProcessIcon(u.ProcessName) // Extract real icon
             }).ToList();
         }
 

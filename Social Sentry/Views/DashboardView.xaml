@@ -143,9 +143,9 @@
                                     <ColumnDefinition Width="Auto"/> <!-- Time -->
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Icon Placeholder -->
-                                <Border Width="40" Height="40" Background="{StaticResource CardBackgroundBrush}" CornerRadius="8" Margin="0,0,16,0">
-                                    <TextBlock Text="App" Foreground="{StaticResource SecondaryTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10"/>
+                                <!-- App Icon -->
+                                <Border Width="40" Height="40" CornerRadius="8" Margin="0,0,16,0" ClipToBounds="True">
+                                    <Image Source="{Binding Icon}" Stretch="UniformToFill" />
                                 </Border>
 
                                 <!-- Details -->
