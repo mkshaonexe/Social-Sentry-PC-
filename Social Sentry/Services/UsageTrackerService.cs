@@ -20,6 +20,8 @@ namespace Social_Sentry.Services
 
         public event Action? OnUsageUpdated;
 
+        public event Action<ActivityEvent>? OnRawActivityDetected;
+
         public UsageTrackerService()
         {
             _activityTracker = new ActivityTracker();
@@ -41,6 +43,9 @@ namespace Social_Sentry.Services
 
         private void HandleActivityChanged(ActivityEvent newEvent)
         {
+            // Update raw log subscribers
+            OnRawActivityDetected?.Invoke(newEvent);
+
             UpdateCurrentSession();
 
             _currentProcessName = newEvent.ProcessName;

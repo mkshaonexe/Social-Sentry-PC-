@@ -24,9 +24,9 @@
             <StackPanel>
                 <!-- Logo Area -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,32">
-                    <Border Width="32" Height="32" CornerRadius="16" Background="White" Margin="0,0,12,0">
-                         <!-- Logo Placeholder -->
-                        <Path Data="M10,20 L15,25 L25,10" Stroke="{StaticResource AccentBrush}" StrokeThickness="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Border Width="32" Height="32" Margin="0,0,12,0">
+                         <!-- Logo -->
+                        <Image Source="Images/AppLogo.png" Stretch="Uniform"/>
                     </Border>
                     <TextBlock Text="Social Sentry" Foreground="{StaticResource PrimaryTextBrush}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                     <!-- Toggle Switch Placeholder -->
@@ -36,9 +36,10 @@
                 </StackPanel>
 
                 <!-- Menu Items -->
-                <Button Content="Dashboard" Style="{StaticResource ActiveSidebarButtonStyle}" Margin="0,0,0,8"/>
+                <Button Content="Dashboard" Command="{Binding NavigateCommand}" CommandParameter="Dashboard" Style="{StaticResource ActiveSidebarButtonStyle}" Margin="0,0,0,8"/>
                 <Button Content="Usage Limits" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
                 <Button Content="Categories" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
+                <Button Content="Raw Data" Command="{Binding NavigateCommand}" CommandParameter="Raw" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
                 <!-- <Button Content="StayFree for Web" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/> -->
 
                 <Separator Background="#333" Margin="0,16"/>
@@ -56,6 +57,9 @@
                  <ContentControl.Resources>
                      <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
                          <views:DashboardView/>
+                     </DataTemplate>
+                     <DataTemplate DataType="{x:Type vm:RawDataViewModel}">
+                         <views:RawDataView/>
                      </DataTemplate>
                  </ContentControl.Resources>
              </ContentControl>
