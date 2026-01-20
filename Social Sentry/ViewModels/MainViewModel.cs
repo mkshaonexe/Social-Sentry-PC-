@@ -14,6 +14,13 @@ namespace Social_Sentry.ViewModels
             set => SetProperty(ref _currentView, value);
         }
 
+        private string _currentPageName = "Dashboard";
+        public string CurrentPageName
+        {
+            get => _currentPageName;
+            set => SetProperty(ref _currentPageName, value);
+        }
+
         public bool IsTrackingEnabled
         {
             get => _isTrackingEnabled;
@@ -60,6 +67,7 @@ namespace Social_Sentry.ViewModels
 
         private void Navigate(string viewName)
         {
+            CurrentPageName = viewName;
             switch (viewName)
             {
                 case "Dashboard":

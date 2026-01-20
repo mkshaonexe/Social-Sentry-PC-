@@ -45,18 +45,55 @@
                 </StackPanel>
 
                 <!-- Menu Items -->
-                <Button Content="Dashboard" Command="{Binding NavigateCommand}" CommandParameter="Dashboard" Style="{StaticResource ActiveSidebarButtonStyle}" Margin="0,0,0,8"/>
-                <Button Content="Categories" Command="{Binding NavigateCommand}" CommandParameter="Categories" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
-                <Button Content="Usage Limits" Command="{Binding NavigateCommand}" CommandParameter="Limit" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
-                <Button Content="Raw Data" Command="{Binding NavigateCommand}" CommandParameter="Raw" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
-                <Button Content="Community" Command="{Binding NavigateCommand}" CommandParameter="Community" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
-                <Button Content="All Features" Command="{Binding NavigateCommand}" CommandParameter="AllFeatures" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
+                <Button Content="Dashboard" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="Dashboard" 
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Dashboard'}"/>
+                        
+                <Button Content="Categories" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="Categories" 
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Categories'}"/>
+                        
+                <Button Content="Usage Limits" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="Limit" 
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Limit'}"/>
+                        
+                <Button Content="Raw Data" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="Raw" 
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Raw'}"/>
+                        
+                <Button Content="Community" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="Community" 
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Community'}"/>
+                        
+                <Button Content="All Features" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="AllFeatures" 
+                        Style="{StaticResource NavigationButtonStyle}"
+                        Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='AllFeatures'}"/>
 
                 <Separator Background="#333" Margin="0,16"/>
 
                 <!-- Bottom Items -->
-                <Button Content="Settings" Command="{Binding NavigateCommand}" CommandParameter="Settings" Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom" Margin="0,0,0,8"/>
-                <Button Content="Get Help" Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom"/>
+                <Button Content="Settings" 
+                        Command="{Binding NavigateCommand}" 
+                        CommandParameter="Settings" 
+                        Style="{StaticResource NavigationButtonStyle}" 
+                        VerticalAlignment="Bottom"
+                        Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Settings'}"/>
+                        
+                <Button Content="Get Help" 
+                        Style="{StaticResource NavigationButtonStyle}" 
+                        VerticalAlignment="Bottom"/>
             </StackPanel>
         </Border>
 
