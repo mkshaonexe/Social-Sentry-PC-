@@ -15,6 +15,16 @@ namespace Social_Sentry.Services
         private readonly List<string> _blockedUrlSegments = new() { "/reels/", "/shorts/" };
         private readonly List<string> _blockedTitles = new() { "Reels", "Shorts" };
         
+        // 1. Add a dictionary to track allowed items and their expiration time
+        private readonly Dictionary<string, DateTime> _temporarilyAllowed = new();
+
+        // 2. Helper to generate a unique key for the content
+        private string GetContentKey(string processName, string title, string url)
+        {
+            // Use part of the title/url to identify this specific content
+            return $"{processName}_{title}_{url}".GetHashCode().ToString(); 
+        }
+        
         public void Initialize(Social_Sentry.Data.DatabaseService dbService)
         {
             _dbService = dbService;
@@ -93,6 +103,18 @@ namespace Social_Sentry.Services
 
         public bool CheckAndBlock(string processName, string title, string url, int processId)
         {
+            string key = GetContentKey(processName, title, url);
+
+            // CLEANUP: Remove expired entries first
+            var expired = _temporarilyAllowed.Where(x => x.Value < DateTime.Now).Select(x => x.Key).ToList();
+            foreach (var k in expired) _temporarilyAllowed.Remove(k);
+
+            // CHECK: Is this specific content allowed right now?
+            if (_temporarilyAllowed.ContainsKey(key))
+            {
+                return false; // Skip blocking
+            }
+
             if (ShouldBlock(title, url))
             {
                 Debug.WriteLine($"Blocking content: {title} | {url}");
@@ -102,7 +124,11 @@ namespace Social_Sentry.Services
                 
                 Application.Current.Dispatcher.Invoke(() => 
                 {
-                    ShowOverlay("Restricted Content Detected");
+                    ShowOverlay("Restricted Content Detected", () => 
+                    {
+                        // ON UNLOCK: Add to allow list for 5 minutes
+                        _temporarilyAllowed[key] = DateTime.Now.AddMinutes(5);
+                    });
                 });
                 
                 // Also optionally key-inject to pause/stop?
@@ -139,11 +165,18 @@ namespace Social_Sentry.Services
             return false;
         }
 
-        public void ShowOverlay(string reason)
+        public void ShowOverlay(string reason, Action? onUnlockSuccess = null)
         {
             if (_currentOverlay == null || !_currentOverlay.IsLoaded)
             {
                 _currentOverlay = new Views.BlackoutWindow();
+                
+                // Pass the callback to the window
+                if (onUnlockSuccess != null)
+                {
+                    _currentOverlay.OnUnlock += onUnlockSuccess;
+                }
+
                 _currentOverlay.Closed += (s, e) => _currentOverlay = null;
                 _currentOverlay.Show();
             }

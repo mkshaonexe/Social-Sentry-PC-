@@ -6,6 +6,9 @@ namespace Social_Sentry.Views
 {
     public partial class BlackoutWindow : Window
     {
+        // Event to fire when correct PIN is entered
+        public event Action? OnUnlock;
+
         public BlackoutWindow()
         {
             InitializeComponent();
@@ -35,6 +38,8 @@ namespace Social_Sentry.Views
             // Placeholder for PIN verification logic
             if (PinBox.Password == "1234") // Temporary Hardcoded
             {
+                // Notify subscribers (BlockerService) that unlock succeeded
+                OnUnlock?.Invoke();
                 this.Close();
             }
             else
