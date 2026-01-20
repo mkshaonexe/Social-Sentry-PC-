@@ -12,17 +12,10 @@ namespace Social_Sentry.ViewModels
             {
                 new FeatureItem
                 {
-                    Title = "Dashboard",
-                    Description = "Real-time screen time visualization with beautiful charts and graphs",
-                    Icon = "📊",
-                    AccentColor = "#00E676"
-                },
-                new FeatureItem
-                {
-                    Title = "Categories",
-                    Description = "Group applications by category and track usage patterns",
-                    Icon = "📁",
-                    AccentColor = "#00BCD4"
+                    Title = "Reels Blocker",
+                    Description = "Block short-form video content to regain your focus",
+                    Icon = "🚫",
+                    AccentColor = "#F44336"
                 },
                 new FeatureItem
                 {
@@ -33,45 +26,10 @@ namespace Social_Sentry.ViewModels
                 },
                 new FeatureItem
                 {
-                    Title = "Raw Data",
-                    Description = "View detailed usage logs and data collected from your apps",
-                    Icon = "📈",
-                    AccentColor = "#9C27B0"
-                },
-                new FeatureItem
-                {
-                    Title = "Real-time Tracking",
-                    Description = "Monitor your screen time as it happens with live updates",
-                    Icon = "🔴",
-                    AccentColor = "#F44336"
-                },
-                new FeatureItem
-                {
-                    Title = "Settings & Preferences",
-                    Description = "Customize your experience with flexible settings and options",
-                    Icon = "⚙️",
-                    AccentColor = "#607D8B"
-                },
-                new FeatureItem
-                {
-                    Title = "Data Export",
-                    Description = "Export your usage data for analysis or backup purposes",
-                    Icon = "💾",
-                    AccentColor = "#4CAF50"
-                },
-                new FeatureItem
-                {
-                    Title = "Notifications",
-                    Description = "Get notified when you exceed your usage limits",
-                    Icon = "🔔",
-                    AccentColor = "#FFC107"
-                },
-                new FeatureItem
-                {
-                    Title = "Community",
-                    Description = "Connect, chat, and share stories with the global community",
-                    Icon = "🌍",
-                    AccentColor = "#00E676"
+                    Title = "Adult Blocker",
+                    Description = "Protect yourself from inappropriate content",
+                    Icon = "🛡️",
+                    AccentColor = "#2196F3"
                 }
             };
         }

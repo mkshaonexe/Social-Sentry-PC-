@@ -102,13 +102,13 @@
                               FontSize="14" 
                               Foreground="{StaticResource SecondaryTextBrush}" 
                               LineHeight="22">
-                        <Run Text="Social Sentry helps you understand and manage your digital wellbeing. Start by exploring the "/>
-                        <Run Text="Dashboard" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                        <Run Text=" to see your real-time screen time, set "/>
+                        <Run Text="Social Sentry helps you stay focused and safe. Enable the "/>
+                        <Run Text="Reels Blocker" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                        <Run Text=" to avoid distractions, set "/>
                         <Run Text="Usage Limits" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                        <Run Text=" to maintain healthy habits, and organize your apps with "/>
-                        <Run Text="Categories" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                        <Run Text=". Use the toggle switch in the header to pause tracking anytime."/>
+                        <Run Text=" to manage your time, and use the "/>
+                        <Run Text="Adult Blocker" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                        <Run Text=" for a safer online environment."/>
                     </TextBlock>
                 </StackPanel>
             </Border>
