@@ -15,17 +15,66 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
-            <TextBlock Text="Social Sentry" FontSize="24" FontWeight="Bold" Margin="0,0,20,0" Foreground="#00D1FF"/>
-            <Button x:Name="BtnStart" Content="START SENTRTY" Width="120" Click="BtnStart_Click" Background="#28A745" Foreground="White" BorderThickness="0" Margin="5"/>
-            <Button x:Name="BtnStop" Content="STOP" Width="80" Click="BtnStop_Click" Background="#DC3545" Foreground="White" BorderThickness="0" Margin="5"/>
+            <!-- Updated Header Color to Green -->
+            <TextBlock Text="Social Sentry" FontSize="26" FontWeight="Bold" Margin="0,0,20,0" Foreground="#00E676" VerticalAlignment="Center">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="#00E676" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+                </TextBlock.Effect>
+            </TextBlock>
+            <Button x:Name="BtnStart" Content="START SENTRY" Width="140" Height="30" Click="BtnStart_Click" Background="#2E7D32" Foreground="White" BorderThickness="0" Margin="5" FontWeight="SemiBold" Cursor="Hand">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button x:Name="BtnStop" Content="STOP" Width="80" Height="30" Click="BtnStop_Click" Background="#C62828" Foreground="White" BorderThickness="0" Margin="5" FontWeight="SemiBold" Cursor="Hand">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
         </StackPanel>
 
-        <DataGrid x:Name="LogGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" Background="#252526" RowBackground="#2D2D30" Foreground="White" BorderThickness="0">
+        <!-- Fixed DataGrid Visibility: Removed Foreground='Black' and added proper Column Styles -->
+        <DataGrid x:Name="LogGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" 
+                  Background="#1E1E1E" RowBackground="#252526" AlternatingRowBackground="#2D2D30"
+                  Foreground="#E0E0E0" BorderThickness="1" BorderBrush="#333333"
+                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#333333" HeadersVisibility="Column">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="#333333"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Padding" Value="10,5"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                    <Setter Property="BorderBrush" Value="#444444"/>
+                </Style>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="Padding" Value="10,5"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="DataGridCell">
+                                <Border Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                                    <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#00E676"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="150" Foreground="Black"/>
-                <DataGridTextColumn Header="App" Binding="{Binding ProcessName}" Width="120" Foreground="Black"/>
-                <DataGridTextColumn Header="Title" Binding="{Binding WindowTitle}" Width="250" Foreground="Black"/>
-                <DataGridTextColumn Header="URL" Binding="{Binding Url}" Width="*" Foreground="Black"/>
+                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="150" ElementStyle="{x:Null}"/>
+                <DataGridTextColumn Header="App" Binding="{Binding ProcessName}" Width="150" ElementStyle="{x:Null}"/>
+                <DataGridTextColumn Header="Title" Binding="{Binding WindowTitle}" Width="300" ElementStyle="{x:Null}"/>
+                <DataGridTextColumn Header="URL" Binding="{Binding Url}" Width="*" ElementStyle="{x:Null}"/>
             </DataGrid.Columns>
         </DataGrid>
 
