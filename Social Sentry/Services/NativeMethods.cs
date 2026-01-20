@@ -125,5 +125,53 @@ namespace Social_Sentry.Services
         public const uint SWP_NOMOVE = 0x0002;
         public const uint SWP_SHOWWINDOW = 0x0040;
 
+        // Security / ACLs
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern uint GetSecurityInfo(
+            IntPtr handle,
+            SE_OBJECT_TYPE ObjectType,
+            uint SecurityInfo,
+            out IntPtr ppsidOwner,
+            out IntPtr ppsidGroup,
+            out IntPtr ppDacl,
+            out IntPtr ppSacl,
+            out IntPtr ppSecurityDescriptor);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern uint SetSecurityInfo(
+            IntPtr handle,
+            SE_OBJECT_TYPE ObjectType,
+            uint SecurityInfo,
+            IntPtr psidOwner,
+            IntPtr psidGroup,
+            IntPtr pDacl,
+            IntPtr pSacl);
+
+        public enum SE_OBJECT_TYPE
+        {
+            SE_UNKNOWN_OBJECT_TYPE = 0,
+            SE_FILE_OBJECT,
+            SE_SERVICE,
+            SE_PRINTER,
+            SE_REGISTRY_KEY,
+            SE_LMSHARE,
+            SE_KERNEL_OBJECT,
+            SE_WINDOW_OBJECT,
+            SE_DS_OBJECT,
+            SE_DS_OBJECT_ALL,
+            SE_PROVIDER_DEFINED_OBJECT,
+            SE_WMIGUID_OBJECT,
+            SE_REGISTRY_WOW64_32KEY
+        }
+
+        public const uint DACL_SECURITY_INFORMATION = 0x00000004;
+        public const uint PROTECTED_DACL_SECURITY_INFORMATION = 0x80000000;
+        public const uint UNPROTECTED_DACL_SECURITY_INFORMATION = 0x20000000;
+
+        public const uint PROCESS_TERMINATE = 0x0001;
+        public const uint STANDARD_RIGHTS_REQUIRED = 0x000F0000;
+        public const uint SYNCHRONIZE = 0x00100000;
+
+
     }
 }
