@@ -23,7 +23,12 @@ namespace Social_Sentry
             InitializeComponent();
             
             _databaseService = new Social_Sentry.Data.DatabaseService();
-            _usageTracker = new Services.UsageTrackerService(_databaseService);
+            
+            var mediaDetector = new Services.MediaDetector();
+            // Initialize async (fire and forget for ctor, or await in Loaded)
+            _ = mediaDetector.InitializeAsync();
+
+            _usageTracker = new Services.UsageTrackerService(_databaseService, mediaDetector);
             _viewModel = new ViewModels.MainViewModel(_usageTracker, _databaseService);
 
             // First Run Auto-Setup

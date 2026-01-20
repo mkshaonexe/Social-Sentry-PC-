@@ -25,6 +25,7 @@ namespace Social_Sentry
             _protectionService = new Services.SelfProtectionService();
             // Start the watchdog
             _protectionService.StartWatchdog();
+            _protectionService.ApplySelfProtection();
         }
     }
 

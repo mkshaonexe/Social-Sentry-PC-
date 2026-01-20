@@ -40,3 +40,12 @@ CREATE TABLE IF NOT EXISTS DailyStats (
     TotalSeconds INTEGER,
     PRIMARY KEY (Date, ProcessName)
 );
+
+-- 5. Classification Rules (Dynamic Categorization)
+CREATE TABLE IF NOT EXISTS ClassificationRules (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Pattern TEXT,
+    MatchType TEXT, -- 'Contains', 'Exact', 'Regex'
+    Category TEXT,
+    Priority INTEGER
+);

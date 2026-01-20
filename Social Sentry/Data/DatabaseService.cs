@@ -84,6 +84,19 @@ namespace Social_Sentry.Data
 
                     command.CommandText = createStats;
                     command.ExecuteNonQuery();
+
+                    // 5. Classification Rules (Dynamic Categorization)
+                    string createClassification = @"
+                        CREATE TABLE IF NOT EXISTS ClassificationRules (
+                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            Pattern TEXT,
+                            MatchType TEXT, -- 'Contains', 'Exact', 'Regex'
+                            Category TEXT,
+                            Priority INTEGER
+                        );";
+
+                    command.CommandText = createClassification;
+                    command.ExecuteNonQuery();
                 }
             }
         }
@@ -181,6 +194,62 @@ namespace Social_Sentry.Data
                     command.Parameters.AddWithValue("@url", _encryptionService.Encrypt(url ?? string.Empty));
                     command.Parameters.AddWithValue("@duration", (int)durationSeconds); 
 
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // Classification Rules Methods
+        public class ClassificationRule
+        {
+            public int Id { get; set; }
+            public string Pattern { get; set; } = "";
+            public string MatchType { get; set; } = "Contains";
+            public string Category { get; set; } = "Uncategorized";
+            public int Priority { get; set; }
+        }
+
+        public List<ClassificationRule> GetClassificationRules()
+        {
+            var rules = new List<ClassificationRule>();
+            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            {
+                connection.Open();
+                string query = "SELECT Id, Pattern, MatchType, Category, Priority FROM ClassificationRules ORDER BY Priority DESC";
+                using (var command = new SqliteCommand(query, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        rules.Add(new ClassificationRule
+                        {
+                            Id = reader.GetInt32(0),
+                            Pattern = reader.GetString(1),
+                            MatchType = reader.GetString(2),
+                            Category = reader.GetString(3),
+                            Priority = reader.GetInt32(4)
+                        });
+                    }
+                }
+            }
+            return rules;
+        }
+
+        public void AddClassificationRule(ClassificationRule rule)
+        {
+            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            {
+                connection.Open();
+                string commandText = @"
+                    INSERT INTO ClassificationRules (Pattern, MatchType, Category, Priority)
+                    VALUES (@pattern, @matchType, @category, @priority)";
+
+                using (var command = new SqliteCommand(commandText, connection))
+                {
+                    command.Parameters.AddWithValue("@pattern", rule.Pattern);
+                    command.Parameters.AddWithValue("@matchType", rule.MatchType);
+                    command.Parameters.AddWithValue("@category", rule.Category);
+                    command.Parameters.AddWithValue("@priority", rule.Priority);
                     command.ExecuteNonQuery();
                 }
             }

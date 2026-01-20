@@ -12,6 +12,7 @@ namespace Social_Sentry.Services
         private readonly BlockerService _blockerService;
         private readonly Social_Sentry.Data.DatabaseService _databaseService;
         private readonly IconExtractionService _iconExtractionService;
+        private readonly MediaDetector _mediaDetector;
 
         private DateTime _lastSwitchTime;
         private string _currentProcessName = "";
@@ -26,9 +27,10 @@ namespace Social_Sentry.Services
 
         public event Action<ActivityEvent>? OnRawActivityDetected;
 
-        public UsageTrackerService(Social_Sentry.Data.DatabaseService databaseService)
+        public UsageTrackerService(Social_Sentry.Data.DatabaseService databaseService, MediaDetector mediaDetector)
         {
             _databaseService = databaseService;
+            _mediaDetector = mediaDetector;
             _activityTracker = new ActivityTracker();
             _blockerService = new BlockerService();
             _blockerService.Initialize(_databaseService);
@@ -55,32 +57,28 @@ namespace Social_Sentry.Services
             // Update raw log subscribers
             OnRawActivityDetected?.Invoke(newEvent);
 
-            // Log to DB
-            _databaseService.LogActivity(newEvent.ProcessName, newEvent.WindowTitle, newEvent.Url, 0); // Duration 0 for event log, or calculate?
-            // Actually ActivityLog table has Duration. We might want to log PREVIOUS activity duration here?
-            // "UpdateCurrentSession" calculates duration of PREVIOUS.
-            // But ActivityLog usually tracks "Events". 
-            // The PRD Schema: Timestamp, ProcessName... DurationSeconds.
-            // If we log *every* switch, duration is 0 until we switch away.
-            // But usually we log the *completed* activity.
-            // Let's stick to logging the EVENT (start of activity) or logging the COMPLETED activity?
-            // For raw stream, logging "Started using Chrome" is good.
-            // But storing "Duration" implies we log it AFTER it finishes.
-            // Use UpdateCurrentSession logic to log to DB?
-            
-            // Attempt to block content if restricted
+            string finalProcessName = newEvent.ProcessName;
 
+            // Context Intelligence: Media Detection
+            if (_mediaDetector != null && _mediaDetector.IsMediaPlaying(newEvent.ProcessName))
+            {
+                // Artificially differentiate this session
+                finalProcessName = $"{newEvent.ProcessName} (Media)";
+            }
+
+            // Log to DB
+            _databaseService.LogActivity(finalProcessName, newEvent.WindowTitle, newEvent.Url, 0); 
+            
             // Attempt to block content if restricted
             bool blocked = _blockerService.CheckAndBlock(newEvent.ProcessName, newEvent.WindowTitle, newEvent.Url, newEvent.ProcessId);
             if (blocked) 
             {
-                 // If blocked, maybe we shouldn't log it as "valid usage" or maybe we should log it as "Blocked Attempt"?
-                 // For now, continue logging so we see "1 sec of Reels" then "Blocked".
+                 // Logic for blocked
             }
 
             UpdateCurrentSession();
 
-            _currentProcessName = newEvent.ProcessName;
+            _currentProcessName = finalProcessName;
             _lastSwitchTime = DateTime.Now;
         }
 

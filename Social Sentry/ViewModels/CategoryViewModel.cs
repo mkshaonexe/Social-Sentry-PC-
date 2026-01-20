@@ -7,12 +7,14 @@ namespace Social_Sentry.ViewModels
     public class CategoryViewModel : ViewModelBase
     {
         private readonly Services.UsageTrackerService _usageTracker;
+        private readonly Services.ClassificationService _classificationService;
 
         public ObservableCollection<CategoryGroup> Categories { get; } = new();
 
-        public CategoryViewModel(Services.UsageTrackerService usageTracker)
+        public CategoryViewModel(Services.UsageTrackerService usageTracker, Services.ClassificationService classificationService)
         {
             _usageTracker = usageTracker;
+            _classificationService = classificationService;
             LoadCategories();
         }
 
@@ -23,126 +25,73 @@ namespace Social_Sentry.ViewModels
             // Get all apps from usage tracker
             var apps = _usageTracker.GetTopApps();
             
-            // Entertainment Category (Videos, Streaming, Gaming)
-            var entertainmentApps = apps.Where(a => 
-                a.Name.Contains("youtube", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("netflix", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("spotify", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("vlc", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("steam", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("game", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("twitch", System.StringComparison.OrdinalIgnoreCase)
-            ).Select(a => a.Name).ToList();
+            // Group apps by category using ClassificationService
+            var groupedApps = apps.GroupBy(a => _classificationService.Categorize(a.Name, ""));
 
-            Categories.Add(new CategoryGroup
+            // Desired Order of categories to appear
+            var desiredCategories = new[] { "Entertainment", "Productive", "Study", "Doom Scrolling", "Communication" };
+            
+            // Create CategoryGroups for defined categories (ensures they appear even if empty if we want, or just consistent order)
+            foreach (var categoryName in desiredCategories)
             {
-                Name = "Entertainment",
-                Icon = "🎬",
-                Color = "#FF5722",
-                Apps = new ObservableCollection<string>(entertainmentApps)
-            });
+                var appsInGroup = groupedApps.FirstOrDefault(g => g.Key == categoryName)?.ToList() ?? new System.Collections.Generic.List<Social_Sentry.Models.AppUsageItem>();
+                
+                Categories.Add(CreateCategoryGroup(categoryName, appsInGroup));
+            }
 
-            // Productive Category (Work, Development, Office)
-            var productiveApps = apps.Where(a => 
-                a.Name.Contains("visual studio", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("code", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("word", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("excel", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("powerpoint", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("notepad", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("jetbrains", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("eclipse", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("brave", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("chrome", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("edge", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("firefox", System.StringComparison.OrdinalIgnoreCase)
-            ).Select(a => a.Name).ToList();
-
-            Categories.Add(new CategoryGroup
+            // Handle "Uncategorized" or any other dynamic categories not in the desired list
+            foreach (var group in groupedApps)
             {
-                Name = "Productive",
-                Icon = "💼",
-                Color = "#2196F3",
-                Apps = new ObservableCollection<string>(productiveApps)
-            });
-
-            // Study Category (Learning, Reading, Research)
-            var studyApps = apps.Where(a => 
-                a.Name.Contains("notion", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("onenote", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("evernote", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("coursera", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("udemy", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("khan", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("duolingo", System.StringComparison.OrdinalIgnoreCase)
-            ).Select(a => a.Name).ToList();
-
-            Categories.Add(new CategoryGroup
-            {
-                Name = "Study",
-                Icon = "📚",
-                Color = "#9C27B0",
-                Apps = new ObservableCollection<string>(studyApps)
-            });
-
-            // Doom Scrolling Category (Mindless browsing, Social feeds)
-            var doomScrollingApps = apps.Where(a => 
-                a.Name.Contains("facebook", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("instagram", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("twitter", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("tiktok", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("reddit", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("9gag", System.StringComparison.OrdinalIgnoreCase)
-            ).Select(a => a.Name).ToList();
-
-            Categories.Add(new CategoryGroup
-            {
-                Name = "Doom Scrolling",
-                Icon = "📱",
-                Color = "#FF9800",
-                Apps = new ObservableCollection<string>(doomScrollingApps)
-            });
-
-            // Communication Category (Messaging, Email)
-            var communicationApps = apps.Where(a => 
-                a.Name.Contains("whatsapp", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("telegram", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("discord", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("slack", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("teams", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("outlook", System.StringComparison.OrdinalIgnoreCase) ||
-                a.Name.Contains("gmail", System.StringComparison.OrdinalIgnoreCase)
-            ).Select(a => a.Name).ToList();
-
-            Categories.Add(new CategoryGroup
-            {
-                Name = "Communication",
-                Icon = "💬",
-                Color = "#4CAF50",
-                Apps = new ObservableCollection<string>(communicationApps)
-            });
-
-            // Uncategorized
-            var categorizedApps = entertainmentApps
-                .Concat(productiveApps)
-                .Concat(studyApps)
-                .Concat(doomScrollingApps)
-                .Concat(communicationApps)
-                .ToHashSet();
-            var uncategorizedApps = apps.Where(a => !categorizedApps.Contains(a.Name)).Select(a => a.Name).ToList();
-
-            if (uncategorizedApps.Any())
-            {
-                Categories.Add(new CategoryGroup
+                if (!desiredCategories.Contains(group.Key))
                 {
-                    Name = "Uncategorized",
-                    Icon = "📁",
-                    Color = "#9E9E9E",
-                    Apps = new ObservableCollection<string>(uncategorizedApps)
-                });
+                    Categories.Add(CreateCategoryGroup(group.Key, group.ToList()));
+                }
             }
 
             // Calculate Totals
+            CalculateTotals();
+        }
+
+        private CategoryGroup CreateCategoryGroup(string name, System.Collections.Generic.List<Social_Sentry.Models.AppUsageItem> apps)
+        {
+            return new CategoryGroup
+            {
+                Name = name,
+                Icon = GetIconForCategory(name),
+                Color = GetColorForCategory(name),
+                Apps = new ObservableCollection<string>(apps.Select(a => a.Name))
+            };
+        }
+
+        private string GetIconForCategory(string category)
+        {
+            return category switch
+            {
+                "Entertainment" => "🎬",
+                "Productive" => "💼",
+                "Study" => "📚",
+                "Doom Scrolling" => "📱",
+                "Communication" => "💬",
+                _ => "📁"
+            };
+        }
+
+        private string GetColorForCategory(string category)
+        {
+             return category switch
+            {
+                "Entertainment" => "#FF5722",
+                "Productive" => "#2196F3",
+                "Study" => "#9C27B0",
+                "Doom Scrolling" => "#FF9800",
+                "Communication" => "#4CAF50",
+                _ => "#9E9E9E"
+            };
+        }
+
+        private void CalculateTotals()
+        {
+            var apps = _usageTracker.GetTopApps();
             var appDurations = apps.ToDictionary(a => a.Name, a => a.RawDuration);
             TimeSpan totalUsage = TimeSpan.Zero;
 
@@ -172,6 +121,7 @@ namespace Social_Sentry.ViewModels
 
             TotalUsageFormatted = FormatDuration(totalUsage);
         }
+
 
         private string _totalUsageFormatted = "0s";
         public string TotalUsageFormatted

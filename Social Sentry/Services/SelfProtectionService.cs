@@ -10,16 +10,64 @@ namespace Social_Sentry.Services
     {
         public void ApplySelfProtection()
         {
+            if (Debugger.IsAttached)
+            {
+                Debug.WriteLine("SelfProtection: Debugger attached, skipping ACL protection to prevent lockout.");
+                return;
+            }
+
             try
             {
                 Process p = Process.GetCurrentProcess();
-                // Note: This requires the app to be running as Administrator to succeed fully
-                // and even then, SetSecurityInfo on one's own process is tricky.
-                // For this implementation, we will focus on the Watchdog as the primary defense.
-                // The ACL part is complex to get right without locking ONESELF out of needed rights often.
-                // We'll leave the method stubbed for now or implement a basic "Deny Everyone Terminate" if needed.
+                IntPtr hProcess = p.Handle;
+
+                // 1. Create a partial DACL
+                var dacl = new DiscretionaryAcl(false, false, 1);
                 
-                Debug.WriteLine("SelfProtection: ACL modification bypassed for safety in this iteration.");
+                // 2. Allow SYSTEM Full Access (Critical)
+                var systemSid = new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null);
+                dacl.AddAccess(AccessControlType.Allow, systemSid, (int)NativeMethods.PROCESS_ALL_ACCESS, InheritanceFlags.None, PropagationFlags.None);
+
+                // 3. Deny 'Everyone' Terminate Access
+                // Note: Deny ACEs generally should appear before Allow ACEs in canonical order 
+                // but standard .NET DiscretionaryAcl handles insertion order to canonical form? 
+                // Actually RawAcl is strict. GenericAcl usually sorts.
+                // Let's rely on DiscretionaryAcl.
+                var worldSid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+                dacl.AddAccess(AccessControlType.Deny, worldSid, (int)NativeMethods.PROCESS_TERMINATE, InheritanceFlags.None, PropagationFlags.None);
+
+                // 4. Serialize DACL to native memory
+                byte[] binaryDacl = new byte[dacl.BinaryLength];
+                dacl.GetBinaryForm(binaryDacl, 0);
+
+                IntPtr pDacl = Marshal.AllocHGlobal(binaryDacl.Length);
+                try
+                {
+                    Marshal.Copy(binaryDacl, 0, pDacl, binaryDacl.Length);
+
+                    // 5. Apply Security Info
+                    uint result = NativeMethods.SetSecurityInfo(
+                        hProcess,
+                        NativeMethods.SE_OBJECT_TYPE.SE_KERNEL_OBJECT,
+                        NativeMethods.DACL_SECURITY_INFORMATION | NativeMethods.PROTECTED_DACL_SECURITY_INFORMATION, // Protected prevents inheritance overwrite
+                        IntPtr.Zero,
+                        IntPtr.Zero,
+                        pDacl,
+                        IntPtr.Zero);
+
+                    if (result == 0)
+                    {
+                        Debug.WriteLine("SelfProtection: ACL applied successfully.");
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"SelfProtection: SetSecurityInfo failed with error code {result}");
+                    }
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(pDacl);
+                }
             }
             catch (Exception ex)
             {
