@@ -1,0 +1,117 @@
+<UserControl x:Class="Social_Sentry.Views.AllFeaturesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Social_Sentry.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,24">
+            <!-- Header -->
+            <TextBlock Text="All Features" FontSize="28" FontWeight="Bold" 
+                      Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,8"/>
+            <TextBlock Text="Discover everything Social Sentry has to offer" 
+                      FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,32"/>
+
+            <!-- Features Grid -->
+            <ItemsControl ItemsSource="{Binding Features}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" HorizontalAlignment="Stretch"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{StaticResource CardBackgroundBrush}" 
+                               CornerRadius="12" 
+                               Padding="24" 
+                               Margin="0,0,16,16"
+                               BorderThickness="1"
+                               BorderBrush="#33FFFFFF">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
+                            </Border.Effect>
+                            
+                            <!-- Hover effect -->
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="BorderBrush" Value="{Binding AccentColor}"/>
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Icon -->
+                                <Border Grid.Column="0" 
+                                       Width="56" 
+                                       Height="56" 
+                                       CornerRadius="12" 
+                                       Margin="0,0,16,0"
+                                       VerticalAlignment="Top">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{Binding AccentColor}" Opacity="0.15"/>
+                                    </Border.Background>
+                                    <TextBlock Text="{Binding Icon}" 
+                                              FontSize="28" 
+                                              HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                                </Border>
+                                
+                                <!-- Content -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Title}" 
+                                              FontSize="18" 
+                                              FontWeight="SemiBold"
+                                              Foreground="{StaticResource PrimaryTextBrush}" 
+                                              Margin="0,0,0,8"/>
+                                    <TextBlock Text="{Binding Description}" 
+                                              FontSize="13" 
+                                              Foreground="{StaticResource SecondaryTextBrush}"
+                                              TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+            <!-- Additional Info Section -->
+            <Border Background="{StaticResource CardBackgroundBrush}" 
+                   CornerRadius="12" 
+                   Padding="24" 
+                   Margin="0,16,16,16">
+                <StackPanel>
+                    <TextBlock Text="💡 Getting Started" 
+                              FontSize="20" 
+                              FontWeight="SemiBold"
+                              Foreground="{StaticResource PrimaryTextBrush}" 
+                              Margin="0,0,0,16"/>
+                    
+                    <TextBlock TextWrapping="Wrap" 
+                              FontSize="14" 
+                              Foreground="{StaticResource SecondaryTextBrush}" 
+                              LineHeight="22">
+                        <Run Text="Social Sentry helps you understand and manage your digital wellbeing. Start by exploring the "/>
+                        <Run Text="Dashboard" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                        <Run Text=" to see your real-time screen time, set "/>
+                        <Run Text="Usage Limits" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                        <Run Text=" to maintain healthy habits, and organize your apps with "/>
+                        <Run Text="Categories" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                        <Run Text=". Use the toggle switch in the header to pause tracking anytime."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

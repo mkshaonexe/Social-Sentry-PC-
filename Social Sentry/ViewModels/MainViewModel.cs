@@ -31,6 +31,7 @@ namespace Social_Sentry.ViewModels
         public CategoryViewModel CategoryVM { get; }
         public LimitViewModel LimitVM { get; }
         public UserSettingsViewModel UserSettingsVM { get; }
+        public AllFeaturesViewModel AllFeaturesVM { get; }
 
         public ICommand NavigateCommand { get; }
         public ICommand ToggleTrackingCommand { get; }
@@ -46,6 +47,7 @@ namespace Social_Sentry.ViewModels
             CategoryVM = new CategoryViewModel(usageTracker);
             LimitVM = new LimitViewModel(usageTracker);
             UserSettingsVM = new UserSettingsViewModel();
+            AllFeaturesVM = new AllFeaturesViewModel();
             
             NavigateCommand = new RelayCommand<string>(Navigate);
             ToggleTrackingCommand = new RelayCommand(ToggleTracking);
@@ -71,6 +73,9 @@ namespace Social_Sentry.ViewModels
                     break;
                 case "Settings":
                     CurrentView = UserSettingsVM;
+                    break;
+                case "AllFeatures":
+                    CurrentView = AllFeaturesVM;
                     break;
             }
         }

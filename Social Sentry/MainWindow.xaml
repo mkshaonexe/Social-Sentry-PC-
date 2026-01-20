@@ -24,47 +24,24 @@
             <StackPanel>
                 <!-- Logo Area -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,32">
-                    <Border Width="32" Height="32" Margin="0,0,12,0">
-                         <!-- Logo -->
+                    <!-- App Logo -->
+                    <Border Width="36" Height="36" Margin="0,0,12,0" CornerRadius="8" Background="#1A00E676" Padding="4">
                         <Image Source="Images/AppLogo.png" Stretch="Uniform"/>
                     </Border>
-                    <TextBlock Text="Social Sentry" Foreground="{StaticResource PrimaryTextBrush}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
                     
-                    <!-- Functional Toggle Button -->
+                    <TextBlock Text="Social Sentry" 
+                               Foreground="{StaticResource PrimaryTextBrush}" 
+                               FontSize="18" 
+                               FontWeight="Bold" 
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0"/>
+                    
+                    <!-- Enhanced Toggle Button -->
                     <ToggleButton IsChecked="{Binding IsTrackingEnabled}" 
-                                 Width="44" Height="24" Margin="16,0,0,0" 
-                                 VerticalAlignment="Center"
-                                 ToolTip="Toggle Tracking On/Off">
-                        <ToggleButton.Style>
-                            <Style TargetType="ToggleButton">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ToggleButton">
-                                            <Grid>
-                                                <!-- Background Track -->
-                                                <Border x:Name="Track" Background="#555" CornerRadius="12" 
-                                                       Width="44" Height="24"/>
-                                                <!-- Thumb -->
-                                                <Border x:Name="Thumb" Width="18" Height="18" 
-                                                       CornerRadius="9" Background="White" 
-                                                       HorizontalAlignment="Left" Margin="3,0,0,0"/>
-                                            </Grid>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsChecked" Value="True">
-                                                    <Setter TargetName="Track" Property="Background" Value="{StaticResource AccentBrush}"/>
-                                                    <Setter TargetName="Thumb" Property="Margin" Value="23,0,0,0"/>
-                                                </Trigger>
-                                                <Trigger Property="IsChecked" Value="False">
-                                                    <Setter TargetName="Track" Property="Background" Value="#555"/>
-                                                    <Setter TargetName="Thumb" Property="Margin" Value="3,0,0,0"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ToggleButton.Style>
-                    </ToggleButton>
+                                  Style="{StaticResource ModernToggleStyle}"
+                                  VerticalAlignment="Center"
+                                  ToolTip="Toggle Tracking On/Off"
+                                  Cursor="Hand"/>
                 </StackPanel>
 
                 <!-- Menu Items -->
@@ -72,6 +49,7 @@
                 <Button Content="Categories" Command="{Binding NavigateCommand}" CommandParameter="Categories" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
                 <Button Content="Usage Limits" Command="{Binding NavigateCommand}" CommandParameter="Limit" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
                 <Button Content="Raw Data" Command="{Binding NavigateCommand}" CommandParameter="Raw" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
+                <Button Content="All Features" Command="{Binding NavigateCommand}" CommandParameter="AllFeatures" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
 
                 <Separator Background="#333" Margin="0,16"/>
 
@@ -100,6 +78,9 @@
                      </DataTemplate>
                      <DataTemplate DataType="{x:Type vm:UserSettingsViewModel}">
                          <views:UserSettingsView/>
+                     </DataTemplate>
+                     <DataTemplate DataType="{x:Type vm:AllFeaturesViewModel}">
+                         <views:AllFeaturesView/>
                      </DataTemplate>
                  </ContentControl.Resources>
              </ContentControl>

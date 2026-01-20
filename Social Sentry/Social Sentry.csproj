@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="Images\**\*" />
+  </ItemGroup>
+
 </Project>
