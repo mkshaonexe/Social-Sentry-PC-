@@ -4,80 +4,62 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Social_Sentry"
+        xmlns:vm="clr-namespace:Social_Sentry.ViewModels"
+        xmlns:views="clr-namespace:Social_Sentry.Views"
         mc:Ignorable="d"
-        Title="Social Sentry - Windows" Height="500" Width="900"
-        Background="#1E1E1E" Foreground="White">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        Title="StayFree Clone" Height="700" Width="1000"
+        Background="{StaticResource WindowBackgroundBrush}"
+        WindowStartupLocation="CenterScreen">
+    
 
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
-            <!-- Updated Header Color to Green -->
-            <TextBlock Text="Social Sentry" FontSize="26" FontWeight="Bold" Margin="0,0,20,0" Foreground="#00E676" VerticalAlignment="Center">
-                <TextBlock.Effect>
-                    <DropShadowEffect Color="#00E676" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
-                </TextBlock.Effect>
-            </TextBlock>
-            <Button x:Name="BtnStart" Content="START SENTRY" Width="140" Height="30" Click="BtnStart_Click" Background="#2E7D32" Foreground="White" BorderThickness="0" Margin="5" FontWeight="SemiBold" Cursor="Hand">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
-            <Button x:Name="BtnStop" Content="STOP" Width="80" Height="30" Click="BtnStop_Click" Background="#C62828" Foreground="White" BorderThickness="0" Margin="5" FontWeight="SemiBold" Cursor="Hand">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
-        </StackPanel>
 
-        <!-- Fixed DataGrid Visibility: Removed Foreground='Black' and added proper Column Styles -->
-        <DataGrid x:Name="LogGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" 
-                  Background="#1E1E1E" RowBackground="#252526" AlternatingRowBackground="#2D2D30"
-                  Foreground="#E0E0E0" BorderThickness="1" BorderBrush="#333333"
-                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#333333" HeadersVisibility="Column">
-            <DataGrid.Resources>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="Background" Value="#333333"/>
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="Padding" Value="10,5"/>
-                    <Setter Property="FontWeight" Value="SemiBold"/>
-                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
-                    <Setter Property="BorderBrush" Value="#444444"/>
-                </Style>
-                <Style TargetType="DataGridCell">
-                    <Setter Property="Padding" Value="10,5"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="DataGridCell">
-                                <Border Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                                    <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="#00E676"/>
-                            <Setter Property="Foreground" Value="Black"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.Resources>
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="150" ElementStyle="{x:Null}"/>
-                <DataGridTextColumn Header="App" Binding="{Binding ProcessName}" Width="150" ElementStyle="{x:Null}"/>
-                <DataGridTextColumn Header="Title" Binding="{Binding WindowTitle}" Width="300" ElementStyle="{x:Null}"/>
-                <DataGridTextColumn Header="URL" Binding="{Binding Url}" Width="*" ElementStyle="{x:Null}"/>
-            </DataGrid.Columns>
-        </DataGrid>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/> <!-- Sidebar -->
+            <ColumnDefinition Width="*"/>   <!-- Content -->
+        </Grid.ColumnDefinitions>
 
-        <TextBlock x:Name="StatusText" Grid.Row="2" Text="Ready" Margin="5"/>
+        <!-- Sidebar -->
+        <Border Grid.Column="0" Background="#202020" Padding="16">
+            <StackPanel>
+                <!-- Logo Area -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,32">
+                    <Border Width="32" Height="32" CornerRadius="16" Background="White" Margin="0,0,12,0">
+                         <!-- Logo Placeholder -->
+                        <Path Data="M10,20 L15,25 L25,10" Stroke="{StaticResource AccentBrush}" StrokeThickness="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="StayFree" Foreground="{StaticResource PrimaryTextBrush}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <!-- Toggle Switch Placeholder -->
+                    <Border Background="#555" CornerRadius="10" Width="36" Height="20" Margin="16,0,0,0" VerticalAlignment="Center">
+                        <Border Width="16" Height="16" CornerRadius="8" Background="{StaticResource AccentSecondaryBrush}" HorizontalAlignment="Right" Margin="2"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Menu Items -->
+                <Button Content="Dashboard" Style="{StaticResource ActiveSidebarButtonStyle}" Margin="0,0,0,8"/>
+                <Button Content="Usage Limits" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
+                <Button Content="Categories" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
+                <Button Content="StayFree for Web" Style="{StaticResource SidebarButtonStyle}" Margin="0,0,0,8"/>
+
+                <Separator Background="#333" Margin="0,16"/>
+
+                <!-- Bottom Items -->
+                <Button Content="Settings" Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom" Margin="0,0,0,8"/>
+                <Button Content="Get Help" Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Content Area -->
+        <Border Grid.Column="1" Background="{StaticResource WindowBackgroundBrush}">
+             <!-- We use a ContentControl bound to the CurrentView property -->
+             <ContentControl Content="{Binding CurrentView}">
+                 <ContentControl.Resources>
+                     <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+                         <views:DashboardView/>
+                     </DataTemplate>
+                 </ContentControl.Resources>
+             </ContentControl>
+        </Border>
+
     </Grid>
 </Window>
