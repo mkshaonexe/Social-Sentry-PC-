@@ -14,7 +14,7 @@ namespace Social_Sentry
             
             _databaseService = new Social_Sentry.Data.DatabaseService();
             _usageTracker = new Services.UsageTrackerService(_databaseService);
-            _viewModel = new ViewModels.MainViewModel(_usageTracker);
+            _viewModel = new ViewModels.MainViewModel(_usageTracker, _databaseService);
 
             DataContext = _viewModel;
 

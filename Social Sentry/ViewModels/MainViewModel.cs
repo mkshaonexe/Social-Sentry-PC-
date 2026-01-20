@@ -38,14 +38,14 @@ namespace Social_Sentry.ViewModels
 
         public event System.Action<bool>? OnTrackingToggled;
 
-        public MainViewModel(Services.UsageTrackerService usageTracker)
+        public MainViewModel(Services.UsageTrackerService usageTracker, Social_Sentry.Data.DatabaseService databaseService)
         {
             _usageTracker = usageTracker;
 
             DashboardVM = new DashboardViewModel(usageTracker);
             RawDataVM = new RawDataViewModel(usageTracker);
             CategoryVM = new CategoryViewModel(usageTracker);
-            LimitVM = new LimitViewModel(usageTracker);
+            LimitVM = new LimitViewModel(usageTracker, databaseService);
             UserSettingsVM = new UserSettingsViewModel();
             AllFeaturesVM = new AllFeaturesViewModel();
             
@@ -54,6 +54,7 @@ namespace Social_Sentry.ViewModels
 
             CurrentView = DashboardVM; // Default view
         }
+
 
         private void Navigate(string viewName)
         {

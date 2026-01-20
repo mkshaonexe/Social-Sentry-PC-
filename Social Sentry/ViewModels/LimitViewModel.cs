@@ -7,6 +7,7 @@ namespace Social_Sentry.ViewModels
     public class LimitViewModel : ViewModelBase
     {
         private readonly Services.UsageTrackerService _usageTracker;
+        private readonly Social_Sentry.Data.DatabaseService _dbService;
         private int _dailyLimitHours = 8;
 
         public int DailyLimitHours
@@ -19,9 +20,10 @@ namespace Social_Sentry.ViewModels
 
         public ICommand SaveLimitsCommand { get; }
 
-        public LimitViewModel(Services.UsageTrackerService usageTracker)
+        public LimitViewModel(Services.UsageTrackerService usageTracker, Social_Sentry.Data.DatabaseService dbService)
         {
             _usageTracker = usageTracker;
+            _dbService = dbService;
             SaveLimitsCommand = new RelayCommand(SaveLimits);
             LoadAppLimits();
         }
@@ -44,9 +46,33 @@ namespace Social_Sentry.ViewModels
 
         private void SaveLimits()
         {
-            // TODO: Implement saving limits to database/settings
-            System.Windows.MessageBox.Show("Limits saved successfully!", "Success", 
-                System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            try
+            {
+                // Simple implementation: Create a rule for each "BlockWhenExceeded" item
+                foreach (var item in AppLimits)
+                {
+                    if (item.BlockWhenExceeded)
+                    {
+                        var rule = new Models.Rule
+                        {
+                            Type = "App", // Assuming Process Name match
+                            Value = item.AppName, // Should be process name
+                            Action = "Block",
+                            LimitSeconds = item.LimitMinutes * 60,
+                            Category = "UserLimit"
+                        };
+                        _dbService.AddRule(rule);
+                    }
+                }
+
+                System.Windows.MessageBox.Show("Limits saved successfully!", "Success", 
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
+            catch (System.Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Error saving limits: {ex.Message}", "Error",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
     }
 

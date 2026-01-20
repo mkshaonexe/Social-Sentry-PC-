@@ -18,13 +18,75 @@ namespace Social_Sentry.Services
         public void Initialize(Social_Sentry.Data.DatabaseService dbService)
         {
             _dbService = dbService;
+            
+            // Subscribe to rule changes
+            _dbService.OnRulesChanged += LoadRules;
+            
             LoadRules();
         }
 
         private void LoadRules()
         {
-            // TODO: Fetch from _dbService.GetRules()
-            // _blockedKeywords.AddRange(...);
+            if (_dbService == null) return;
+            
+            try
+            {
+                var rules = _dbService.GetRules();
+                
+                // Clear existing (except hardcoded fallbacks if we want to keep them, 
+                // but Phase 3 goal is dynamic. For safety, let's KEEP hardcoded as "Base Rules" 
+                // and ADD DB rules).
+                
+                _blockedKeywords.Clear();
+                _blockedKeywords.Add("porn");
+                _blockedKeywords.Add("xxx");
+                _blockedKeywords.Add("sex");
+                
+                _blockedUrlSegments.Clear();
+                _blockedUrlSegments.Add("/reels/");
+                _blockedUrlSegments.Add("/shorts/");
+
+                _blockedTitles.Clear();
+                _blockedTitles.Add("Reels");
+                _blockedTitles.Add("Shorts");
+
+                foreach (var rule in rules)
+                {
+                    if (rule.Action == "Block")
+                    {
+                        // Map rule types
+                        // Types: 'App', 'Url', 'Title' ... 
+                        // But _blockedKeywords iterates on Title AND Url checks.
+                        
+                        // If Type == 'Url', add to _blockedUrlSegments or Keyword?
+                        // Our ShouldBlock logic is:
+                        // 1. Keywords (in Title OR Url)
+                        // 2. Url Segments (in Url)
+                        // 3. Titles (in Title)
+                        
+                        if (rule.Type == "Url")
+                        {
+                             // If it's a segment e.g. "/reels/", add to segments.
+                             // If it's a domain e.g. "facebook.com", add to segments.
+                             _blockedUrlSegments.Add(rule.Value.ToLower());
+                        }
+                        else if (rule.Type == "Title")
+                        {
+                            _blockedTitles.Add(rule.Value);
+                        }
+                        else if (rule.Type == "Keyword") // If we support this
+                        {
+                            _blockedKeywords.Add(rule.Value.ToLower());
+                        }
+                    }
+                }
+                
+                Debug.WriteLine($"BlockerService: Loaded {rules.Count} rules from DB.");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"BlockerService: Error loading rules: {ex.Message}");
+            }
         }
 
         private Views.BlackoutWindow? _currentOverlay;

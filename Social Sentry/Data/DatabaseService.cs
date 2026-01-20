@@ -84,6 +84,72 @@ namespace Social_Sentry.Data
             }
         }
 
+        public event Action? OnRulesChanged;
+
+        public List<Models.Rule> GetRules()
+        {
+            var rules = new List<Models.Rule>();
+            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            {
+                connection.Open();
+                string query = "SELECT * FROM Rules";
+                using (var command = new SqliteCommand(query, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        rules.Add(new Models.Rule
+                        {
+                            Id = reader.GetInt32(0),
+                            Type = reader.GetString(1),
+                            Value = reader.GetString(2),
+                            Category = reader.IsDBNull(3) ? "" : reader.GetString(3),
+                            Action = reader.GetString(4),
+                            LimitSeconds = reader.IsDBNull(5) ? 0 : reader.GetInt32(5),
+                            ScheduleJson = reader.IsDBNull(6) ? "" : reader.GetString(6)
+                        });
+                    }
+                }
+            }
+            return rules;
+        }
+
+        public void AddRule(Models.Rule rule)
+        {
+            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            {
+                connection.Open();
+                string commandText = @"
+                    INSERT INTO Rules (Type, Value, Category, Action, LimitSeconds, ScheduleJson)
+                    VALUES (@type, @value, @category, @action, @limit, @schedule)";
+
+                using (var command = new SqliteCommand(commandText, connection))
+                {
+                    command.Parameters.AddWithValue("@type", rule.Type);
+                    command.Parameters.AddWithValue("@value", rule.Value);
+                    command.Parameters.AddWithValue("@category", rule.Category);
+                    command.Parameters.AddWithValue("@action", rule.Action);
+                    command.Parameters.AddWithValue("@limit", rule.LimitSeconds);
+                    command.Parameters.AddWithValue("@schedule", rule.ScheduleJson);
+                    command.ExecuteNonQuery();
+                }
+            }
+            OnRulesChanged?.Invoke();
+        }
+
+        public void ClearRules()
+        {
+            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            {
+                connection.Open();
+                using (var command = new SqliteCommand("DELETE FROM Rules", connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+            OnRulesChanged?.Invoke();
+        }
+
         public void LogActivity(string processName, string windowTitle, string url, double durationSeconds)
         {
             using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
