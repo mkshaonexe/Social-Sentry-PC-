@@ -83,14 +83,14 @@
                               Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                     
                     <!-- Export Data -->
-                    <Button Content="Export Data" Margin="0,0,0,12" HorizontalAlignment="Left"
+                   <Button Content="Export Data" Margin="0,0,0,12" HorizontalAlignment="Left"
                            Command="{Binding ExportDataCommand}"
-                           Style="{StaticResource SidebarButtonStyle}" Padding="16,8"/>
+                           Style="{StaticResource ActionButtonStyle}" Padding="16,8"/>
                     
                     <!-- Clear Data -->
                     <Button Content="Clear All Data" HorizontalAlignment="Left"
                            Command="{Binding ClearDataCommand}"
-                           Style="{StaticResource SidebarButtonStyle}" Padding="16,8">
+                           Style="{StaticResource ActionButtonStyle}" Padding="16,8">
                         <Button.Foreground>
                             <SolidColorBrush Color="#FF5252"/>
                         </Button.Foreground>
