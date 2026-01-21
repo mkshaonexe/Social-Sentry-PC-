@@ -120,6 +120,15 @@
                      <DataTemplate DataType="{x:Type vm:AllFeaturesViewModel}">
                          <views:AllFeaturesView/>
                      </DataTemplate>
+                     <DataTemplate DataType="{x:Type vm:CommunityViewModel}">
+                         <views:CommunityView/>
+                     </DataTemplate>
+                     <DataTemplate DataType="{x:Type vm:ReelsBlockerViewModel}">
+                         <views:ReelsBlockerView/>
+                     </DataTemplate>
+                     <DataTemplate DataType="{x:Type vm:AdultBlockerViewModel}">
+                         <views:AdultBlockerView/>
+                     </DataTemplate>
                  </ContentControl.Resources>
              </ContentControl>
         </Border>
