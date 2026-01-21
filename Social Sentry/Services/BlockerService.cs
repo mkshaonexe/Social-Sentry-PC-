@@ -9,6 +9,8 @@ namespace Social_Sentry.Services
     public class BlockerService
     {
         private Social_Sentry.Data.DatabaseService? _dbService;
+        private bool _isReelsBlockerEnabled;
+        private bool _isAdultBlockerEnabled;
 
         // Simple rules list for now (Phase 2). Later verify against DB.
         private readonly List<string> _blockedKeywords = new() { "porn", "xxx", "sex" }; 
@@ -32,7 +34,21 @@ namespace Social_Sentry.Services
             // Subscribe to rule changes
             _dbService.OnRulesChanged += LoadRules;
             
+            // Subscribe to settings changes
+            SettingsService.SettingsChanged += UpdateSettings;
+
+            // Load initial settings
+            var settingsService = new SettingsService();
+            UpdateSettings(settingsService.LoadSettings());
+
             LoadRules();
+        }
+
+        private void UpdateSettings(UserSettings settings)
+        {
+            _isReelsBlockerEnabled = settings.IsReelsBlockerEnabled;
+            _isAdultBlockerEnabled = settings.IsAdultBlockerEnabled;
+            Debug.WriteLine($"BlockerService: Settings Updated - Reels: {_isReelsBlockerEnabled}, Adult: {_isAdultBlockerEnabled}");
         }
 
         private void LoadRules()
@@ -223,21 +239,36 @@ namespace Social_Sentry.Services
             string lowerUrl = url.ToLower();
 
             // 1. Check Keywords (Adult)
-            foreach (var keyword in _blockedKeywords)
+            if (_isAdultBlockerEnabled)
             {
-                if (lowerTitle.Contains(keyword) || lowerUrl.Contains(keyword)) return true;
+                foreach (var keyword in _blockedKeywords)
+                {
+                    if (lowerTitle.Contains(keyword) || lowerUrl.Contains(keyword)) return true;
+                }
             }
 
             // 2. Check Shorts/Reels (URL segments)
-            foreach (var segment in _blockedUrlSegments)
+            if (_isReelsBlockerEnabled)
             {
-                if (lowerUrl.Contains(segment)) return true;
+                foreach (var segment in _blockedUrlSegments)
+                {
+                    if (lowerUrl.Contains(segment)) return true;
+                }
             }
 
             // 3. Check Title Specifics
-            foreach (var t in _blockedTitles)
+            // Assuming blocked titles are mostly related to adult content or specific blocks desired by user?
+            // If we don't know the category, we can default to checking them always OR map them.
+            // For now, let's assume they are "Adult" or "General" blocks. 
+            // If we want granular control, we need to categorize titles.
+            // Let's perform this check if EITHER is enabled, or maybe strictly Adult? 
+            // Let's assume broad blocking for now if Adult blocker is on.
+            if (_isAdultBlockerEnabled)
             {
-                 if (lowerTitle.Contains(t.ToLower())) return true;
+                foreach (var t in _blockedTitles)
+                {
+                     if (lowerTitle.Contains(t.ToLower())) return true;
+                }
             }
 
             return false;

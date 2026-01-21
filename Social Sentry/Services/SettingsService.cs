@@ -12,6 +12,8 @@ namespace Social_Sentry.Services
         private const string APP_NAME = "SocialSentry";
         private const string REGISTRY_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
 
+        public static event Action<UserSettings>? SettingsChanged;
+
         public SettingsService()
         {
             _encryptionService = new EncryptionService();
@@ -69,6 +71,9 @@ namespace Social_Sentry.Services
                 // Encrypt the entire JSON blob
                 var encrypted = _encryptionService.Encrypt(json);
                 File.WriteAllText(_settingsPath, encrypted);
+                
+                // Notify listeners
+                SettingsChanged?.Invoke(settings);
             }
             catch (Exception ex)
             {
