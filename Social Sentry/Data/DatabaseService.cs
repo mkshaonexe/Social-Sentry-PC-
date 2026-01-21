@@ -86,6 +86,34 @@ namespace Social_Sentry.Data
                     command.ExecuteNonQuery();
 
                     // 5. Classification Rules (Dynamic Categorization)
+                    
+                    // Simple migration/check: Ensure table has correct schema
+                    // If it exists but might be old version, check for a known new column 'Pattern'
+                    bool needRecreate = false;
+                    command.CommandText = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='ClassificationRules'";
+                    long tableExists = (long)(command.ExecuteScalar() ?? 0L);
+
+                    if (tableExists > 0)
+                    {
+                        command.CommandText = "PRAGMA table_info(ClassificationRules)";
+                        using (var reader = command.ExecuteReader())
+                        {
+                            bool hasPatternCol = false;
+                            while (reader.Read())
+                            {
+                                var colName = reader.GetString(1); // name is column 1
+                                if (colName == "Pattern") hasPatternCol = true;
+                            }
+                            if (!hasPatternCol) needRecreate = true;
+                        }
+                    }
+
+                    if (needRecreate)
+                    {
+                        command.CommandText = "DROP TABLE ClassificationRules";
+                        command.ExecuteNonQuery();
+                    }
+
                     string createClassification = @"
                         CREATE TABLE IF NOT EXISTS ClassificationRules (
                             Id INTEGER PRIMARY KEY AUTOINCREMENT,
