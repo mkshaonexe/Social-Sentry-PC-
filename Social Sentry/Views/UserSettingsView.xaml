@@ -10,14 +10,55 @@
         <StackPanel Margin="32,24">
             <!-- Header -->
             <TextBlock Text="Settings" FontSize="28" FontWeight="Bold" 
-                      Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,24"/>
+                      Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,24"/>
+
+            <!-- Appearance Settings (NEW) -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                   CornerRadius="12" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Appearance" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                    
+                    <!-- Dark Mode -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel>
+                            <TextBlock Text="Dark Mode" FontSize="14"
+                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Switch between light and dark themes" 
+                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        
+                        <CheckBox Grid.Column="1" IsChecked="{Binding IsDarkTheme}" 
+                                 VerticalAlignment="Center">
+                             <!-- Using a checkbox for now or bind toggle style if updated -->
+                             <CheckBox.Style>
+                                <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="CheckBox">
+                                                <ToggleButton IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                                            Style="{StaticResource ModernToggleStyle}"/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                             </CheckBox.Style>
+                        </CheckBox>
+                    </Grid>
+                </StackPanel>
+            </Border>
 
             <!-- General Settings -->
-            <Border Background="{StaticResource CardBackgroundBrush}" 
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
                    CornerRadius="12" Padding="24" Margin="0,0,0,20">
                 <StackPanel>
                     <TextBlock Text="General" FontSize="20" FontWeight="SemiBold"
-                              Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                     
                     <!-- Start with Windows -->
                     <Grid Margin="0,0,0,16">
@@ -28,9 +69,9 @@
                         
                         <StackPanel>
                             <TextBlock Text="Start with Windows" FontSize="14"
-                                      Foreground="{StaticResource PrimaryTextBrush}"/>
+                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
                             <TextBlock Text="Launch Social Sentry automatically when you log in" 
-                                      FontSize="12" Foreground="{StaticResource SecondaryTextBrush}"/>
+                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
                         </StackPanel>
                         
                         <CheckBox Grid.Column="1" IsChecked="{Binding StartWithWindows}" 
@@ -46,9 +87,9 @@
                         
                         <StackPanel>
                             <TextBlock Text="Start Minimized" FontSize="14"
-                                      Foreground="{StaticResource PrimaryTextBrush}"/>
+                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
                             <TextBlock Text="Start the app minimized to system tray" 
-                                      FontSize="12" Foreground="{StaticResource SecondaryTextBrush}"/>
+                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
                         </StackPanel>
                         
                         <CheckBox Grid.Column="1" IsChecked="{Binding StartMinimized}" 
@@ -64,9 +105,9 @@
                         
                         <StackPanel>
                             <TextBlock Text="Show Notifications" FontSize="14"
-                                      Foreground="{StaticResource PrimaryTextBrush}"/>
+                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
                             <TextBlock Text="Get notified when you exceed usage limits" 
-                                      FontSize="12" Foreground="{StaticResource SecondaryTextBrush}"/>
+                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
                         </StackPanel>
                         
                         <CheckBox Grid.Column="1" IsChecked="{Binding ShowNotifications}" 
@@ -76,11 +117,11 @@
             </Border>
 
             <!-- Data Management -->
-            <Border Background="{StaticResource CardBackgroundBrush}" 
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
                    CornerRadius="12" Padding="24" Margin="0,0,0,20">
                 <StackPanel>
                     <TextBlock Text="Data Management" FontSize="20" FontWeight="SemiBold"
-                              Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                     
                     <!-- Export Data -->
                    <Button Content="Export Data" Margin="0,0,0,12" HorizontalAlignment="Left"
@@ -99,13 +140,13 @@
             </Border>
 
             <!-- About -->
-            <Border Background="{StaticResource CardBackgroundBrush}" 
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
                    CornerRadius="12" Padding="24">
                 <StackPanel>
                     <TextBlock Text="About" FontSize="20" FontWeight="SemiBold"
-                              Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,16"/>
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,16"/>
                     
-                    <TextBlock FontSize="14" Foreground="{StaticResource SecondaryTextBrush}">
+                    <TextBlock FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}">
                         <Run Text="Social Sentry" FontWeight="SemiBold"/>
                         <LineBreak/>
                         <Run Text="Version 1.0.0"/>

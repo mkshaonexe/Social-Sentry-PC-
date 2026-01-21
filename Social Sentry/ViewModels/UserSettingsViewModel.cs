@@ -8,9 +8,24 @@ namespace Social_Sentry.ViewModels
     public class UserSettingsViewModel : ViewModelBase
     {
         private readonly Services.SettingsService _settingsService;
+        private readonly Services.ThemeService _themeService;
         private bool _startWithWindows;
         private bool _startMinimized;
         private bool _showNotifications = true;
+        private bool _isDarkTheme;
+
+        public bool IsDarkTheme
+        {
+            get => _isDarkTheme;
+            set
+            {
+                if (SetProperty(ref _isDarkTheme, value))
+                {
+                    _themeService.SetTheme(value);
+                    SaveSettings();
+                }
+            }
+        }
 
         public bool StartWithWindows
         {
@@ -55,12 +70,19 @@ namespace Social_Sentry.ViewModels
         public UserSettingsViewModel()
         {
             _settingsService = new Services.SettingsService();
+            _themeService = new Services.ThemeService();
             
             // Load settings
             var settings = _settingsService.LoadSettings();
             _startWithWindows = _settingsService.IsStartWithWindowsEnabled();
             _startMinimized = settings.StartMinimized;
             _showNotifications = settings.ShowNotifications;
+
+            // Initialize Theme (Default to dark if not saved, or maybe we should save it)
+            // Ideally SettingsService should also save theme preference. 
+            // For now, assuming default is Dark (true) and syncing.
+            _isDarkTheme = settings.IsDarkTheme; 
+            _themeService.SetTheme(_isDarkTheme);
 
             ExportDataCommand = new RelayCommand(ExportData);
             ClearDataCommand = new RelayCommand(ClearData);
@@ -72,7 +94,8 @@ namespace Social_Sentry.ViewModels
             {
                 StartWithWindows = _startWithWindows,
                 StartMinimized = _startMinimized,
-                ShowNotifications = _showNotifications
+                ShowNotifications = _showNotifications,
+                IsDarkTheme = _isDarkTheme
             };
             _settingsService.SaveSettings(settings);
         }

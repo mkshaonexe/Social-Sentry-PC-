@@ -8,7 +8,7 @@
         xmlns:views="clr-namespace:Social_Sentry.Views"
         mc:Ignorable="d"
         Title="Social Sentry" Height="700" Width="1000"
-        Background="{StaticResource WindowBackgroundBrush}"
+        Background="{DynamicResource WindowBackgroundBrush}"
         WindowStartupLocation="CenterScreen">
     
 
@@ -20,7 +20,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-        <Border Grid.Column="0" Background="{StaticResource CardBackgroundBrush}" Padding="16">
+        <Border Grid.Column="0" Background="{DynamicResource CardBackgroundBrush}" Padding="16">
             <StackPanel>
                 <!-- Logo Area -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,32">
@@ -30,7 +30,7 @@
                     </Border>
                     
                     <TextBlock Text="Social Sentry" 
-                               Foreground="{StaticResource PrimaryTextBrush}" 
+                               Foreground="{DynamicResource PrimaryTextBrush}" 
                                FontSize="18" 
                                FontWeight="Bold" 
                                VerticalAlignment="Center"
@@ -98,7 +98,7 @@
         </Border>
 
         <!-- Content Area -->
-        <Border Grid.Column="1" Background="{StaticResource WindowBackgroundBrush}">
+        <Border Grid.Column="1" Background="{DynamicResource WindowBackgroundBrush}">
              <!-- We use a ContentControl bound to the CurrentView property -->
              <ContentControl Content="{Binding CurrentView}">
                  <ContentControl.Resources>

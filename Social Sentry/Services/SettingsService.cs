@@ -129,5 +129,6 @@ namespace Social_Sentry.Services
         public bool ShowTrayIcon { get; set; } = true; // Toggle tray icon visibility
         public bool RunInvisiblyInBackground { get; set; } = true; // Continue running without tray
         public bool ShowNotifications { get; set; } = true;
+        public bool IsDarkTheme { get; set; } = true;
     }
 }
