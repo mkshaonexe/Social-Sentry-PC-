@@ -48,7 +48,7 @@
 
                             <Border.InputBindings>
                                 <MouseBinding MouseAction="LeftClick" 
-                                              Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                               CommandParameter="{Binding Route}"/>
                             </Border.InputBindings>
                             

@@ -11,6 +11,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:EqualityToBooleanConverter x:Key="EqualConverter"/>
+            <converters:BooleanToStringConverter x:Key="BooleanToStringConverter"/>
         
             <!-- Base Styles -->
             <Style x:Key="CardStyle" TargetType="Border">

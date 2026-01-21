@@ -7,6 +7,9 @@ namespace Social_Sentry.ViewModels
     {
         public ObservableCollection<FeatureItem> Features { get; }
 
+        public ICommand NavigateCommand { get; }
+        public event System.Action<string>? NavigationRequest;
+
         public AllFeaturesViewModel()
         {
             Features = new ObservableCollection<FeatureItem>
@@ -40,12 +43,12 @@ namespace Social_Sentry.ViewModels
             NavigateCommand = new RelayCommand<string>(Navigate);
         }
 
-        public ICommand NavigateCommand { get; }
-        public event System.Action<string>? NavigationRequest;
-
         private void Navigate(string route)
         {
-            NavigationRequest?.Invoke(route);
+            if (!string.IsNullOrEmpty(route))
+            {
+                NavigationRequest?.Invoke(route);
+            }
         }
     }
 

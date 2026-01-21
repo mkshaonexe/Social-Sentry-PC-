@@ -2,6 +2,8 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using System.IO;
 using System.Text.Json;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Social_Sentry.ViewModels
 {
@@ -13,6 +15,23 @@ namespace Social_Sentry.ViewModels
         private bool _startMinimized;
         private bool _showNotifications = true;
         private bool _isDarkTheme;
+        private bool _isDeveloperModeEnabled;
+        private int _developerClicks = 0;
+        private const int CLICKS_TO_UNLOCK = 7;
+
+        public ObservableCollection<BrowserExtension> BrowserExtensions { get; }
+
+        public bool IsDeveloperModeEnabled
+        {
+            get => _isDeveloperModeEnabled;
+            set
+            {
+                if (SetProperty(ref _isDeveloperModeEnabled, value))
+                {
+                    SaveSettings();
+                }
+            }
+        }
 
         public bool IsDarkTheme
         {
@@ -66,6 +85,7 @@ namespace Social_Sentry.ViewModels
 
         public ICommand ExportDataCommand { get; }
         public ICommand ClearDataCommand { get; }
+        public ICommand UnlockDeveloperModeCommand { get; }
 
         public UserSettingsViewModel()
         {
@@ -86,6 +106,31 @@ namespace Social_Sentry.ViewModels
 
             ExportDataCommand = new RelayCommand(ExportData);
             ClearDataCommand = new RelayCommand(ClearData);
+            UnlockDeveloperModeCommand = new RelayCommand(UnlockDeveloperMode);
+
+            // Initialize Extensions
+            BrowserExtensions = new ObservableCollection<BrowserExtension>
+            {
+                new BrowserExtension { Name = "Google Chrome", Icon = "Chrome", IsInstalled = true }, // Placeholder logic for IsInstalled
+                new BrowserExtension { Name = "Mozilla Firefox", Icon = "Firefox", IsInstalled = true },
+                new BrowserExtension { Name = "Microsoft Edge", Icon = "Edge", IsInstalled = true },
+                new BrowserExtension { Name = "Brave", Icon = "Brave", IsInstalled = true }
+            };
+
+            _isDeveloperModeEnabled = settings.IsDeveloperModeEnabled;
+        }
+
+        private void UnlockDeveloperMode()
+        {
+            if (_isDeveloperModeEnabled) return;
+
+            _developerClicks++;
+            if (_developerClicks >= CLICKS_TO_UNLOCK)
+            {
+                IsDeveloperModeEnabled = true;
+                _developerClicks = 0;
+                System.Windows.MessageBox.Show("Developer Mode Activated!", "Social Sentry", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
         }
 
         private void SaveSettings()
@@ -95,7 +140,8 @@ namespace Social_Sentry.ViewModels
                 StartWithWindows = _startWithWindows,
                 StartMinimized = _startMinimized,
                 ShowNotifications = _showNotifications,
-                IsDarkTheme = _isDarkTheme
+                IsDarkTheme = _isDarkTheme,
+                IsDeveloperModeEnabled = _isDeveloperModeEnabled
             };
             _settingsService.SaveSettings(settings);
         }
@@ -214,5 +260,13 @@ namespace Social_Sentry.ViewModels
                 }
             }
         }
+    }
+
+
+    public class BrowserExtension
+    {
+        public string Name { get; set; }
+        public string Icon { get; set; } 
+        public bool IsInstalled { get; set; }
     }
 }

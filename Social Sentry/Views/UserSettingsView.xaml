@@ -139,6 +139,65 @@
                 </StackPanel>
             </Border>
 
+            <!-- Extensions (New Section) -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                   CornerRadius="12" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Extensions" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                    
+                    <ItemsControl ItemsSource="{Binding BrowserExtensions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- Icon Placeholder -->
+                                    <Border Width="32" Height="32" Background="#30FFFFFF" CornerRadius="8" Margin="0,0,12,0">
+                                        <TextBlock Text="{Binding Icon}" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                                  FontSize="10" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                                    </Border>
+                                    
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    </StackPanel>
+                                    
+                                    <TextBlock Grid.Column="2" Text="{Binding IsInstalled, Converter={StaticResource BooleanToStringConverter}, FallbackValue='Installed'}" 
+                                              VerticalAlignment="Center" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="12"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Developer Mode Settings (Hidden by default) -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                   CornerRadius="12" Padding="24" Margin="0,0,0,20"
+                   Visibility="{Binding IsDeveloperModeEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel>
+                    <TextBlock Text="Developer Mode" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                    
+                    <TextBlock Text="Advanced settings for developers." FontSize="14" 
+                              Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,0,0,10"/>
+                              
+                    <!-- Placeholder features -->
+                     <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Debug Logging" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                        <CheckBox Grid.Column="1" VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
             <!-- About -->
             <Border Background="{DynamicResource CardBackgroundBrush}" 
                    CornerRadius="12" Padding="24">
@@ -149,7 +208,10 @@
                     <TextBlock FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}">
                         <Run Text="Social Sentry" FontWeight="SemiBold"/>
                         <LineBreak/>
-                        <Run Text="Version 1.0.0"/>
+                        <!-- Version click trigger -->
+                        <Hyperlink Command="{Binding UnlockDeveloperModeCommand}" TextDecorations="None" Foreground="{DynamicResource SecondaryTextBrush}">
+                            <Run Text="Version 1.0.0"/>
+                        </Hyperlink>
                         <LineBreak/>
                         <LineBreak/>
                         <Run Text="A powerful digital wellbeing tool to track and manage your screen time."/>
