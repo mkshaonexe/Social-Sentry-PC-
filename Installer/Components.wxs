@@ -1,0 +1,58 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+            <Component Id="cmp_b2b94b90ba7f408d8e96d3c9a7b9b6e8" Guid="4a3cefe5-3cb7-4824-b69b-7e3335946270" Bitness="always64">
+                <File Id="file_6d683f10e26548d789ecebd71c603dec" Source="source\D3DCompiler_47_cor3.dll" KeyPath="yes" />
+            </Component>            <Component Id="cmp_0dee62515eda455ba019547dd45ea75f" Guid="961b1bf3-0ef8-48cf-ae90-32cd5c1aa9ce" Bitness="always64">
+                <File Id="file_452e0cb1e5104028a6442af4497aed40" Source="source\e_sqlcipher.dll" KeyPath="yes" />
+            </Component>            <Component Id="cmp_0615a71a1a7e454cba3fd68aed094f0b" Guid="7716c815-a567-4a42-8b0d-3f3fdcf09195" Bitness="always64">
+                <File Id="file_d73ff52638d949c6a1d979e385d1f25b" Source="source\PenImc_cor3.dll" KeyPath="yes" />
+            </Component>            <Component Id="cmp_b162c05d37da47c8aa00e0c598f2e775" Guid="071be4bd-b046-4906-a610-e4a1b3efb9f7" Bitness="always64">
+                <File Id="file_4636ea3b6b4f4cc1b0396223dd6a897d" Source="source\PresentationNative_cor3.dll" KeyPath="yes" />
+            </Component>            <Component Id="cmp_388b79d76caa4aa38bdb78c1d0a671d7" Guid="e5ea67e3-0767-4492-ac60-f95a356c8154" Bitness="always64">
+                <File Id="file_38f02cf1b79e4feb8403a0e3a6b2bc36" Source="source\Social Sentry.exe" KeyPath="yes" />
+            </Component>            <Component Id="cmp_3706e6ed4d1a40b0885559fb3bda21fb" Guid="c210ee07-3d4d-4043-9606-0203167502c7" Bitness="always64">
+                <File Id="file_c3bb048e0b4d4b5e8663fc32d66f536b" Source="source\Social Sentry.pdb" KeyPath="yes" />
+            </Component>            <Component Id="cmp_eabe5b56f5334819a26ecc49ae2661a9" Guid="c2b478fd-7af6-4dfe-8b22-3c4654f505fd" Bitness="always64">
+                <File Id="file_3edc47f642324386bf4e240da1e1ce47" Source="source\SocialSentry.Watchdog.exe" KeyPath="yes" />
+            </Component>            <Component Id="cmp_ca8d36c51a1c4138b56863f4d986a3b3" Guid="b3897da8-53ac-498a-888c-0d499f094d47" Bitness="always64">
+                <File Id="file_9dbb725bfe4d427aa6c8d34eefd2c2b2" Source="source\SocialSentry.Watchdog.pdb" KeyPath="yes" />
+            </Component>            <Component Id="cmp_7e230cd53e1d4a6ab408a2dd54d22ecd" Guid="fde3ad3c-2035-4d51-b479-718516f9a9e1" Bitness="always64">
+                <File Id="file_0fd95cadc1ee4d2b8fca6eb4bda400b9" Source="source\vcruntime140_cor3.dll" KeyPath="yes" />
+            </Component>            <Component Id="cmp_aab783e0ed6840e6acb5448b3e8c25f0" Guid="15ba4a99-83f9-49a6-8b14-ada87007e066" Bitness="always64">
+                <File Id="file_642a3fcfeb694e4cbe8094e08fdbec25" Source="source\wpfgfx_cor3.dll" KeyPath="yes" />
+            </Component>            <Directory Id="dir_596d589d5cad49feb37cc82b4abb40da" Name="extension">            <Component Id="cmp_1ad5db38f08640258b45b15c65978668" Guid="5be00de9-ec78-416c-b84b-b2d48a86dad4" Bitness="always64">
+                <File Id="file_544a5c1d87ff421f932971c5204982de" Source="source\extension\background.js" KeyPath="yes" />
+            </Component>            <Component Id="cmp_965bc0ea87aa4e4187d7b345838f337a" Guid="b4bac149-6032-4897-8081-768869e50c60" Bitness="always64">
+                <File Id="file_0747acd19366497b84811ed4c2a06666" Source="source\extension\content.js" KeyPath="yes" />
+            </Component>            <Component Id="cmp_01627bfa27ba4d969c51d6aae8d2c022" Guid="f0704cc0-782e-453b-804e-db9a8b9c4978" Bitness="always64">
+                <File Id="file_d0acc4fa60804261827e069cee678396" Source="source\extension\manifest.json" KeyPath="yes" />
+            </Component>            <Component Id="cmp_9f4fbbdcb6da4a8db5a14985f7d5a997" Guid="8de90f3e-ee74-416a-bf93-322e956ae1ec" Bitness="always64">
+                <File Id="file_6cd9e6743733407dbbdaed6b881002a4" Source="source\extension\popup.html" KeyPath="yes" />
+            </Component>            <Component Id="cmp_f183ed95472046bd8752755516606fcb" Guid="1e28fa33-9de2-4ad3-9ff3-b9711456b728" Bitness="always64">
+                <File Id="file_9a7ba1e5b6ee499dbe032a5bcea671cc" Source="source\extension\popup.js" KeyPath="yes" />
+            </Component>            <Component Id="cmp_ccb5dbc9f9fb4ede8d2f5f5babc12f14" Guid="661f3152-c36c-4f30-a1cc-3d429ff3a1c4" Bitness="always64">
+                <File Id="file_d5d93380ccf64f9abfa97be3982c806f" Source="source\extension\PRD.md" KeyPath="yes" />
+            </Component>            <Component Id="cmp_a4f8581b194f471dbf3eab3d210ebb4d" Guid="04a30494-07f3-4c66-a4d9-b1e83e8f1f4e" Bitness="always64">
+                <File Id="file_f81bf70f4fce45979ceced560bdb2993" Source="source\extension\PRD_Enhanced_Extension.md" KeyPath="yes" />
+            </Component>            <Component Id="cmp_b7381cc35b494278b938dd66d03b8aa1" Guid="c0d6d76b-bd87-4d08-bb0d-ec19b4697170" Bitness="always64">
+                <File Id="file_1509be2174904479a005bdce5a1f25c9" Source="source\extension\styles.css" KeyPath="yes" />
+            </Component>            <Directory Id="dir_5d837907e4334cccb09101a5bf29e2f1" Name="icons">            <Component Id="cmp_c054108e88244ed28711f79277b08fe4" Guid="9b434302-c719-4f30-8b15-d34089e1222a" Bitness="always64">
+                <File Id="file_5a3a643f957548b59302c62caee6d6c6" Source="source\extension\icons\icon128.png" KeyPath="yes" />
+            </Component>            <Component Id="cmp_05860577d15440668f9291f22213bb12" Guid="db6ff171-832e-4cb4-8614-80d7eb726756" Bitness="always64">
+                <File Id="file_e87947f384d647e2bd53be033e39c0b3" Source="source\extension\icons\icon16.png" KeyPath="yes" />
+            </Component>            <Component Id="cmp_896b5a9dd99346bbba66f1bcfeb50fcd" Guid="2059bd88-dbf8-4156-9571-1b237157bf1e" Bitness="always64">
+                <File Id="file_962c5f42335847aa903268ed25ad2340" Source="source\extension\icons\icon48.png" KeyPath="yes" />
+            </Component>            </Directory>            <Directory Id="dir_1ca20ff084c54dd18a4e7c69794bb2b0" Name="parsers">            <Component Id="cmp_af2830aa87d140eaa47ad8d55f93c8b6" Guid="fa1b00ca-f048-4fce-9a82-7d25fbb0c61c" Bitness="always64">
+                <File Id="file_78eaa25fea184c8aa655ad611538a8f6" Source="source\extension\parsers\facebook.js" KeyPath="yes" />
+            </Component>            <Component Id="cmp_0d68e15bfcd64faa969ec022b4deb425" Guid="b49c5659-4dba-442e-a13b-d4e2922ba803" Bitness="always64">
+                <File Id="file_1ba4011c018b4a71be0eecf703d55577" Source="source\extension\parsers\generic.js" KeyPath="yes" />
+            </Component>            <Component Id="cmp_e88a1549180f46ada8ffbcbe21e2c7f7" Guid="f25c4f8c-0a76-40ef-b7c5-0e1cb451d1c1" Bitness="always64">
+                <File Id="file_b7f9f4649dda4823928c5fd00359be4b" Source="source\extension\parsers\youtube.js" KeyPath="yes" />
+            </Component>            </Directory>            </Directory>
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <ComponentGroup Id="HarvestedComponents">      <ComponentRef Id="cmp_b2b94b90ba7f408d8e96d3c9a7b9b6e8" />      <ComponentRef Id="cmp_0dee62515eda455ba019547dd45ea75f" />      <ComponentRef Id="cmp_0615a71a1a7e454cba3fd68aed094f0b" />      <ComponentRef Id="cmp_b162c05d37da47c8aa00e0c598f2e775" />      <ComponentRef Id="cmp_388b79d76caa4aa38bdb78c1d0a671d7" />      <ComponentRef Id="cmp_3706e6ed4d1a40b0885559fb3bda21fb" />      <ComponentRef Id="cmp_eabe5b56f5334819a26ecc49ae2661a9" />      <ComponentRef Id="cmp_ca8d36c51a1c4138b56863f4d986a3b3" />      <ComponentRef Id="cmp_7e230cd53e1d4a6ab408a2dd54d22ecd" />      <ComponentRef Id="cmp_aab783e0ed6840e6acb5448b3e8c25f0" />      <ComponentRef Id="cmp_1ad5db38f08640258b45b15c65978668" />      <ComponentRef Id="cmp_965bc0ea87aa4e4187d7b345838f337a" />      <ComponentRef Id="cmp_01627bfa27ba4d969c51d6aae8d2c022" />      <ComponentRef Id="cmp_9f4fbbdcb6da4a8db5a14985f7d5a997" />      <ComponentRef Id="cmp_f183ed95472046bd8752755516606fcb" />      <ComponentRef Id="cmp_ccb5dbc9f9fb4ede8d2f5f5babc12f14" />      <ComponentRef Id="cmp_a4f8581b194f471dbf3eab3d210ebb4d" />      <ComponentRef Id="cmp_b7381cc35b494278b938dd66d03b8aa1" />      <ComponentRef Id="cmp_c054108e88244ed28711f79277b08fe4" />      <ComponentRef Id="cmp_05860577d15440668f9291f22213bb12" />      <ComponentRef Id="cmp_896b5a9dd99346bbba66f1bcfeb50fcd" />      <ComponentRef Id="cmp_af2830aa87d140eaa47ad8d55f93c8b6" />      <ComponentRef Id="cmp_0d68e15bfcd64faa969ec022b4deb425" />      <ComponentRef Id="cmp_e88a1549180f46ada8ffbcbe21e2c7f7" />    </ComponentGroup>
+  </Fragment>
+</Wix>

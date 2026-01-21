@@ -13,14 +13,12 @@ namespace Social_Sentry.Services
         private readonly HttpListener _listener;
         private readonly CancellationTokenSource _cts;
         private Task _serverTask;
-        private readonly ActivityTracker _activityTracker;
         private bool _isRunning;
 
         public event EventHandler<ExtensionActivityData> OnActivityReceived;
 
-        public LocalApiServer(ActivityTracker activityTracker)
+        public LocalApiServer()
         {
-            _activityTracker = activityTracker;
             _listener = new HttpListener();
             _listener.Prefixes.Add("http://localhost:5123/");
             _cts = new CancellationTokenSource();
@@ -92,20 +90,23 @@ namespace Social_Sentry.Services
                         responseBody = JsonSerializer.Serialize(new { status = "ok", timestamp = DateTime.UtcNow });
                         break;
 
-                    case "/api/activity":
+                    case "/api/activity": // Legacy Endpoint
+                    case "/api/v2/activity": // New V2 Endpoint
                         if (request.HttpMethod == "POST")
                         {
                             using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
                             var body = await reader.ReadToEndAsync();
+                            
+                            // Deserialize to V2 model
                             var activityData = JsonSerializer.Deserialize<ExtensionActivityData>(body, new JsonSerializerOptions 
                             { 
-                                PropertyNameCaseInsensitive = true 
+                                PropertyNameCaseInsensitive = true,
+                                Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } 
                             });
 
                             if (activityData != null)
                             {
                                 OnActivityReceived?.Invoke(this, activityData);
-                                // Could also directly track via ActivityTracker here
                             }
 
                             responseBody = JsonSerializer.Serialize(new { success = true });
@@ -156,20 +157,33 @@ namespace Social_Sentry.Services
         }
     }
 
+    // Updated Model to support V2
     public class ExtensionActivityData
     {
-        public string? ActivityType { get; set; }
+        public string? Platform { get; set; } // e.g. "YouTube", "Facebook"
+        public string? ContentType { get; set; } // e.g. "Shorts", "Video", "Feed"
+        
+        // Legacy/Generic fields
+        public string? ActivityType { get; set; } 
         public int ScrollDepth { get; set; }
         public double VideoWatchTime { get; set; }
         public int Duration { get; set; }
         public string? Url { get; set; }
-        public string? Title { get; set; }
+        public string? Title { get; set; } // Can be enriched by Metadata
         public string? Timestamp { get; set; }
-        public int? TabId { get; set; }
-        public ExtensionMetadata? Metadata { get; set; }
+        
+        public ExtensionSession? Session { get; set; }
+        public Dictionary<string, object>? Metadata { get; set; } // Flexible metadata bag
     }
 
-    public class ExtensionMetadata
+    public class ExtensionSession
+    {
+        public int? TabId { get; set; }
+        public int? WindowId { get; set; }
+        public bool IsFocused { get; set; }
+    }
+
+    public class ExtensionMetadata // Legacy support if needed, but Metadata Dict is preferred for flexibility
     {
         public string? Hostname { get; set; }
         public string? Pathname { get; set; }

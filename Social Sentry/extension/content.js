@@ -1,175 +1,97 @@
-// Social Sentry Content Script
-// Tracks user activity on web pages
+/**
+ * Social Sentry Content Script - Controller
+ * Orchestrates activity tracking using modular parsers.
+ */
+
+// Import parsers (In a real build system we'd check/require, but for simple chrome ext we concat or load all)
+// The manifest will ensure these files are loaded before content.js, or we can include them here if we had a bundler.
+// Since we are doing "raw" js for now, we assume the classes are available in global scope 
+// OR we will use a simpler monolithic file approach for now if loading is complex without a bundler.
+// STRATEGY: To avoid complex build steps for the user, we will actually inline the logic or rely on manifest order.
+// Let's rely on Manifest V3 order. We will list parsers first in manifest.
 
 (function () {
     'use strict';
 
-    // Activity state
-    let currentActivity = {
-        type: 'browsing',
-        startTime: Date.now(),
-        scrollDepth: 0,
-        videoWatchTime: 0,
-        isIdle: false,
-        lastInteraction: Date.now()
-    };
-
-    // Configuration
-    const IDLE_THRESHOLD = 30000; // 30 seconds
-    const REPORT_INTERVAL = 5000; // 5 seconds
-    const SCROLL_SAMPLE_RATE = 100; // ms
-
-    // Detect activity type based on page content
-    function detectActivityType() {
-        const url = window.location.href;
-        const hostname = window.location.hostname;
-
-        // Reels/Shorts detection
-        if (url.includes('/shorts') || url.includes('/reels') || url.includes('/reel/')) {
-            return 'reels';
+    class ParserController {
+        constructor() {
+            this.parsers = [
+                // We assume these classes are globally available because we'll load them first in manifest
+                new YouTubeParser(),
+                new FacebookParser(),
+                new GenericParser() // Last resort
+            ];
+            this.activeParser = null;
+            this.currentActivity = null;
+            this.reportInterval = 5000;
         }
 
-        // Video detection
-        const videos = document.querySelectorAll('video');
-        for (const video of videos) {
-            if (!video.paused && video.readyState >= 2) {
-                // Check if it's a main video player (not a small preview)
-                const rect = video.getBoundingClientRect();
-                if (rect.width > 200 && rect.height > 150) {
-                    return 'video_watching';
+        init() {
+            this.detectParser();
+            this.startTracking();
+            this.setupObservers();
+        }
+
+        detectParser() {
+            for (const parser of this.parsers) {
+                if (parser.isApplicable()) {
+                    this.activeParser = parser;
+                    console.log(`[Social Sentry] Activated parser: ${parser.name}`);
+                    break;
                 }
             }
         }
 
-        // Study/Reading detection (text-heavy, slow scrolling)
-        const textContent = document.body?.innerText || '';
-        const wordCount = textContent.split(/\s+/).length;
-        const isTextHeavy = wordCount > 500;
+        async tick() {
+            if (!this.activeParser) return;
 
-        if (isTextHeavy && currentActivity.scrollDepth < 30) {
-            // Low scroll + text heavy = likely reading/studying
-            const timeSinceStart = Date.now() - currentActivity.startTime;
-            if (timeSinceStart > 10000) { // More than 10 seconds on page
-                return 'studying';
-            }
+            // check for idle? (To be implemented fully later, for now we trust the parser or add global idle check)
+            // let's add a simple idle check here or inside parsers?
+            // simpler to keep it global.
+
+            const activityData = this.activeParser.parse();
+
+            // Add global context
+            const payload = {
+                ...activityData,
+                timestamp: new Date().toISOString(),
+                session: {
+                    tabId: null, // Filled by background
+                    windowId: null, // Filled by background
+                    isFocused: document.hasFocus()
+                }
+            };
+
+            chrome.runtime.sendMessage({ type: 'ACTIVITY_UPDATE_V2', data: payload });
         }
 
-        // Social media feed detection
-        if (hostname.includes('facebook.com') ||
-            hostname.includes('twitter.com') ||
-            hostname.includes('x.com') ||
-            hostname.includes('instagram.com') ||
-            hostname.includes('tiktok.com') ||
-            hostname.includes('reddit.com')) {
-            if (currentActivity.scrollDepth > 50) {
-                return 'doom_scrolling';
-            }
-            return 'social_feed';
+        startTracking() {
+            setInterval(() => this.tick(), this.reportInterval);
         }
 
-        // Default
-        return 'browsing';
-    }
-
-    // Track scroll depth
-    let lastScrollY = 0;
-    let scrollVelocity = 0;
-
-    function updateScrollDepth() {
-        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-        if (scrollHeight > 0) {
-            currentActivity.scrollDepth = Math.round((window.scrollY / scrollHeight) * 100);
-        }
-
-        // Calculate scroll velocity
-        scrollVelocity = Math.abs(window.scrollY - lastScrollY);
-        lastScrollY = window.scrollY;
-    }
-
-    // Track video watch time
-    function trackVideoTime() {
-        const videos = document.querySelectorAll('video');
-        for (const video of videos) {
-            if (!video.paused) {
-                currentActivity.videoWatchTime += REPORT_INTERVAL / 1000;
-            }
+        setupObservers() {
+            // Watch for URL changes (SPA support)
+            let lastUrl = location.href;
+            new MutationObserver(() => {
+                const url = location.href;
+                if (url !== lastUrl) {
+                    lastUrl = url;
+                    // Re-evaluate parser on URL change? Usually platform stays same, but good to check.
+                    // For now, just logging navigation.
+                    this.detectParser();
+                    this.tick(); // Send immediate update on nav
+                }
+            }).observe(document, { subtree: true, childList: true });
         }
     }
 
-    // Check for idle state
-    function checkIdle() {
-        const timeSinceInteraction = Date.now() - currentActivity.lastInteraction;
-        currentActivity.isIdle = timeSinceInteraction > IDLE_THRESHOLD;
-
-        if (currentActivity.isIdle) {
-            currentActivity.type = 'idle';
-        }
+    // Start everything
+    const controller = new ParserController();
+    // Wait for load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => controller.init());
+    } else {
+        controller.init();
     }
 
-    // Update interaction timestamp
-    function updateInteraction() {
-        currentActivity.lastInteraction = Date.now();
-        currentActivity.isIdle = false;
-    }
-
-    // Send activity report to background script
-    function sendActivityReport() {
-        checkIdle();
-        trackVideoTime();
-
-        if (!currentActivity.isIdle) {
-            currentActivity.type = detectActivityType();
-        }
-
-        const report = {
-            activityType: currentActivity.type,
-            scrollDepth: currentActivity.scrollDepth,
-            videoWatchTime: currentActivity.videoWatchTime,
-            duration: Math.round((Date.now() - currentActivity.startTime) / 1000),
-            metadata: {
-                hostname: window.location.hostname,
-                pathname: window.location.pathname,
-                scrollVelocity: scrollVelocity
-            }
-        };
-
-        chrome.runtime.sendMessage({ type: 'ACTIVITY_UPDATE', data: report });
-    }
-
-    // Event listeners
-    window.addEventListener('scroll', () => {
-        updateScrollDepth();
-        updateInteraction();
-    }, { passive: true });
-
-    window.addEventListener('mousemove', updateInteraction, { passive: true });
-    window.addEventListener('keydown', updateInteraction, { passive: true });
-    window.addEventListener('click', updateInteraction, { passive: true });
-    window.addEventListener('touchstart', updateInteraction, { passive: true });
-
-    // Initial scroll depth
-    updateScrollDepth();
-
-    // Periodic reporting
-    setInterval(sendActivityReport, REPORT_INTERVAL);
-
-    // Report on page unload
-    window.addEventListener('beforeunload', sendActivityReport);
-
-    // Listen for popup requests
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.type === 'GET_ACTIVITY') {
-            checkIdle();
-            trackVideoTime();
-            
-            sendResponse({
-                activityType: currentActivity.isIdle ? 'idle' : detectActivityType(),
-                scrollDepth: currentActivity.scrollDepth,
-                videoWatchTime: currentActivity.videoWatchTime,
-                duration: Math.round((Date.now() - currentActivity.startTime) / 1000)
-            });
-        }
-    });
-
-    console.log('Social Sentry content script loaded');
 })();

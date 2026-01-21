@@ -110,5 +110,9 @@ namespace Social_Sentry.Services
                 return "[Encrypted Data]";
             }
         }
+        public string GetMasterKey()
+        {
+            return Convert.ToBase64String(_aesKey);
+        }
     }
 }

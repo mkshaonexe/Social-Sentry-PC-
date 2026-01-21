@@ -11,7 +11,7 @@ namespace Social_Sentry
     public partial class App : System.Windows.Application
     {
         private Services.SelfProtectionService _protectionService;
-        private Services.SelfProtectionService _protectionService;
+
         public static Services.LocalApiServer Server { get; private set; }
         public static bool IsStartupLaunch { get; private set; } = false;
         private static Services.SettingsService _settingsService;
@@ -127,8 +127,7 @@ namespace Social_Sentry
             // Start Local API Server for browser extension communication
             try
             {
-                var activityTracker = new Services.ActivityTracker();
-                Server = new Services.LocalApiServer(activityTracker);
+                Server = new Services.LocalApiServer();
                 Server.Start();
             }
             catch (System.Exception ex)

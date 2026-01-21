@@ -8,7 +8,8 @@ namespace Social_Sentry.Data
     public class DatabaseService
     {
         private readonly string _dbPath;
-        private readonly EncryptionService _encryptionService; 
+        private readonly string _connectionString;
+        private readonly EncryptionService _encryptionService;  
 
         public DatabaseService()
         {
@@ -19,12 +20,35 @@ namespace Social_Sentry.Data
             if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
             
             _dbPath = Path.Combine(folder, "sentry.db");
-            InitializeDatabase();
+            
+            // Set up strict encryption
+            string key = _encryptionService.GetMasterKey();
+            // Connection string for SQLCipher (Microsoft.Data.Sqlite with bundle_e_sqlcipher)
+            _connectionString = $"Data Source={_dbPath};Password={key};Mode=ReadWriteCreate";
+            
+            // Initialize bundled SQLCipher provider
+            SQLitePCL.Batteries_V2.Init();
+
+            try 
+            {
+                InitializeDatabase();
+            }
+            catch (SqliteException)
+            {
+                // Likely invalid password (meaning old DB was unencrypted or different key).
+                // Backup and reset for Zero Trust compliance.
+                string backupPath = _dbPath + ".bak-" + DateTime.Now.Ticks;
+                if (File.Exists(_dbPath)) 
+                {
+                    File.Move(_dbPath, backupPath);
+                    InitializeDatabase(); // Retry with fresh DB
+                }
+            }
         }
 
         private void InitializeDatabase()
         {
-            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
 
@@ -85,7 +109,26 @@ namespace Social_Sentry.Data
                     command.CommandText = createStats;
                     command.ExecuteNonQuery();
 
-                    // 5. Classification Rules (Dynamic Categorization)
+                    // 5. Activity Log Migration (Add Metadata column)
+                    bool needMetadataCol = false;
+                    command.CommandText = "PRAGMA table_info(ActivityLog)";
+                    using (var reader = command.ExecuteReader())
+                    {
+                        bool hasMetadata = false;
+                        while(reader.Read())
+                        {
+                            if (reader.GetString(1) == "Metadata") hasMetadata = true;
+                        }
+                        if (!hasMetadata) needMetadataCol = true;
+                    }
+
+                    if (needMetadataCol)
+                    {
+                        command.CommandText = "ALTER TABLE ActivityLog ADD COLUMN Metadata TEXT";
+                        command.ExecuteNonQuery();
+                    }
+
+                    // 6. Classification Rules (Dynamic Categorization)
                     
                     // Simple migration/check: Ensure table has correct schema
                     // If it exists but might be old version, check for a known new column 'Pattern'
@@ -134,7 +177,7 @@ namespace Social_Sentry.Data
         public List<Models.Rule> GetRules()
         {
             var rules = new List<Models.Rule>();
-            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
                 string query = "SELECT * FROM Rules";
@@ -168,7 +211,7 @@ namespace Social_Sentry.Data
 
         public void AddRule(Models.Rule rule)
         {
-            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
                 string commandText = @"
@@ -192,7 +235,7 @@ namespace Social_Sentry.Data
 
         public void ClearRules()
         {
-            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
                 using (var command = new SqliteCommand("DELETE FROM Rules", connection))
@@ -203,15 +246,15 @@ namespace Social_Sentry.Data
             OnRulesChanged?.Invoke();
         }
 
-        public void LogActivity(string processName, string windowTitle, string url, double durationSeconds)
+        public void LogActivity(string processName, string windowTitle, string url, double durationSeconds, string category = "", string metadata = "")
         {
-            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
 
                 string insertCommand = @"
-                    INSERT INTO ActivityLog (Timestamp, ProcessName, WindowTitle, Url, DurationSeconds)
-                    VALUES (@timestamp, @processName, @windowTitle, @url, @duration)";
+                    INSERT INTO ActivityLog (Timestamp, ProcessName, WindowTitle, Url, DurationSeconds, Category, Metadata)
+                    VALUES (@timestamp, @processName, @windowTitle, @url, @duration, @category, @metadata)";
 
                 using (var command = new SqliteCommand(insertCommand, connection))
                 {
@@ -220,7 +263,9 @@ namespace Social_Sentry.Data
                     command.Parameters.AddWithValue("@processName", _encryptionService.Encrypt(processName));
                     command.Parameters.AddWithValue("@windowTitle", _encryptionService.Encrypt(windowTitle));
                     command.Parameters.AddWithValue("@url", _encryptionService.Encrypt(url ?? string.Empty));
-                    command.Parameters.AddWithValue("@duration", (int)durationSeconds); 
+                    command.Parameters.AddWithValue("@duration", (int)durationSeconds);
+                    command.Parameters.AddWithValue("@category", _encryptionService.Encrypt(category ?? string.Empty));
+                    command.Parameters.AddWithValue("@metadata", _encryptionService.Encrypt(metadata ?? string.Empty));
 
                     command.ExecuteNonQuery();
                 }
@@ -240,7 +285,7 @@ namespace Social_Sentry.Data
         public List<ClassificationRule> GetClassificationRules()
         {
             var rules = new List<ClassificationRule>();
-            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
                 string query = "SELECT Id, Pattern, MatchType, Category, Priority FROM ClassificationRules ORDER BY Priority DESC";
@@ -265,7 +310,7 @@ namespace Social_Sentry.Data
 
         public void AddClassificationRule(ClassificationRule rule)
         {
-            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
                 string commandText = @"
@@ -285,7 +330,7 @@ namespace Social_Sentry.Data
         public Dictionary<string, double> GetTodayAppUsage()
         {
             var usage = new Dictionary<string, double>();
-            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
                 // Aggregate duration for today
@@ -315,7 +360,7 @@ namespace Social_Sentry.Data
         public List<ActivityLogItem> GetRecentActivityLogs(int limit = 100)
         {
             var logs = new List<ActivityLogItem>();
-            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
                 string query = @"

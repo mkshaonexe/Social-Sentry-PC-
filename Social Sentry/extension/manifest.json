@@ -16,10 +16,14 @@
   "background": {
     "service_worker": "background.js"
   },
-  "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": [
+        "parsers/generic.js",
+        "parsers/youtube.js",
+        "parsers/facebook.js",
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ],

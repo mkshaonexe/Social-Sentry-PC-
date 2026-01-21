@@ -18,7 +18,10 @@ namespace Social_Sentry.Services
         private string _currentProcessName = "";
         private string _currentWindowTitle = "";
         private string _currentUrl = "";
+        private string _currentCategory = "Uncategorized"; // Track current category
         
+        private string _currentMetadata = ""; // Store current metadata JSON
+
         // Key: ProcessName
         private readonly ConcurrentDictionary<string, AppUsageInfo> _dailyUsage = new();
 
@@ -98,25 +101,90 @@ namespace Social_Sentry.Services
             _currentProcessName = finalProcessName;
             _currentWindowTitle = newEvent.WindowTitle;
             _currentUrl = newEvent.Url;
+            _currentCategory = "Uncategorized"; // Reset category on native switch
+            _currentMetadata = ""; // Reset metadata on native switch
             _lastSwitchTime = DateTime.Now;
         }
 
         public void HandleExtensionActivity(ExtensionActivityData data)
         {
-            // Convert to ActivityEvent for consistent processing/logging
-            var evt = new ActivityEvent 
+            if (data == null) return;
+
+            // Log previous session with old state
+            UpdateCurrentSession();
+
+            // Override state with rich data
+            _currentUrl = data.Url ?? _currentUrl;
+            _currentWindowTitle = data.Title ?? _currentWindowTitle;
+            
+            // Smart Process Naming (e.g., "YouTube" instead of "Chrome")
+            _currentProcessName = GetSmartProcessName(data) ?? _currentProcessName;
+
+            // Determine Category from Extension Data
+            _currentCategory = DetermineCategory(data);
+
+            // Serialize Metadata
+            try 
             {
-                ProcessName = "Chrome Extension", 
-                WindowTitle = data.Title ?? "Unknown Page",
-                Url = data.Url ?? "Unknown URL",
-                Timestamp = DateTime.Now
-            };
+                if (data.Metadata != null)
+                {
+                    _currentMetadata = System.Text.Json.JsonSerializer.Serialize(data.Metadata);
+                }
+                else
+                {
+                    _currentMetadata = "";
+                }
+            }
+            catch { _currentMetadata = ""; }
+
+            _lastSwitchTime = DateTime.Now;
 
             // Notify raw data subscribers (Dashboard)
+            var evt = new ActivityEvent 
+            {
+                ProcessName = _currentProcessName, 
+                WindowTitle = _currentWindowTitle,
+                Url = _currentUrl,
+                Timestamp = DateTime.Now
+            };
             OnRawActivityDetected?.Invoke(evt);
+        }
 
-            // TODO: Use this richer data to update _currentUrl or refine categorization logic
-            // e.g. if (data.ActivityType == "reels") ...
+        private string? GetSmartProcessName(ExtensionActivityData data)
+        {
+            // Prefer explicit platform from V2 API
+            if (!string.IsNullOrEmpty(data.Platform)) return data.Platform;
+
+            if (string.IsNullOrEmpty(data.Url)) return null;
+
+            try 
+            {
+                var uri = new Uri(data.Url);
+                string host = uri.Host.ToLower();
+
+                if (host.Contains("youtube.com")) return "YouTube";
+                if (host.Contains("facebook.com")) return "Facebook";
+                if (host.Contains("instagram.com")) return "Instagram";
+                if (host.Contains("twitter.com") || host.Contains("x.com")) return "X";
+                if (host.Contains("reddit.com")) return "Reddit";
+                if (host.Contains("netflix.com")) return "Netflix";
+                
+                return null; // Fallback to existing native name (e.g. Chrome)
+            }
+            catch { return null; }
+        }
+
+        private string DetermineCategory(ExtensionActivityData data)
+        {
+            // V2 Logic
+            if (data.ContentType == "Shorts" || data.ContentType == "Reels") return "Doom Scrolling";
+            if (data.ContentType == "Video") return "Entertainment";
+
+            // Fallback Logic
+            if (data.ActivityType == "reels" || data.ActivityType == "shorts") return "Doom Scrolling";
+            if (!string.IsNullOrEmpty(data.Url) && data.Url.Contains("youtube.com")) return "Entertainment"; // Default, could be 'Education' based on title
+            
+            return "Browsing";
         }
 
         private void UpdateCurrentSession()
@@ -145,7 +213,7 @@ namespace Social_Sentry.Services
             _hourlyUsage.AddOrUpdate(hour, duration.TotalSeconds, (key, existing) => existing + duration.TotalSeconds);
 
             // Log to DB
-            _databaseService.LogActivity(_currentProcessName, _currentWindowTitle, _currentUrl, duration.TotalSeconds);
+            _databaseService.LogActivity(_currentProcessName, _currentWindowTitle, _currentUrl, duration.TotalSeconds, _currentCategory, _currentMetadata);
 
             OnUsageUpdated?.Invoke();
         }

@@ -1,7 +1,7 @@
 // Social Sentry Background Service Worker
 // Handles API communication with Social Sentry desktop app
 
-const API_BASE = 'http://localhost:5123/api';
+const API_BASE = 'http://localhost:5123/api/v2'; // Updated to V2
 let isConnected = false;
 
 // Activity queue for batching
@@ -57,18 +57,22 @@ async function flushActivityQueue() {
 
 // Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'ACTIVITY_UPDATE') {
+    // Handle V2 Updates
+    if (message.type === 'ACTIVITY_UPDATE_V2') {
         const activity = {
             ...message.data,
-            tabId: sender.tab?.id,
-            url: sender.tab?.url,
-            title: sender.tab?.title,
-            timestamp: new Date().toISOString()
+            // Enrich with Tab info here if missing from content script (content script has limited access to tab ID sometimes)
+            session: {
+                ...message.data.session,
+                tabId: sender.tab?.id,
+                windowId: sender.tab?.windowId
+            }
         };
 
         activityQueue.push(activity);
         flushActivityQueue(); // Send immediately for real-time updates
         sendResponse({ success: true });
+        return true;
     }
 
     if (message.type === 'CHECK_CONNECTION') {
@@ -97,4 +101,4 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 // Initial connection check
 checkConnection();
 
-console.log('Social Sentry Extension loaded');
+console.log('Social Sentry Extension (V2) loaded');
