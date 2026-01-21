@@ -11,6 +11,7 @@ namespace Social_Sentry.ViewModels
     {
         private readonly Services.SettingsService _settingsService;
         private readonly Services.ThemeService _themeService;
+        private readonly Services.ExtensionService _extensionService;
         private bool _startWithWindows;
         private bool _startMinimized;
         private bool _showNotifications = true;
@@ -86,11 +87,13 @@ namespace Social_Sentry.ViewModels
         public ICommand ExportDataCommand { get; }
         public ICommand ClearDataCommand { get; }
         public ICommand UnlockDeveloperModeCommand { get; }
+        public ICommand InstallExtensionCommand { get; }
 
         public UserSettingsViewModel()
         {
             _settingsService = new Services.SettingsService();
             _themeService = new Services.ThemeService();
+            _extensionService = new Services.ExtensionService();
             
             // Load settings
             var settings = _settingsService.LoadSettings();
@@ -107,6 +110,7 @@ namespace Social_Sentry.ViewModels
             ExportDataCommand = new RelayCommand(ExportData);
             ClearDataCommand = new RelayCommand(ClearData);
             UnlockDeveloperModeCommand = new RelayCommand(UnlockDeveloperMode);
+            InstallExtensionCommand = new RelayCommand<string>(InstallExtension);
 
             // Initialize Extensions
             BrowserExtensions = new ObservableCollection<BrowserExtension>
@@ -118,6 +122,19 @@ namespace Social_Sentry.ViewModels
             };
 
             _isDeveloperModeEnabled = settings.IsDeveloperModeEnabled;
+        }
+
+        private void InstallExtension(string browserName)
+        {
+            string browser = browserName?.ToLower() switch
+            {
+                "google chrome" => "chrome",
+                "mozilla firefox" => "chrome", // Firefox uses same flow for now
+                "microsoft edge" => "edge",
+                "brave" => "brave",
+                _ => "chrome"
+            };
+            _extensionService.OpenBrowserWithInstructions(browser);
         }
 
         private void UnlockDeveloperMode()

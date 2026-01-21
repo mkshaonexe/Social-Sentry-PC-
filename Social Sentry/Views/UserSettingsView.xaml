@@ -166,8 +166,11 @@
                                         <TextBlock Text="{Binding Name}" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
                                     </StackPanel>
                                     
-                                    <TextBlock Grid.Column="2" Text="{Binding IsInstalled, Converter={StaticResource BooleanToStringConverter}, FallbackValue='Installed'}" 
-                                              VerticalAlignment="Center" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="12"/>
+                                    <Button Grid.Column="2" Content="Install" 
+                                            Command="{Binding DataContext.InstallExtensionCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding Name}"
+                                            Style="{StaticResource ActionButtonStyle}" 
+                                            Padding="12,6" FontSize="12"/>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
