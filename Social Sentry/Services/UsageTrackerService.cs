@@ -101,6 +101,24 @@ namespace Social_Sentry.Services
             _lastSwitchTime = DateTime.Now;
         }
 
+        public void HandleExtensionActivity(ExtensionActivityData data)
+        {
+            // Convert to ActivityEvent for consistent processing/logging
+            var evt = new ActivityEvent 
+            {
+                ProcessName = "Chrome Extension", 
+                WindowTitle = data.Title ?? "Unknown Page",
+                Url = data.Url ?? "Unknown URL",
+                Timestamp = DateTime.Now
+            };
+
+            // Notify raw data subscribers (Dashboard)
+            OnRawActivityDetected?.Invoke(evt);
+
+            // TODO: Use this richer data to update _currentUrl or refine categorization logic
+            // e.g. if (data.ActivityType == "reels") ...
+        }
+
         private void UpdateCurrentSession()
         {
             if (string.IsNullOrEmpty(_currentProcessName)) return;

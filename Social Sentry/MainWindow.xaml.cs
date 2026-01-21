@@ -61,6 +61,12 @@ namespace Social_Sentry
             // Start tracking by default - ALWAYS, regardless of UI state
             _usageTracker.Start();
 
+            // Connect Extension Server to Usage Tracker if available
+            if (App.Server != null)
+            {
+                App.Server.OnActivityReceived += (s, data) => _usageTracker.HandleExtensionActivity(data);
+            }
+
             Closing += MainWindow_Closing;
 
             InitializeTrayIcon();

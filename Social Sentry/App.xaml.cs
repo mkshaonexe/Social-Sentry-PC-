@@ -11,7 +11,8 @@ namespace Social_Sentry
     public partial class App : System.Windows.Application
     {
         private Services.SelfProtectionService _protectionService;
-        private Services.LocalApiServer _localApiServer;
+        private Services.SelfProtectionService _protectionService;
+        public static Services.LocalApiServer Server { get; private set; }
         public static bool IsStartupLaunch { get; private set; } = false;
         private static Services.SettingsService _settingsService;
 
@@ -127,8 +128,8 @@ namespace Social_Sentry
             try
             {
                 var activityTracker = new Services.ActivityTracker();
-                _localApiServer = new Services.LocalApiServer(activityTracker);
-                _localApiServer.Start();
+                Server = new Services.LocalApiServer(activityTracker);
+                Server.Start();
             }
             catch (System.Exception ex)
             {
@@ -138,7 +139,7 @@ namespace Social_Sentry
 
         protected override void OnExit(ExitEventArgs e)
         {
-            _localApiServer?.Dispose();
+            Server?.Dispose();
             base.OnExit(e);
         }
     }

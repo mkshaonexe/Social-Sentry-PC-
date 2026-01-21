@@ -156,5 +156,20 @@
     // Report on page unload
     window.addEventListener('beforeunload', sendActivityReport);
 
+    // Listen for popup requests
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.type === 'GET_ACTIVITY') {
+            checkIdle();
+            trackVideoTime();
+            
+            sendResponse({
+                activityType: currentActivity.isIdle ? 'idle' : detectActivityType(),
+                scrollDepth: currentActivity.scrollDepth,
+                videoWatchTime: currentActivity.videoWatchTime,
+                duration: Math.round((Date.now() - currentActivity.startTime) / 1000)
+            });
+        }
+    });
+
     console.log('Social Sentry content script loaded');
 })();

@@ -67,6 +67,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         };
 
         activityQueue.push(activity);
+        flushActivityQueue(); // Send immediately for real-time updates
         sendResponse({ success: true });
     }
 
