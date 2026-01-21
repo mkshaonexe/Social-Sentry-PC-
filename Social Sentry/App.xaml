@@ -12,6 +12,7 @@
 
             <converters:EqualityToBooleanConverter x:Key="EqualConverter"/>
             <converters:BooleanToStringConverter x:Key="BooleanToStringConverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         
             <!-- Base Styles -->
             <Style x:Key="CardStyle" TargetType="Border">
