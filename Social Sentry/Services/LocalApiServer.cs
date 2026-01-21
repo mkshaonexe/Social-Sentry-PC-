@@ -158,21 +158,21 @@ namespace Social_Sentry.Services
 
     public class ExtensionActivityData
     {
-        public string ActivityType { get; set; }
+        public string? ActivityType { get; set; }
         public int ScrollDepth { get; set; }
         public double VideoWatchTime { get; set; }
         public int Duration { get; set; }
-        public string Url { get; set; }
-        public string Title { get; set; }
-        public string Timestamp { get; set; }
+        public string? Url { get; set; }
+        public string? Title { get; set; }
+        public string? Timestamp { get; set; }
         public int? TabId { get; set; }
-        public ExtensionMetadata Metadata { get; set; }
+        public ExtensionMetadata? Metadata { get; set; }
     }
 
     public class ExtensionMetadata
     {
-        public string Hostname { get; set; }
-        public string Pathname { get; set; }
+        public string? Hostname { get; set; }
+        public string? Pathname { get; set; }
         public double ScrollVelocity { get; set; }
     }
 }

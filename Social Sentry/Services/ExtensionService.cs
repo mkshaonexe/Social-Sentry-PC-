@@ -95,7 +95,7 @@ namespace Social_Sentry.Services
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = browserExe,
-                    Arguments = extensionsUrl,
+                    Arguments = $"{extensionsUrl} --load-extension=\"{_extensionInstallPath}\"",
                     UseShellExecute = true
                 });
 

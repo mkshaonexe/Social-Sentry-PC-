@@ -200,12 +200,9 @@ namespace Social_Sentry
         {
             if (!_isExplicitExit)
             {
-                // Minimize to tray/background instead of closing
-                // IMPORTANT: Tracking continues running in background
                 e.Cancel = true;
                 Hide();
                 
-                // Optional: Show balloon tip if tray is visible
                 if (_isTrayIconVisible && _settings.ShowNotifications)
                 {
                     _notifyIcon?.ShowBalloonTip(2000, "Social Sentry", "Running in background", Forms.ToolTipIcon.Info);
@@ -213,10 +210,8 @@ namespace Social_Sentry
             }
             else
             {
-                 // Explicit exit - stop tracking and cleanup
                  _usageTracker.Stop();
             
-                 // Kill the watchdog to prevent restart
                  try 
                  {
                      var watchdogs = System.Diagnostics.Process.GetProcessesByName("SocialSentry.Watchdog");
@@ -230,6 +225,30 @@ namespace Social_Sentry
                      System.Diagnostics.Debug.WriteLine($"Error killing watchdog: {ex.Message}");
                  }
             }
+        }
+
+        public void SetTitleBarVisibility(bool visible)
+        {
+            IsCustomTitleBarVisible = visible;
+            if (AppTitleBar != null)
+            {
+                AppTitleBar.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void MaximizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }

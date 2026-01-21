@@ -156,7 +156,7 @@ namespace Social_Sentry.ViewModels
                 StartWithWindows = _startWithWindows,
                 StartMinimized = _startMinimized,
                 ShowNotifications = _showNotifications,
-                ShowNotifications = _showNotifications,
+
                 SelectedTheme = _selectedTheme,
                 IsDeveloperModeEnabled = _isDeveloperModeEnabled
             };

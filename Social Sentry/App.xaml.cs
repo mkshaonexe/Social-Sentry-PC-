@@ -49,9 +49,9 @@ namespace Social_Sentry
             mergedDicts.Add(dict);
 
             // Handle Window Styling for Mica
-            if (Application.Current.MainWindow != null)
+            if (System.Windows.Application.Current.MainWindow != null)
             {
-               UpdateWindowStyle(Application.Current.MainWindow, themeName);
+               UpdateWindowStyle(System.Windows.Application.Current.MainWindow, themeName);
             }
         }
 
