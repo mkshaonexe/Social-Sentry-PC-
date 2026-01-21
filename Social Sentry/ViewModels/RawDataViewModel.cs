@@ -13,6 +13,20 @@ namespace Social_Sentry.ViewModels
         public RawDataViewModel(UsageTrackerService usageTracker)
         {
             _usageTracker = usageTracker;
+
+            // Load historical logs
+            var history = _usageTracker.GetRecentLogs(200);
+            foreach (var item in history)
+            {
+                Logs.Add(new RawLogItem
+                {
+                    Timestamp = item.Timestamp.ToString("HH:mm:ss"),
+                    ProcessName = item.ProcessName,
+                    WindowTitle = item.WindowTitle,
+                    Url = item.Url
+                });
+            }
+
             _usageTracker.OnRawActivityDetected += OnActivityDetected;
         }
 

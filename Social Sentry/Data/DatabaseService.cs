@@ -282,5 +282,77 @@ namespace Social_Sentry.Data
                 }
             }
         }
+        public Dictionary<string, double> GetTodayAppUsage()
+        {
+            var usage = new Dictionary<string, double>();
+            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            {
+                connection.Open();
+                // Aggregate duration for today
+                string query = @"
+                    SELECT ProcessName, SUM(DurationSeconds) 
+                    FROM ActivityLog 
+                    WHERE date(Timestamp) = date('now', 'localtime')
+                    GROUP BY ProcessName";
+
+                using (var command = new SqliteCommand(query, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string process = _encryptionService.Decrypt(reader.GetString(0));
+                        double seconds = reader.GetDouble(1);
+                        if (usage.ContainsKey(process))
+                            usage[process] += seconds;
+                        else
+                            usage[process] = seconds;
+                    }
+                }
+            }
+            return usage;
+        }
+
+        public List<ActivityLogItem> GetRecentActivityLogs(int limit = 100)
+        {
+            var logs = new List<ActivityLogItem>();
+            using (var connection = new SqliteConnection($"Data Source={_dbPath}"))
+            {
+                connection.Open();
+                string query = @"
+                    SELECT Timestamp, ProcessName, WindowTitle, Url, DurationSeconds 
+                    FROM ActivityLog 
+                    ORDER BY LogId DESC 
+                    LIMIT @limit";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@limit", limit);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            logs.Add(new ActivityLogItem
+                            {
+                                Timestamp = DateTime.Parse(reader.GetString(0)),
+                                ProcessName = _encryptionService.Decrypt(reader.GetString(1)),
+                                WindowTitle = _encryptionService.Decrypt(reader.GetString(2)),
+                                Url = _encryptionService.Decrypt(reader.GetString(3)),
+                                DurationSeconds = reader.GetDouble(4)
+                            });
+                        }
+                    }
+                }
+            }
+            return logs;
+        }
+    }
+
+    public class ActivityLogItem
+    {
+        public DateTime Timestamp { get; set; }
+        public string ProcessName { get; set; } = "";
+        public string WindowTitle { get; set; } = "";
+        public string Url { get; set; } = "";
+        public double DurationSeconds { get; set; }
     }
 }

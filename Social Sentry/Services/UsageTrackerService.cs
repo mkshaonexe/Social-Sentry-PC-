@@ -16,6 +16,8 @@ namespace Social_Sentry.Services
 
         private DateTime _lastSwitchTime;
         private string _currentProcessName = "";
+        private string _currentWindowTitle = "";
+        private string _currentUrl = "";
         
         // Key: ProcessName
         private readonly ConcurrentDictionary<string, AppUsageInfo> _dailyUsage = new();
@@ -37,6 +39,23 @@ namespace Social_Sentry.Services
             _iconExtractionService = new IconExtractionService();
 
             _activityTracker.OnActivityChanged += HandleActivityChanged;
+
+            // Load today's usage from DB
+            LoadTodayUsage();
+        }
+
+        private void LoadTodayUsage()
+        {
+            var savedUsage = _databaseService.GetTodayAppUsage();
+            foreach (var kvp in savedUsage)
+            {
+                _dailyUsage[kvp.Key] = new AppUsageInfo 
+                { 
+                    ProcessName = kvp.Key, 
+                    Duration = TimeSpan.FromSeconds(kvp.Value),
+                    SessionCount = 1 // Approximate, doesn't matter much for total time
+                };
+            }
         }
 
         public void Start()
@@ -66,9 +85,6 @@ namespace Social_Sentry.Services
                 finalProcessName = $"{newEvent.ProcessName} (Media)";
             }
 
-            // Log to DB
-            _databaseService.LogActivity(finalProcessName, newEvent.WindowTitle, newEvent.Url, 0); 
-            
             // Attempt to block content if restricted
             bool blocked = _blockerService.CheckAndBlock(newEvent.ProcessName, newEvent.WindowTitle, newEvent.Url, newEvent.ProcessId);
             if (blocked) 
@@ -76,9 +92,12 @@ namespace Social_Sentry.Services
                  // Logic for blocked
             }
 
+            // Log previous session before switching
             UpdateCurrentSession();
 
             _currentProcessName = finalProcessName;
+            _currentWindowTitle = newEvent.WindowTitle;
+            _currentUrl = newEvent.Url;
             _lastSwitchTime = DateTime.Now;
         }
 
@@ -106,6 +125,9 @@ namespace Social_Sentry.Services
             // Let's just add to the current hour bucket for simplicity of "when it happened".
             int hour = now.Hour;
             _hourlyUsage.AddOrUpdate(hour, duration.TotalSeconds, (key, existing) => existing + duration.TotalSeconds);
+
+            // Log to DB
+            _databaseService.LogActivity(_currentProcessName, _currentWindowTitle, _currentUrl, duration.TotalSeconds);
 
             OnUsageUpdated?.Invoke();
         }
@@ -166,6 +188,11 @@ namespace Social_Sentry.Services
         public Dictionary<int, double> GetHourlyUsage()
         {
             return _hourlyUsage.ToDictionary(k => k.Key, v => v.Value);
+        }
+
+        public List<Social_Sentry.Data.ActivityLogItem> GetRecentLogs(int count = 200)
+        {
+            return _databaseService.GetRecentActivityLogs(count);
         }
 
         private string FormatDuration(TimeSpan ts)
