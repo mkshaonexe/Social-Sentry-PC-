@@ -19,36 +19,25 @@
                     <TextBlock Text="Appearance" FontSize="20" FontWeight="SemiBold"
                               Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
                     
-                    <!-- Dark Mode -->
+                    <!-- Theme -->
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="150"/>
                         </Grid.ColumnDefinitions>
                         
                         <StackPanel>
-                            <TextBlock Text="Dark Mode" FontSize="14"
+                            <TextBlock Text="Theme" FontSize="14"
                                       Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="Switch between light and dark themes" 
+                            <TextBlock Text="Choose your preferred appearance" 
                                       FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
                         </StackPanel>
                         
-                        <CheckBox Grid.Column="1" IsChecked="{Binding IsDarkTheme}" 
-                                 VerticalAlignment="Center">
-                             <!-- Using a checkbox for now or bind toggle style if updated -->
-                             <CheckBox.Style>
-                                <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="CheckBox">
-                                                <ToggleButton IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                                            Style="{StaticResource ModernToggleStyle}"/>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                             </CheckBox.Style>
-                        </CheckBox>
+                        <ComboBox Grid.Column="1" 
+                                  ItemsSource="{Binding AvailableThemes}" 
+                                  SelectedItem="{Binding SelectedTheme}"
+                                  VerticalAlignment="Center"
+                                  Padding="8,4"/>
                     </Grid>
                 </StackPanel>
             </Border>

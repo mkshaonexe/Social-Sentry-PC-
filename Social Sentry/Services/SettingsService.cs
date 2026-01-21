@@ -135,6 +135,7 @@ namespace Social_Sentry.Services
         public bool RunInvisiblyInBackground { get; set; } = true; // Continue running without tray
         public bool ShowNotifications { get; set; } = true;
         public bool IsDarkTheme { get; set; } = true;
+        public string SelectedTheme { get; set; } = "Dark"; // "Dark", "Light", "Mica"
         public bool IsReelsBlockerEnabled { get; set; } = false;
         public bool IsAdultBlockerEnabled { get; set; } = false;
         public bool IsDeveloperModeEnabled { get; set; } = false;

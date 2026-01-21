@@ -18,6 +18,8 @@ namespace Social_Sentry
         private bool _isExplicitExit = false;
         private bool _isTrayIconVisible = true;
 
+        public bool IsCustomTitleBarVisible { get; private set; }
+
         public MainWindow()
         {
             InitializeComponent();

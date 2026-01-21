@@ -15,12 +15,13 @@ namespace Social_Sentry.ViewModels
         private bool _startWithWindows;
         private bool _startMinimized;
         private bool _showNotifications = true;
-        private bool _isDarkTheme;
+        private string _selectedTheme;
         private bool _isDeveloperModeEnabled;
         private int _developerClicks = 0;
         private const int CLICKS_TO_UNLOCK = 7;
 
         public ObservableCollection<BrowserExtension> BrowserExtensions { get; }
+        public ObservableCollection<string> AvailableThemes { get; } = new ObservableCollection<string> { "Light", "Dark", "Mica" };
 
         public bool IsDeveloperModeEnabled
         {
@@ -34,12 +35,12 @@ namespace Social_Sentry.ViewModels
             }
         }
 
-        public bool IsDarkTheme
+        public string SelectedTheme
         {
-            get => _isDarkTheme;
+            get => _selectedTheme;
             set
             {
-                if (SetProperty(ref _isDarkTheme, value))
+                if (SetProperty(ref _selectedTheme, value))
                 {
                     _themeService.SetTheme(value);
                     SaveSettings();
@@ -101,11 +102,9 @@ namespace Social_Sentry.ViewModels
             _startMinimized = settings.StartMinimized;
             _showNotifications = settings.ShowNotifications;
 
-            // Initialize Theme (Default to dark if not saved, or maybe we should save it)
-            // Ideally SettingsService should also save theme preference. 
-            // For now, assuming default is Dark (true) and syncing.
-            _isDarkTheme = settings.IsDarkTheme; 
-            _themeService.SetTheme(_isDarkTheme);
+            // Initialize Theme (Default to dark if not saved)
+            _selectedTheme = settings.SelectedTheme; 
+            _themeService.SetTheme(_selectedTheme);
 
             ExportDataCommand = new RelayCommand(ExportData);
             ClearDataCommand = new RelayCommand(ClearData);
@@ -157,7 +156,8 @@ namespace Social_Sentry.ViewModels
                 StartWithWindows = _startWithWindows,
                 StartMinimized = _startMinimized,
                 ShowNotifications = _showNotifications,
-                IsDarkTheme = _isDarkTheme,
+                ShowNotifications = _showNotifications,
+                SelectedTheme = _selectedTheme,
                 IsDeveloperModeEnabled = _isDeveloperModeEnabled
             };
             _settingsService.SaveSettings(settings);
