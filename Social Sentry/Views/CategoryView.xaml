@@ -9,9 +9,11 @@
              Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <Style x:Key="CategoryItemStyle" TargetType="Border">
-            <Setter Property="Background" Value="#1E1E1E"/>
+            <Setter Property="Background" Value="#2D2D2D"/>
+            <Setter Property="BorderBrush" Value="#3D3D3D"/>
+            <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="12"/>
-            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="Padding" Value="20,16"/>
             <Setter Property="Margin" Value="0,0,0,12"/>
         </Style>
     </UserControl.Resources>

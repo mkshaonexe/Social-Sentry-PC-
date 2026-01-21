@@ -153,15 +153,16 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <!-- App Name -->
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,6">
                                         <TextBlock Text="{Binding Name}" Foreground="{StaticResource PrimaryTextBrush}" FontWeight="SemiBold"/>
                                     </StackPanel>
 
                                     <!-- Progress Bar -->
-                                    <!-- Back track -->
-                                    <Grid Grid.Row="1" Height="4">
+                                    <Grid Grid.Row="1" Height="4" Margin="0,0,0,6">
                                         <Border Background="#333" CornerRadius="2"/>
                                         <!-- Fill -->
                                          <Border Background="{StaticResource AccentBrush}" CornerRadius="2" HorizontalAlignment="Stretch">
@@ -170,7 +171,10 @@
                                              </Border.RenderTransform>
                                          </Border>
                                     </Grid>
-                                    <TextBlock Grid.Row="1" Text="{Binding Sessions, StringFormat='{}{0} sessions'}" Foreground="{StaticResource SecondaryTextBrush}" FontSize="10" Margin="0,6,0,0"/>
+                                    
+                                    <!-- Sessions Count -->
+                                    <TextBlock Grid.Row="2" Text="{Binding Sessions, StringFormat='{}{0} sessions'}" 
+                                               Foreground="{StaticResource SecondaryTextBrush}" FontSize="11"/>
 
                                 </Grid>
 
