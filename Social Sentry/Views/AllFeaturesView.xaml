@@ -45,6 +45,12 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
+
+                            <Border.InputBindings>
+                                <MouseBinding MouseAction="LeftClick" 
+                                              Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              CommandParameter="{Binding Route}"/>
+                            </Border.InputBindings>
                             
                             <Grid>
                                 <Grid.ColumnDefinitions>

@@ -39,6 +39,8 @@ namespace Social_Sentry.ViewModels
         public LimitViewModel LimitVM { get; }
         public UserSettingsViewModel UserSettingsVM { get; }
         public AllFeaturesViewModel AllFeaturesVM { get; }
+        public ReelsBlockerViewModel ReelsBlockerVM { get; }
+        public AdultBlockerViewModel AdultBlockerVM { get; }
         public CommunityViewModel CommunityVM { get; }
 
         public ICommand NavigateCommand { get; }
@@ -58,6 +60,11 @@ namespace Social_Sentry.ViewModels
             LimitVM = new LimitViewModel(usageTracker, databaseService);
             UserSettingsVM = new UserSettingsViewModel();
             AllFeaturesVM = new AllFeaturesViewModel();
+            AllFeaturesVM.NavigationRequest += Navigate;
+            
+            ReelsBlockerVM = new ReelsBlockerViewModel();
+            AdultBlockerVM = new AdultBlockerViewModel();
+            
             CommunityVM = new CommunityViewModel();
             
             NavigateCommand = new RelayCommand<string>(Navigate);
@@ -92,6 +99,12 @@ namespace Social_Sentry.ViewModels
                     break;
                 case "Community":
                     CurrentView = CommunityVM;
+                    break;
+                case "ReelsBlocker":
+                    CurrentView = ReelsBlockerVM;
+                    break;
+                case "AdultBlocker":
+                    CurrentView = AdultBlockerVM;
                     break;
             }
         }

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace Social_Sentry.ViewModels
 {
@@ -15,23 +16,36 @@ namespace Social_Sentry.ViewModels
                     Title = "Reels Blocker",
                     Description = "Block short-form video content to regain your focus",
                     Icon = "🚫",
-                    AccentColor = "#F44336"
+                    AccentColor = "#F44336",
+                    Route = "ReelsBlocker"
                 },
                 new FeatureItem
                 {
                     Title = "Usage Limits",
                     Description = "Set time limits for applications to maintain healthy digital habits",
                     Icon = "⏱️",
-                    AccentColor = "#FF9800"
+                    AccentColor = "#FF9800",
+                    Route = "Limit"
                 },
                 new FeatureItem
                 {
                     Title = "Adult Blocker",
                     Description = "Protect yourself from inappropriate content",
                     Icon = "🛡️",
-                    AccentColor = "#2196F3"
+                    AccentColor = "#2196F3",
+                    Route = "AdultBlocker"
                 }
             };
+            
+            NavigateCommand = new RelayCommand<string>(Navigate);
+        }
+
+        public ICommand NavigateCommand { get; }
+        public event System.Action<string>? NavigationRequest;
+
+        private void Navigate(string route)
+        {
+            NavigationRequest?.Invoke(route);
         }
     }
 
@@ -41,5 +55,6 @@ namespace Social_Sentry.ViewModels
         public string Description { get; set; } = string.Empty;
         public string Icon { get; set; } = string.Empty;
         public string AccentColor { get; set; } = string.Empty;
+        public string Route { get; set; } = string.Empty;
     }
 }
