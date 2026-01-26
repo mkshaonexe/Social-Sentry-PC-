@@ -2,6 +2,9 @@
 
 A powerful Windows native application designed for digital well-being, parental control, and comprehensive system monitoring. Social Sentry PC helps users track screen time, manage app usage, and enforce digital boundaries with advanced blocking and filtering capabilities.
 
+## 📥 Download
+Download the latest version from our **[GitHub Releases](https://github.com/mkshaonexe/Social-Sentry-PC-/releases/latest)** page.
+
 ## ✨ Features
 
 ### 🔍 Real-Time Activity Tracking
