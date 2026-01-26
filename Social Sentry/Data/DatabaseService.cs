@@ -37,11 +37,27 @@ namespace Social_Sentry.Data
             {
                 // Likely invalid password (meaning old DB was unencrypted or different key).
                 // Backup and reset for Zero Trust compliance.
+                
+                // CRITICAL FIX: Clear connection pools to release file lock
+                SqliteConnection.ClearAllPools();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
                 string backupPath = _dbPath + ".bak-" + DateTime.Now.Ticks;
                 if (File.Exists(_dbPath)) 
                 {
-                    File.Move(_dbPath, backupPath);
-                    InitializeDatabase(); // Retry with fresh DB
+                    try 
+                    {
+                        File.Move(_dbPath, backupPath);
+                        InitializeDatabase(); // Retry with fresh DB
+                    }
+                    catch (Exception ex)
+                    {
+                        // If we still can't move it, we might be stuck, but at least don't crash the whole app just yet.
+                        // Ideally rethrow or handle specifically. 
+                        // For now, let's treat it as fatal but caught by global handler if rethrown.
+                        throw new Exception($"Failed to reset database. Please delete 'sentry.db' manually. Error: {ex.Message}", ex);
+                    }
                 }
             }
         }
