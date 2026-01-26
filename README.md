@@ -62,6 +62,15 @@ A watchdog service ensures the core monitoring process cannot be easily terminat
     - **`Resources/`**: Styles, themes, and assets.
 - **`mastersqlalinhere/`**: Contains the `mastersqlalinhere.txt` backup SQL file for database recovery.
 
+## 📦 Creating the Installer (The Easy Way)
+
+To create a shareable `.msi` installer for your friends or customers:
+
+1.  Right-click `build_installer.ps1` in the project root.
+2.  Select **"Run with PowerShell"**.
+3.  Wait for the script to finish (it will look for WiX and build the app).
+4.  The installer will appear in `Installer/SocialSentry.msi`.
+
 ## 🚀 Getting Started
 
 ### Prerequisites
