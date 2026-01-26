@@ -79,12 +79,13 @@ namespace Social_Sentry
                 Hide();
                 
                 // Optional: Show balloon tip on first startup
-                if (_settings.ShowNotifications && _isTrayIconVisible)
-                {
-                    _notifyIcon?.ShowBalloonTip(3000, "Social Sentry", 
-                        "Running in background. Double-click tray icon to open.", 
-                        Forms.ToolTipIcon.Info);
-                }
+                // Notification disabled per user request
+                // if (_settings.ShowNotifications && _isTrayIconVisible)
+                // {
+                //     _notifyIcon?.ShowBalloonTip(3000, "Social Sentry", 
+                //         "Running in background. Double-click tray icon to open.", 
+                //         Forms.ToolTipIcon.Info);
+                // }
             }
         }
 
@@ -209,11 +210,14 @@ namespace Social_Sentry
                 e.Cancel = true;
                 Hide();
                 
-                if (_isTrayIconVisible && _settings.ShowNotifications)
-                {
-                    _notifyIcon?.ShowBalloonTip(2000, "Social Sentry", "Running in background", Forms.ToolTipIcon.Info);
-                }
             }
+            // else
+            // {
+            //    if (_isTrayIconVisible && _settings.ShowNotifications)
+            //    {
+            //        _notifyIcon?.ShowBalloonTip(2000, "Social Sentry", "Running in background", Forms.ToolTipIcon.Info);
+            //    }
+            // }
             else
             {
                  _usageTracker.Stop();
