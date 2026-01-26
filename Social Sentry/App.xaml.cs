@@ -97,6 +97,39 @@ namespace Social_Sentry
             }
         }
 
+        public App()
+        {
+            // Global Exception Handling
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+            System.AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            ShowErrorAndExit(e.Exception);
+            e.Handled = true;
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, System.UnhandledExceptionEventArgs e)
+        {
+            if (e.ExceptionObject is System.Exception ex)
+            {
+                ShowErrorAndExit(ex);
+            }
+        }
+
+        private void ShowErrorAndExit(System.Exception ex)
+        {
+            string errorMessage = $"A detailed error occurred:\n\n{ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+            if (ex.InnerException != null)
+            {
+                errorMessage += $"\n\nInner Exception:\n{ex.InnerException.Message}";
+            }
+
+            MessageBox.Show(errorMessage, "Social Sentry Crash Report", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown();
+        }
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -107,32 +140,33 @@ namespace Social_Sentry
                 IsStartupLaunch = true;
             }
             
-            _protectionService = new Services.SelfProtectionService();
-            // Start the watchdog
-            _protectionService.StartWatchdog();
-            _protectionService.ApplySelfProtection();
-
-            // Load Settings and Apply Theme
-            _settingsService = new Services.SettingsService();
-            var settings = _settingsService.LoadSettings();
-            
-            // Migrate legacy boolean if needed (SettingsService might have done it, but let's be safe)
-            if (string.IsNullOrEmpty(settings.SelectedTheme))
+            try 
             {
-                settings.SelectedTheme = settings.IsDarkTheme ? "Dark" : "Light";
-            }
-            
-            ApplyTheme(settings.SelectedTheme);
+                _protectionService = new Services.SelfProtectionService();
+                // Start the watchdog
+                _protectionService.StartWatchdog();
+                _protectionService.ApplySelfProtection();
 
-            // Start Local API Server for browser extension communication
-            try
-            {
+                // Load Settings and Apply Theme
+                _settingsService = new Services.SettingsService();
+                var settings = _settingsService.LoadSettings();
+                
+                // Migrate legacy boolean if needed
+                if (string.IsNullOrEmpty(settings.SelectedTheme))
+                {
+                    settings.SelectedTheme = settings.IsDarkTheme ? "Dark" : "Light";
+                }
+                
+                ApplyTheme(settings.SelectedTheme);
+
+                // Start Local API Server for browser extension communication
                 Server = new Services.LocalApiServer();
                 Server.Start();
             }
             catch (System.Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to start API server: {ex.Message}");
+                // Catch startup errors specifically to show them before UI loads
+                ShowErrorAndExit(ex);
             }
         }
 
@@ -142,5 +176,4 @@ namespace Social_Sentry
             base.OnExit(e);
         }
     }
-
 }
