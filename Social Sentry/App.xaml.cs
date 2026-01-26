@@ -126,7 +126,7 @@ namespace Social_Sentry
                 errorMessage += $"\n\nInner Exception:\n{ex.InnerException.Message}";
             }
 
-            MessageBox.Show(errorMessage, "Social Sentry Crash Report", MessageBoxButton.OK, MessageBoxImage.Error);
+            System.Windows.MessageBox.Show(errorMessage, "Social Sentry Crash Report", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
         }
 
