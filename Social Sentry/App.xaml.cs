@@ -10,11 +10,11 @@ namespace Social_Sentry
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        private Services.SelfProtectionService _protectionService;
+        private Services.SelfProtectionService? _protectionService;
 
-        public static Services.LocalApiServer Server { get; private set; }
+        public static Services.LocalApiServer? Server { get; private set; }
         public static bool IsStartupLaunch { get; private set; } = false;
-        private static Services.SettingsService _settingsService;
+        private static Services.SettingsService? _settingsService;
 
         public static void ApplyTheme(string themeName)
         {

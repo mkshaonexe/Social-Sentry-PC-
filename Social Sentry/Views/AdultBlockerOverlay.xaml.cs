@@ -26,12 +26,12 @@ namespace Social_Sentry.Views
                 settings.IsAdultBlockerEnabled = false;
                 settingsService.SaveSettings(settings); 
                 
-                MessageBox.Show("Adult Blocker has been turned off.", "Social Sentry", MessageBoxButton.OK, MessageBoxImage.Information);
+                System.Windows.MessageBox.Show("Adult Blocker has been turned off.", "Social Sentry", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to update settings: " + ex.Message);
+                System.Windows.MessageBox.Show("Failed to update settings: " + ex.Message);
             }
         }
     }

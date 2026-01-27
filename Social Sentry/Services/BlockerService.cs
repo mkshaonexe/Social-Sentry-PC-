@@ -242,7 +242,7 @@ namespace Social_Sentry.Services
         private void CloseCurrentTab()
         {
             // Simulate CTRL + W
-             NativeMethods.INPUT[] inputsDown = new NativeMethods.INPUT[2];
+            NativeMethods.INPUT[] inputsDown = new NativeMethods.INPUT[2];
             
             inputsDown[0].type = NativeMethods.INPUT_KEYBOARD;
             inputsDown[0].U.ki.wVk = NativeMethods.VK_CONTROL;
@@ -266,6 +266,73 @@ namespace Social_Sentry.Services
             inputsUp[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
 
             NativeMethods.SendInput((uint)inputsUp.Length, inputsUp, NativeMethods.INPUT.Size);
+        }
+
+        private void SimulateGoBack()
+        {
+            // Simulate Alt + Left Arrow
+            NativeMethods.INPUT[] inputsDown = new NativeMethods.INPUT[2];
+
+            inputsDown[0].type = NativeMethods.INPUT_KEYBOARD;
+            inputsDown[0].U.ki.wVk = NativeMethods.VK_MENU; // VK_MENU is Alt
+            inputsDown[0].U.ki.dwFlags = 0;
+
+            inputsDown[1].type = NativeMethods.INPUT_KEYBOARD;
+            inputsDown[1].U.ki.wVk = NativeMethods.VK_LEFT;
+            inputsDown[1].U.ki.dwFlags = 0;
+
+            NativeMethods.SendInput((uint)inputsDown.Length, inputsDown, NativeMethods.INPUT.Size);
+
+            // Release
+            NativeMethods.INPUT[] inputsUp = new NativeMethods.INPUT[2];
+
+            inputsUp[0].type = NativeMethods.INPUT_KEYBOARD;
+            inputsUp[0].U.ki.wVk = NativeMethods.VK_LEFT;
+            inputsUp[0].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            inputsUp[1].type = NativeMethods.INPUT_KEYBOARD;
+            inputsUp[1].U.ki.wVk = NativeMethods.VK_MENU;
+            inputsUp[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            NativeMethods.SendInput((uint)inputsUp.Length, inputsUp, NativeMethods.INPUT.Size);
+        }
+
+        private void SimulateTextClear()
+        {
+            // 1. Select All (Ctrl + A)
+            NativeMethods.INPUT[] selectAllDown = new NativeMethods.INPUT[2];
+            selectAllDown[0].type = NativeMethods.INPUT_KEYBOARD;
+            selectAllDown[0].U.ki.wVk = NativeMethods.VK_CONTROL;
+            selectAllDown[0].U.ki.dwFlags = 0;
+
+            selectAllDown[1].type = NativeMethods.INPUT_KEYBOARD;
+            selectAllDown[1].U.ki.wVk = NativeMethods.VK_A;
+            selectAllDown[1].U.ki.dwFlags = 0;
+
+            NativeMethods.SendInput((uint)selectAllDown.Length, selectAllDown, NativeMethods.INPUT.Size);
+
+            NativeMethods.INPUT[] selectAllUp = new NativeMethods.INPUT[2];
+            selectAllUp[0].type = NativeMethods.INPUT_KEYBOARD;
+            selectAllUp[0].U.ki.wVk = NativeMethods.VK_A;
+            selectAllUp[0].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            selectAllUp[1].type = NativeMethods.INPUT_KEYBOARD;
+            selectAllUp[1].U.ki.wVk = NativeMethods.VK_CONTROL;
+            selectAllUp[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            NativeMethods.SendInput((uint)selectAllUp.Length, selectAllUp, NativeMethods.INPUT.Size);
+
+            // 2. Press Backspace
+            NativeMethods.INPUT[] backspace = new NativeMethods.INPUT[2];
+            backspace[0].type = NativeMethods.INPUT_KEYBOARD;
+            backspace[0].U.ki.wVk = NativeMethods.VK_BACK;
+            backspace[0].U.ki.dwFlags = 0;
+
+            backspace[1].type = NativeMethods.INPUT_KEYBOARD;
+            backspace[1].U.ki.wVk = NativeMethods.VK_BACK;
+            backspace[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            NativeMethods.SendInput((uint)backspace.Length, backspace, NativeMethods.INPUT.Size);
         }
     }
 }
