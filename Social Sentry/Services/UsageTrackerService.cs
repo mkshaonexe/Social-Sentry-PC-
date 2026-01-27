@@ -73,6 +73,51 @@ namespace Social_Sentry.Services
             {
                 _hourlyUsage[kvp.Key] = kvp.Value;
             }
+
+            // Perform Integrity Check in background
+            System.Threading.Tasks.Task.Run(() => VerifyStatsIntegrity());
+        }
+
+        private void VerifyStatsIntegrity()
+        {
+            try
+            {
+                // 1. Calculate Total from Granular Logs (Source of Truth)
+                var todayActivities = _databaseService.GetTodayAppUsage();
+                double totalActivitySeconds = todayActivities.Values.Sum();
+
+                // 2. Calculate Total from Aggregated Hourly Stats
+                double totalHourlySeconds = _hourlyUsage.Values.Sum();
+
+                // 3. Compare (Tolerance: 1.0 second or 1%)
+                double diff = Math.Abs(totalActivitySeconds - totalHourlySeconds);
+                bool significant = totalActivitySeconds > 5.0; // Only check if there's meaningful data
+
+                if (significant && diff > Math.Max(1.0, totalActivitySeconds * 0.01))
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Integrity] Mismatch detected! Activity: {totalActivitySeconds}s, Hourly: {totalHourlySeconds}s. Rebuilding...");
+                    
+                    // Rebuild DB
+                    _databaseService.RebuildHourlyStats(DateTime.Today);
+
+                    // Reload memory
+                    _hourlyUsage.Clear();
+                    var reloaded = _databaseService.GetHourlyUsage(DateTime.Today);
+                    foreach (var kvp in reloaded)
+                    {
+                        _hourlyUsage[kvp.Key] = kvp.Value;
+                    }
+                     System.Diagnostics.Debug.WriteLine("[Integrity] Rebuild complete.");
+                }
+                else
+                {
+                     System.Diagnostics.Debug.WriteLine($"[Integrity] Stats verified. Diff: {diff:F2}s");
+                }
+            }
+            catch (Exception ex)
+            {
+                 System.Diagnostics.Debug.WriteLine($"[Integrity] Check failed: {ex.Message}");
+            }
         }
 
         public void Start()

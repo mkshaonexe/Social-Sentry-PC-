@@ -549,6 +549,87 @@ namespace Social_Sentry.Data
             return usage;
         }
 
+        public void RebuildHourlyStats(DateTime date)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+                string dateStr = date.ToString("yyyy-MM-dd");
+
+                // 1. Fetch Activity Log for today
+                var activities = new List<(int Hour, string Process, string Category, double Duration)>();
+                
+                string query = "SELECT Timestamp, ProcessName, Category, DurationSeconds FROM ActivityLog WHERE date(Timestamp) = @date";
+                using (var cmd = new SqliteCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@date", dateStr);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (DateTime.TryParse(reader.GetString(0), out DateTime ts))
+                            {
+                                string proc = _encryptionService.Decrypt(reader.GetString(1));
+                                string cat = _encryptionService.Decrypt(reader.GetString(2));
+                                double dur = reader.GetDouble(3);
+                                activities.Add((ts.Hour, proc, cat, dur));
+                            }
+                        }
+                    }
+                }
+
+                // 2. Aggregate In-Memory
+                var aggregated = new Dictionary<(int Hour, string Process), (string Category, double TotalSeconds)>();
+                foreach (var act in activities)
+                {
+                    var key = (act.Hour, act.Process);
+                    if (aggregated.ContainsKey(key))
+                    {
+                        var existing = aggregated[key];
+                        aggregated[key] = (existing.Category, existing.TotalSeconds + act.Duration);
+                    }
+                    else
+                    {
+                        aggregated[key] = (act.Category, act.Duration);
+                    }
+                }
+
+                // 3. Update DB in Transaction
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                         // clear old stats for the day
+                        using (var delCmd = new SqliteCommand("DELETE FROM HourlyStats WHERE Date = @date", connection, transaction))
+                        {
+                            delCmd.Parameters.AddWithValue("@date", dateStr);
+                            delCmd.ExecuteNonQuery();
+                        }
+
+                        string insert = "INSERT INTO HourlyStats (Date, Hour, ProcessName, Category, TotalSeconds) VALUES (@date, @hour, @proc, @cat, @dur)";
+                        foreach (var kvp in aggregated)
+                        {
+                             using (var insCmd = new SqliteCommand(insert, connection, transaction))
+                             {
+                                 insCmd.Parameters.AddWithValue("@date", dateStr);
+                                 insCmd.Parameters.AddWithValue("@hour", kvp.Key.Hour);
+                                 insCmd.Parameters.AddWithValue("@proc", _encryptionService.Encrypt(kvp.Key.Process));
+                                 insCmd.Parameters.AddWithValue("@cat", _encryptionService.Encrypt(kvp.Value.Category));
+                                 insCmd.Parameters.AddWithValue("@dur", kvp.Value.TotalSeconds);
+                                 insCmd.ExecuteNonQuery();
+                             }
+                        }
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw; // Re-throw to handle upstream
+                    }
+                }
+            }
+        }
+
     }
 
     public class ActivityLogItem

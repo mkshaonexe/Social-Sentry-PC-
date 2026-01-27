@@ -19,21 +19,27 @@
             <!-- 1. Header -->
             <Grid Grid.Row="0" Margin="0,0,0,24">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
                 <TextBlock Text="Dashboard" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center"/>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Border Background="{StaticResource CardBackgroundBrush}" CornerRadius="8" Padding="12,6" Margin="0,0,8,0">
-                        <TextBlock Text="Screen Time" Foreground="{StaticResource SecondaryTextBrush}"/>
-                    </Border>
-                    <Border Background="{StaticResource CardBackgroundBrush}" CornerRadius="8" Padding="12,6">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="📅 Today" Foreground="{StaticResource PrimaryTextBrush}"/>
-                        </StackPanel>
-                    </Border>
+                <!-- Date Navigation (Center) -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button Content="‹" Command="{Binding PreviousDateCommand}" Background="Transparent" BorderThickness="0" Foreground="{StaticResource PrimaryTextBrush}" FontSize="20" FontWeight="Bold" Padding="8,0" Cursor="Hand"/>
+                    <TextBlock Text="{Binding SelectedDate, StringFormat='{}{0:D}'}" Foreground="{StaticResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="16,0" FontSize="14"/>
+                    <Button Content="›" Command="{Binding NextDateCommand}" Background="Transparent" BorderThickness="0" Foreground="{StaticResource PrimaryTextBrush}" FontSize="20" FontWeight="Bold" Padding="8,0" Cursor="Hand"/>
+                </StackPanel>
+
+                <!-- Scope Selector (Right) -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <ComboBox ItemsSource="{Binding Scopes}" SelectedItem="{Binding SelectedScope}"
+                              Foreground="{StaticResource PrimaryTextBrush}"
+                              Background="{StaticResource CardBackgroundBrush}"
+                              Padding="8,4" MinWidth="100" BorderThickness="1" BorderBrush="#333">
+                    </ComboBox>
                 </StackPanel>
             </Grid>
 
@@ -46,7 +52,7 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <TextBlock Text="Screen Time: " Foreground="{StaticResource SecondaryTextBrush}" FontSize="16"/>
+                        <TextBlock Text="Total Screen Time: " Foreground="{StaticResource SecondaryTextBrush}" FontSize="16"/>
                         <TextBlock Text="{Binding TotalUsageTime}" Foreground="{StaticResource PrimaryTextBrush}" FontSize="16" FontWeight="Bold"/>
                     </StackPanel>
 
@@ -60,7 +66,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid VerticalAlignment="Bottom" Margin="4">
+                                <Grid VerticalAlignment="Bottom" Margin="4" ToolTip="{Binding TooltipText}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/> <!-- The Bar Area -->
                                         <RowDefinition Height="Auto"/> <!-- Label -->

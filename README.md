@@ -26,6 +26,11 @@ Download the latest version from our **[GitHub Releases](https://github.com/mksh
     - **Smart Logic**: Automatically detects "Doom Scrolling" (Shorts/Reels) separate from general "Entertainment".
     - **Context Awareness**: Identifies "Study" sessions based on window titles (e.g., "Math Lecture").
     - **Modern UI**: Revamped Categories view with Hero Cards and sleek animations.
+- **Enhanced Dashboard**:
+    - **Historical Views**: Analyze screen time trends by Day, Week, or Month.
+    - **Interactive Charts**: Drill down into hourly or daily usage with precision.
+    - **Data Integrity**: Self-healing statistics engine ensures accurate graphs even after crashes.
+    - **Session Logic**: Improved session coalescing (merges short breaks) and buffering (ignores accidental clicks).
 - **Categorization**: Group apps and sites into categories (e.g., Productivity, Social Media, Games).
 
 ## 🛠️ How It Works (Technical Implementation)
