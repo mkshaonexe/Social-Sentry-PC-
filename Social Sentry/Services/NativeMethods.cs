@@ -6,6 +6,14 @@ namespace Social_Sentry.Services
 {
     public static class NativeMethods
     {
+        // DWM Immersive Dark Mode
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+        public const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 = 19;
+        public const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+        public const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
+
         // Get the handle of the currently active window
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();

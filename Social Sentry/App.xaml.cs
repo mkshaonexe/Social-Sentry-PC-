@@ -60,12 +60,46 @@ namespace Social_Sentry
         {
             if (window == null) return;
 
+            // Get Window Handle
+            var helper = new System.Windows.Interop.WindowInteropHelper(window);
+            var handle = helper.Handle;
+
+            // 1. Apply Immersive Dark Mode for Title Bar / Borders
+            if (themeName == "Dark" || themeName == "Mica")
+            {
+                 int useImmersiveDarkMode = 1;
+                 // Try enabling for newer Windows 10/11 (Attribute 20)
+                 int result = Services.NativeMethods.DwmSetWindowAttribute(
+                     handle, 
+                     Services.NativeMethods.DWMWA_USE_IMMERSIVE_DARK_MODE, 
+                     ref useImmersiveDarkMode, 
+                     sizeof(int));
+                 
+                 if (result != 0)
+                 {
+                     // Fallback for older Windows 10 versions (Attribute 19)
+                     Services.NativeMethods.DwmSetWindowAttribute(
+                         handle, 
+                         Services.NativeMethods.DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1, 
+                         ref useImmersiveDarkMode, 
+                         sizeof(int));
+                 }
+            }
+            else
+            {
+                int useImmersiveDarkMode = 0;
+                Services.NativeMethods.DwmSetWindowAttribute(
+                     handle, 
+                     Services.NativeMethods.DWMWA_USE_IMMERSIVE_DARK_MODE, 
+                     ref useImmersiveDarkMode, 
+                     sizeof(int));
+            }
+
+            // 2. Handle Custom Window Styles
             if (themeName == "Mica")
             {
+                // ... Existing Mica Logic ...
                 window.WindowStyle = WindowStyle.None;
-                window.AllowsTransparency = true; // Required for true transparency, but might be tricky with WindowChrome sometimes. 
-                // Actually, for WinUI 3 feel, standard Window with WindowChrome is better than AllowsTransparency=True which has performance penalties.
-                // Let's try just WindowStyle=None + WindowChrome first.
                 window.AllowsTransparency = false; 
                 
                 var chrome = new System.Windows.Shell.WindowChrome
@@ -77,8 +111,6 @@ namespace Social_Sentry
                 };
                 System.Windows.Shell.WindowChrome.SetWindowChrome(window, chrome);
                 
-                // Show Custom Title Bar (handled in MainWindow code behind via binding or event, 
-                // but we can imply it by the theme name if we notify the window)
                 if (window is MainWindow mainWin)
                 {
                     mainWin.SetTitleBarVisibility(true);
@@ -86,6 +118,8 @@ namespace Social_Sentry
             }
             else
             {
+                // Revert to standard window for "Dark" and "Light" to get standard OS chrome 
+                // but with the DWM dark mode applied above.
                 window.WindowStyle = WindowStyle.SingleBorderWindow;
                 window.AllowsTransparency = false;
                 System.Windows.Shell.WindowChrome.SetWindowChrome(window, null);
