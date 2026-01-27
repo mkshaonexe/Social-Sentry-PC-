@@ -10,15 +10,20 @@
         Title="Social Sentry" Height="700" Width="1000"
         Background="{DynamicResource WindowBackgroundBrush}"
         Icon="Images/app.ico"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="False"
+        BorderBrush="{DynamicResource CardBackgroundBrush}"
+        BorderThickness="1">
     
 
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32"  
                       ResizeBorderThickness="4" 
-                      GlassFrameThickness="1" 
+                      GlassFrameThickness="-1" 
                       CornerRadius="0"
+                      NonClientFrameEdges="None"
                       UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 

@@ -56,45 +56,52 @@
                         <TextBlock Text="{Binding TotalUsageTime}" Foreground="{StaticResource PrimaryTextBrush}" FontSize="16" FontWeight="Bold"/>
                     </StackPanel>
 
-                    <!-- Simple Bar Chart Visualization logic -->
-                    <!-- We use an ItemsControl to lay out bars horizontally -->
-                    <ItemsControl Grid.Row="1" ItemsSource="{Binding ChartData}" VerticalAlignment="Bottom">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Rows="1"/> 
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid VerticalAlignment="Bottom" Margin="4" ToolTip="{Binding TooltipText}">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/> <!-- The Bar Area -->
-                                        <RowDefinition Height="Auto"/> <!-- Label -->
-                                    </Grid.RowDefinitions>
-                                    
-                                    <!-- Bar Background -->
-                                    <Border Grid.Row="0" Height="150" VerticalAlignment="Bottom">
-                                         <!-- The actual bar with dynamic height requires a converter or direct binding to Height if Value was absolute. 
-                                              For now, we will simulate it with a ScaleTransform or simple relative height if possible. 
-                                              Actually, a simple way without converters is to bind Height to a scaled property, but let's try a Grid with star sizing approach if we can, or just a simple fixed height for the bar container and a relative sized object inside. -->
-                                         
-                                         <!-- Since we can't easily do percentage height without a converter in pure XAML standard, 
-                                              we will use a Grid with a weighted row definition if 'Value' was a star width, 
-                                              but here we want vertical. 
-                                              
-                                              Hack for pure XAML: Use a ScaleTransform on the Y axis bound to Value (0.0 to 1.0) -->
-                                         <Border Background="{StaticResource AccentBrush}" CornerRadius="4" Width="20" VerticalAlignment="Bottom" Height="150">
-                                             <Border.RenderTransform>
-                                                 <ScaleTransform ScaleY="{Binding Value}" CenterY="150"/> 
-                                             </Border.RenderTransform>
-                                         </Border>
-                                    </Border>
-                                    
-                                    <TextBlock Grid.Row="1" Text="{Binding TimeLabel}" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Center" Margin="0,8,0,0" FontSize="12"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <!-- Area Chart Visualization -->
+                    <Grid Grid.Row="1" VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- The Graph -->
+                        <Grid Grid.Row="0" Margin="10,0,10,0">
+                            <!-- Gradient Fill Area -->
+                            <Path Data="{Binding ChartGeometry}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="Fill">
+                                <Path.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#00E676" Offset="0"/>
+                                        <GradientStop Color="#1A00E676" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Path.Fill>
+                                <Path.Stroke>
+                                    <SolidColorBrush Color="#00E676"/>
+                                </Path.Stroke>
+                                <Path.StrokeThickness>2</Path.StrokeThickness>
+                            </Path>
+                        </Grid>
+
+                        <!-- X-Axis Labels -->
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding ChartData}" Margin="0,8,0,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="1"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <!-- Only show if TimeLabel is not empty, handled by TextBlock or Converter? 
+                                         TextBlock usually renders empty string as nothing. -->
+                                    <TextBlock Text="{Binding TimeLabel}" 
+                                               Foreground="{StaticResource SecondaryTextBrush}" 
+                                               HorizontalAlignment="Center" 
+                                               FontSize="11" 
+                                               TextTrimming="CharacterEllipsis"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        
+                        <!-- Tooltip Overlay (Invisible hit-test layer could be added here for interactivity) -->
+                    </Grid>
                 </Grid>
             </Border>
 

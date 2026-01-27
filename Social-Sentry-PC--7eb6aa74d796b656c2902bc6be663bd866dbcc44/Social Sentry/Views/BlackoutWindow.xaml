@@ -1,0 +1,46 @@
+<Window x:Class="Social_Sentry.Views.BlackoutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Restricted Access" Height="450" Width="800"
+        WindowStyle="None" ResizeMode="NoResize" WindowState="Maximized"
+        Topmost="True" ShowInTaskbar="False" Focusable="True"
+        Background="#1A1A1A">
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <!-- Icon placeholder -->
+            <TextBlock Text="🚫" FontSize="72" HorizontalAlignment="Center" Foreground="#FF5555" Margin="0,0,0,20"/>
+            
+            <TextBlock Text="Access Restricted" 
+                       FontSize="32" 
+                       FontWeight="Bold" 
+                       Foreground="White" 
+                       HorizontalAlignment="Center" 
+                       Margin="0,0,0,10"/>
+            
+            <TextBlock Text="This improved self-discipline feature has blocked this content." 
+                       FontSize="16" 
+                       Foreground="#AAAAAA" 
+                       HorizontalAlignment="Center" 
+                       TextWrapping="Wrap" 
+                       MaxWidth="600" 
+                       TextAlignment="Center"/>
+            
+            <Border Background="#333333" CornerRadius="8" Margin="0,40,0,0" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Enter PIN to Unlock (Parent Mode)" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                    <PasswordBox x:Name="PinBox" Width="200" Height="30" HorizontalContentAlignment="Center"/>
+                    <Button Content="Unlock" Width="100" Height="30" Margin="0,10,0,0" Click="Unblock_Click"/>
+                </StackPanel>
+            </Border>
+
+            <Button Content="Close Overlay" 
+                    Width="120" 
+                    Height="30" 
+                    Margin="0,20,0,0" 
+                    Background="Transparent" 
+                    Foreground="#AAAAAA" 
+                    BorderBrush="#555555" 
+                    Click="Close_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,232 @@
+<UserControl x:Class="Social_Sentry.Views.UserSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Social_Sentry.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,24">
+            <!-- Header -->
+            <TextBlock Text="Settings" FontSize="28" FontWeight="Bold" 
+                      Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,24"/>
+
+            <!-- Appearance Settings (NEW) -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                   CornerRadius="12" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Appearance" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                    
+                    <!-- Theme -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="150"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel>
+                            <TextBlock Text="Theme" FontSize="14"
+                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Choose your preferred appearance" 
+                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        
+                        <ComboBox Grid.Column="1" 
+                                  ItemsSource="{Binding AvailableThemes}" 
+                                  SelectedItem="{Binding SelectedTheme}"
+                                  VerticalAlignment="Center"
+                                  Padding="8,4"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- General Settings -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                   CornerRadius="12" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="General" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                    
+                    <!-- Start with Windows -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel>
+                            <TextBlock Text="Start with Windows" FontSize="14"
+                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Launch Social Sentry automatically when you log in" 
+                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        
+                        <CheckBox Grid.Column="1" IsChecked="{Binding StartWithWindows}" 
+                                 VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- Start Minimized -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel>
+                            <TextBlock Text="Start Minimized" FontSize="14"
+                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Start the app minimized to system tray" 
+                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        
+                        <CheckBox Grid.Column="1" IsChecked="{Binding StartMinimized}" 
+                                 VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- Show Notifications -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel>
+                            <TextBlock Text="Show Notifications" FontSize="14"
+                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Get notified when you exceed usage limits" 
+                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        
+                        <CheckBox Grid.Column="1" IsChecked="{Binding ShowNotifications}" 
+                                 VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Data Management -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                   CornerRadius="12" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Data Management" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                    
+                    <!-- Export Data -->
+                   <Button Content="Export Data" Margin="0,0,0,12" HorizontalAlignment="Left"
+                           Command="{Binding ExportDataCommand}"
+                           Style="{StaticResource ActionButtonStyle}" Padding="16,8"/>
+                    
+                    <!-- Clear Data -->
+                    <Button Content="Clear All Data" HorizontalAlignment="Left"
+                           Command="{Binding ClearDataCommand}"
+                           Style="{StaticResource ActionButtonStyle}" Padding="16,8">
+                        <Button.Foreground>
+                            <SolidColorBrush Color="#FF5252"/>
+                        </Button.Foreground>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- Extensions (New Section) -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                   CornerRadius="12" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Extensions" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                    
+                    <ItemsControl ItemsSource="{Binding BrowserExtensions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- Icon Placeholder -->
+                                    <Border Width="32" Height="32" Background="#30FFFFFF" CornerRadius="8" Margin="0,0,12,0">
+                                        <TextBlock Text="{Binding Icon}" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                                  FontSize="10" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                                    </Border>
+                                    
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    </StackPanel>
+                                    
+                                    <Button Grid.Column="2" Content="Install" 
+                                            Command="{Binding DataContext.InstallExtensionCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding Name}"
+                                            Style="{StaticResource ActionButtonStyle}" 
+                                            Padding="12,6" FontSize="12"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Developer Mode Settings (Hidden by default) -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                   CornerRadius="12" Padding="24" Margin="0,0,0,20"
+                   Visibility="{Binding IsDeveloperModeEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel>
+                    <TextBlock Text="Developer Options" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                    
+                    <TextBlock Text="Advanced debugging tools." FontSize="14" 
+                              Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,0,0,16"/>
+                              
+                    <!-- Debug Features -->
+                     <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="View Build Logs" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Open the latest build log file" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Open Logs" Command="{Binding OpenDevLogsCommand}"
+                                Style="{StaticResource ActionButtonStyle}" Padding="12,6"/>
+                    </Grid>
+
+                     <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                         <StackPanel>
+                            <TextBlock Text="App Data Folder" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Open the application data directory" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Open Folder" Command="{Binding OpenDataFolderCommand}"
+                                Style="{StaticResource ActionButtonStyle}" Padding="12,6"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- About -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                   CornerRadius="12" Padding="24">
+                <StackPanel>
+                    <TextBlock Text="About" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,16"/>
+                    
+                    <TextBlock FontSize="14" Foreground="{DynamicResource SecondaryTextBrush}">
+                        <Run Text="Social Sentry" FontWeight="SemiBold"/>
+                        <LineBreak/>
+                        <!-- Version click trigger -->
+                        <Hyperlink Command="{Binding UnlockDeveloperModeCommand}" TextDecorations="None" Foreground="{DynamicResource SecondaryTextBrush}">
+                            <Run Text="Version 1.0.0"/>
+                        </Hyperlink>
+                        <LineBreak/>
+                        <LineBreak/>
+                        <Run Text="A powerful digital wellbeing tool to track and manage your screen time."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,26 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <!-- Colors -->
+    <Color x:Key="WindowBackgroundColor">#F0F2F5</Color> <!-- Light Gray/Blueish for depth -->
+    <Color x:Key="CardBackgroundColor">#FFFFFF</Color>   <!-- Pure White -->
+    <Color x:Key="PrimaryTextColor">#1C1E21</Color>      <!-- Almost Black -->
+    <Color x:Key="SecondaryTextColor">#65676B</Color>    <!-- Dark Gray -->
+    <Color x:Key="AccentColor">#00C853</Color>           <!-- Slightly Darker Green for Light Mode visibility -->
+    <Color x:Key="AccentSecondaryColor">#00E676</Color>  <!-- Regular Green -->
+
+    <!-- Brushes -->
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{StaticResource WindowBackgroundColor}"/>
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackgroundColor}"/>
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="{StaticResource PrimaryTextColor}"/>
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryTextColor}"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="AccentSecondaryBrush" Color="{StaticResource AccentSecondaryColor}"/>
+
+    <!-- Extra Brushes for specific controls/borders -->
+    <SolidColorBrush x:Key="BorderBrush" Color="#E4E6EB"/>
+    <SolidColorBrush x:Key="HoverBackgroundBrush" Color="#F2F2F2"/>
+    <SolidColorBrush x:Key="PressedBackgroundBrush" Color="#E4E6EB"/>
+    <SolidColorBrush x:Key="SeparatorBrush" Color="#CED0D4"/>
+
+</ResourceDictionary>

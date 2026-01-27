@@ -247,24 +247,37 @@ namespace Social_Sentry.ViewModels
             }
         }
 
+        private string _chartGeometry;
+        public string ChartGeometry
+        {
+            get => _chartGeometry;
+            set => SetProperty(ref _chartGeometry, value);
+        }
+
         private void UpdateHourlyChart(Dictionary<int, double> hourly)
         {
             var points = new ObservableCollection<ChartDataPoint>();
             double max = hourly.Values.DefaultIfEmpty(1).Max();
             if (max == 0) max = 1;
 
-            for (int i = 0; i < 24; i++)
+            for (int i = 0; i < 24; i++) // 0 to 23
             {
                 double val = hourly.ContainsKey(i) ? hourly[i] : 0;
+                
+                // Show label only every 4 hours (0, 4, 8, 12, 16, 20)
+                // or every 6 hours (0, 6, 12, 18)
+                string label = (i % 6 == 0) ? $"{i:00}:00" : string.Empty;
+
                 points.Add(new ChartDataPoint
                 {
-                    TimeLabel = $"{i:00}:00",
+                    TimeLabel = label,
                     Value = val / max,
                     RawValue = val,
                     TooltipText = $"{i:00}:00 - {FormatDuration(TimeSpan.FromSeconds(val))}"
                 });
             }
             ChartData = points;
+            CalculateChartGeometry(points);
         }
 
         private void UpdateDailyChart(Dictionary<DateTime, double> daily, DateTime start, DateTime end)
@@ -273,10 +286,27 @@ namespace Social_Sentry.ViewModels
             double max = daily.Values.DefaultIfEmpty(1).Max();
             if (max == 0) max = 1;
 
+            int count = 0;
+            int total = (end - start).Days + 1;
+            
             for (DateTime date = start; date <= end; date = date.AddDays(1))
             {
                 double val = daily.ContainsKey(date) ? daily[date] : 0;
-                string label = SelectedScope == DashboardScope.Week ? date.DayOfWeek.ToString().Substring(0, 3) : date.Day.ToString();
+                string label = "";
+
+                if (SelectedScope == DashboardScope.Week)
+                {
+                    // Week view: show all days
+                    label = date.DayOfWeek.ToString().Substring(0, 3);
+                }
+                else
+                {
+                    // Month view: show roughly every 5 days
+                   if (count % 5 == 0 || count == total - 1)
+                   {
+                        label = date.Day.ToString();
+                   }
+                }
                 
                 points.Add(new ChartDataPoint
                 {
@@ -285,8 +315,51 @@ namespace Social_Sentry.ViewModels
                     RawValue = val,
                     TooltipText = $"{date:MM/dd} - {FormatDuration(TimeSpan.FromSeconds(val))}"
                 });
+                count++;
             }
             ChartData = points;
+            CalculateChartGeometry(points);
+        }
+
+        private void CalculateChartGeometry(ObservableCollection<ChartDataPoint> points)
+        {
+            if (points == null || points.Count == 0)
+            {
+                ChartGeometry = "";
+                return;
+            }
+
+            // We define a conceptual canvas of 100x100
+            // X goes from 0 to 100
+            // Y goes from 100 (bottom, value 0) to 0 (top, value 1)
+            
+            double width = 100.0;
+            double height = 100.0;
+            double stepX = width / (points.Count - 1);
+            if (points.Count == 1) stepX = width; 
+
+            using (var sw = new System.IO.StringWriter())
+            {
+                // Start at bottom-left
+                sw.Write($"M 0,{height} ");
+
+                // First point (actual data)
+                // Y = height - (Value * height)
+                double firstY = height - (points[0].Value * height);
+                sw.Write($"L 0,{firstY:F1} ");
+
+                for (int i = 1; i < points.Count; i++)
+                {
+                    double x = i * stepX;
+                    double y = height - (points[i].Value * height);
+                    sw.Write($"L {x:F1},{y:F1} ");
+                }
+
+                // Close the loop to bottom-right then bottom-left to create a filled area
+                sw.Write($"L {width},{height} Z");
+                
+                ChartGeometry = sw.ToString();
+            }
         }
 
         private string FormatDuration(TimeSpan ts)
