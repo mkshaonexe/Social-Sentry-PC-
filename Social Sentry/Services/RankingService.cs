@@ -42,6 +42,42 @@ namespace Social_Sentry.Services
             return $"{(int)diff.TotalDays} days {diff.Hours} hours";
         }
 
+        public string GetDurationText()
+        {
+            var settings = _settingsService.LoadSettings();
+            var startTime = settings.RankingStartTimestamp;
+
+            if (startTime == 0) return "00:00:00";
+
+            var startDateTime = DateTimeOffset.FromUnixTimeMilliseconds(startTime);
+            var now = DateTimeOffset.Now;
+            var diff = now - startDateTime;
+
+            if (diff.TotalMilliseconds < 0) return "00:00:00";
+
+            // HH:mm:ss format
+            return $"{diff.Hours:D2}:{diff.Minutes:D2}:{diff.Seconds:D2}";
+        }
+
+        public double GetDailyProgress()
+        {
+            var settings = _settingsService.LoadSettings();
+            var startTime = settings.RankingStartTimestamp;
+
+            if (startTime == 0) return 0;
+
+            var startDateTime = DateTimeOffset.FromUnixTimeMilliseconds(startTime);
+            var now = DateTimeOffset.Now;
+            var diff = now - startDateTime;
+
+            if (diff.TotalMilliseconds < 0) return 0;
+
+            var oneDayMs = 86400000.0;
+            var msIntoCurrentDay = diff.TotalMilliseconds % oneDayMs;
+            
+            return msIntoCurrentDay / oneDayMs;
+        }
+
         public RankingBadge GetCurrentBadge()
         {
             long days = GetCurrentStrikeDays();

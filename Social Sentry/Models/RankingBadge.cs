@@ -40,12 +40,12 @@ namespace Social_Sentry.Models
             new RankingBadge(RankingBadgeType.NOOB, "Noob", 1, "badge_noob.png"),
             new RankingBadge(RankingBadgeType.NOVICE, "Novice", 3, "badge_novice.png"),
             new RankingBadge(RankingBadgeType.AVERAGE, "Average", 7, "badge_average.png"),
-            new RankingBadge(RankingBadgeType.ADVANCED, "Advanced", 10, "badge_advanced.png"),
-            new RankingBadge(RankingBadgeType.DISCIPLINED, "Disciplined", 14, "badge_disciplined.png"),
+            new RankingBadge(RankingBadgeType.ADVANCED, "Advanced", 10, "badge_advanced.jpg"),
+            new RankingBadge(RankingBadgeType.DISCIPLINED, "Disciplined", 14, "badge_disciplined.jpg"),
             new RankingBadge(RankingBadgeType.SIGMA, "Sigma", 30, "badge_sigma.png"),
             new RankingBadge(RankingBadgeType.CHAD, "Chad", 45, "badge_chad.png"),
-            new RankingBadge(RankingBadgeType.ABSOLUTE_CHAD, "Absolute Chad", 60, "badge_absolute_chad.png"),
-            new RankingBadge(RankingBadgeType.GIGA_CHAD, "Giga Chad", 120, "badge_giga_chad.png"),
+            new RankingBadge(RankingBadgeType.ABSOLUTE_CHAD, "Absolute Chad", 60, "badge_absolute_chad.jpg"),
+            new RankingBadge(RankingBadgeType.GIGA_CHAD, "Giga Chad", 120, "badge_giga_chad.jpg"),
             new RankingBadge(RankingBadgeType.ABSOLUTE_GIGA_CHAD, "Absolute Giga Chad", 365, "badge_absolute_giga_chad.png")
         };
 

@@ -71,6 +71,54 @@ namespace Social_Sentry.ViewModels
 
         public ObservableCollection<RankingBadge> AllBadges { get; }
 
+        private string _durationText = "00:00:00";
+        public string DurationText
+        {
+            get => _durationText;
+            set
+            {
+                if (_durationText != value)
+                {
+                    _durationText = value;
+                    OnPropertyChanged(nameof(DurationText));
+                }
+            }
+        }
+
+        private bool _showInfo;
+        public bool ShowInfo
+        {
+            get => _showInfo;
+            set
+            {
+                if (_showInfo != value)
+                {
+                    _showInfo = value;
+                    OnPropertyChanged(nameof(ShowInfo));
+                }
+            }
+        }
+
+        private bool _adultBlockingEnabled;
+        public bool AdultBlockingEnabled
+        {
+            get => _adultBlockingEnabled;
+            set
+            {
+                if (_adultBlockingEnabled != value)
+                {
+                    _adultBlockingEnabled = value;
+                    OnPropertyChanged(nameof(AdultBlockingEnabled));
+                }
+            }
+        }
+
+        // Command to toggle info
+        public RelayCommand ToggleInfoCommand { get; }
+        
+        // Command to turn off protection
+        public RelayCommand TurnOffProtectionCommand { get; }
+
         public RankingViewModel()
         {
              // TODO: Dependency Injection would be better, but sticking to pattern
@@ -81,12 +129,32 @@ namespace Social_Sentry.ViewModels
              
              AllBadges = new ObservableCollection<RankingBadge>(RankingBadge.AllBadges);
              
+             ToggleInfoCommand = new RelayCommand(ExecuteToggleInfo);
+             TurnOffProtectionCommand = new RelayCommand(ExecuteTurnOffProtection);
+
+             // Start timer
              _timer = new DispatcherTimer();
              _timer.Interval = TimeSpan.FromSeconds(1);
              _timer.Tick += Timer_Tick;
              _timer.Start();
 
              UpdateData();
+        }
+
+        private void ExecuteToggleInfo(object? parameter)
+        {
+            ShowInfo = !ShowInfo;
+        }
+
+        private void ExecuteTurnOffProtection(object? parameter)
+        {
+            // TODO: Show disabling dialog/logic similar to Android
+            // For now, toggle settings or show message.
+            // Requires interacting with SettingsService to save state.
+            
+            // This is a placeholder action. In a real scenario, this would trigger
+            // the penalty dialog or navigation to settings.
+            System.Windows.MessageBox.Show("Disabling protection will reset your streak. Are you sure?", "Warning", System.Windows.MessageBoxButton.YesNo);
         }
 
         private void Timer_Tick(object? sender, EventArgs e)
@@ -99,21 +167,17 @@ namespace Social_Sentry.ViewModels
              CurrentBadge = _rankingService.GetCurrentBadge();
              StrikeTimeText = _rankingService.GetFormattedStrikeTime();
              CurrentDays = _rankingService.GetCurrentStrikeDays();
+             DurationText = _rankingService.GetDurationText();
+             DailyProgress = _rankingService.GetDailyProgress();
              
-             // Calculate daily progress (time passed in current 24h cycle)
-             // This is simplified. Ideally we get the exact milliseconds from service.
-             // For now, let's just make it visually progress based on time of day? 
-             // No, it should be based on start time.
-             
-             // Quick hack for progress based on "seconds in current day of streak"
-             // _rankingService needs to expose raw diff for accurate progress
-             // I'll leave it as 0 for now or implement logic here if needed.
-             // Let's assume progress is just seconds/86400 of the current day.
+             // Sync with settings
+             var settings = new SettingsService().LoadSettings();
+             AdultBlockingEnabled = settings.IsAdultBlockerEnabled;
         }
         
         private void UpdateProgress()
         {
-            // Implementation pending exact logic
+            // Deprecated, handled in UpdateData
         }
     }
 }

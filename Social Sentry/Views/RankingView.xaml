@@ -5,8 +5,30 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Social_Sentry.Views"
              xmlns:vm="clr-namespace:Social_Sentry.ViewModels"
+             xmlns:conv="clr-namespace:Social_Sentry.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="1000">
+    
+    <UserControl.Resources>
+        <conv:ProgressToGeometryConverter x:Key="ProgressToGeometryConverter"/>
+        <conv:BadgeUnlockConverter x:Key="BadgeUnlockConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <Style x:Key="CarouselListBoxStyle" TargetType="ListBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
     <UserControl.DataContext>
         <vm:RankingViewModel/>
     </UserControl.DataContext>
@@ -14,85 +36,320 @@
     <Grid Background="#121212">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Header -->
-            <RowDefinition Height="*"/>    <!-- Badges Carousel -->
-            <RowDefinition Height="Auto"/> <!-- Timer/Progress -->
-            <RowDefinition Height="50"/>   <!-- Bottom Spacer -->
+            <RowDefinition Height="*"/>    <!-- Carousel -->
+            <RowDefinition Height="Auto"/> <!-- Timer -->
+            <RowDefinition Height="Auto"/> <!-- Info -->
+            <RowDefinition Height="30"/>   <!-- Bottom Padding -->
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <TextBlock Text="NO FAP RANK" 
-                   Foreground="White" 
-                   FontSize="18" 
-                   FontWeight="Bold" 
-                   HorizontalAlignment="Center" 
-                   Margin="0,20,0,0"/>
+        <Grid Margin="20" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Back Button placeholder logic if needed, visually present -->
+            <Button Style="{StaticResource IconButtonStyle}" Visibility="Hidden">
+                <Path Data="M20,11H7.83L13.42,5.41L12,4L4,12L12,20L13.41,18.59L7.83,13H20V11Z" Fill="White" Stretch="Uniform" Width="24" Height="24"/>
+            </Button>
+            
+            <TextBlock Grid.Column="1" Text="NO FAP RANK" 
+                       Foreground="#E6FFFFFF" 
+                       FontSize="16" 
+                       FontWeight="Bold" 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"
+                       LetterSpacing="1"/>
 
-        <!-- Badges Section (Simplified Carousel as ListBox with items panel) -->
+            <Button Grid.Column="2" Style="{StaticResource IconButtonStyle}" Command="{Binding ToggleInfoCommand}">
+                 <!-- Settings Icon or Info Icon -->
+               <Path Data="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z" Fill="White" Stretch="Uniform" Width="24" Height="24"/>
+            </Button>
+        </Grid>
+
+        <!-- Carousel -->
         <ListBox Grid.Row="1" 
-                 ItemsSource="{Binding AllBadges}" 
-                 SelectedItem="{Binding CurrentBadge}"
-                 Background="Transparent"
-                 BorderThickness="0"
-                 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                 HorizontalAlignment="Center"
+                 ItemsSource="{Binding AllBadges}"
+                 Style="{StaticResource CarouselListBoxStyle}"
                  VerticalAlignment="Center">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="20,0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <ContentPresenter/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid Width="200" Margin="10">
-                        <Grid.RowDefinitions>
+                    <Grid Width="220" Height="280">
+                        <!-- Unlock Status Logic -->
+                        <Grid.Resources>
+                             <MultiBinding x:Key="IsUnlocked" Converter="{StaticResource BadgeUnlockConverter}">
+                                <Binding Path="." />
+                                <Binding Path="DataContext.CurrentBadge" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                            </MultiBinding>
+                        </Grid.Resources>
+
+                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         
                         <!-- Badge Image -->
-                        <Image Source="{Binding ImagePath}" 
-                               Width="120" Height="120" 
-                               HorizontalAlignment="Center"/>
+                        <Grid Width="140" Height="140" HorizontalAlignment="Center" Margin="0,0,0,20">
+                            <Image Source="{Binding ImagePath}" Stretch="Uniform">
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Converter={StaticResource BadgeUnlockConverter}, ConverterParameter=val}">
+                                                <DataTrigger.Binding>
+                                                     <MultiBinding Converter="{StaticResource BadgeUnlockConverter}">
+                                                        <Binding Path="." />
+                                                        <Binding Path="DataContext.CurrentBadge" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <DataTrigger.Value>False</DataTrigger.Value>
+                                                <Setter Property="Opacity" Value="0.4"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                            
+                            <!-- Lock Icon -->
+                            <Path Data="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z" 
+                                  Fill="#80FFFFFF" 
+                                  Stretch="Uniform" 
+                                  Width="40" Height="40"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path.Style>
+                                    <Style TargetType="Path">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Value="False">
+                                                <DataTrigger.Binding>
+                                                     <MultiBinding Converter="{StaticResource BadgeUnlockConverter}">
+                                                        <Binding Path="." />
+                                                        <Binding Path="DataContext.CurrentBadge" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Path.Style>
+                            </Path>
+                        </Grid>
                         
                         <!-- Title -->
-                        <TextBlock Grid.Row="1" 
-                                   Text="{Binding Title}" 
-                                   Foreground="White" 
-                                   FontSize="16" 
-                                   FontWeight="SemiBold" 
-                                   HorizontalAlignment="Center" 
-                                   Margin="0,10,0,0"/>
+                        <TextBlock Grid.Row="1" Text="{Binding Title}" 
+                                   Foreground="White" FontWeight="Bold" FontSize="20" 
+                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                   LetterSpacing="2">
+                                   <!-- Logic to color Cyan if current -->
+                                   <TextBlock.Style>
+                                       <Style TargetType="TextBlock">
+                                           <Setter Property="Foreground" Value="White"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Value="True">
+                                                    <DataTrigger.Binding>
+                                                        <MultiBinding Converter="{StaticResource BadgeUnlockConverter}">
+                                                            <Binding Path="." />
+                                                            <Binding Path="DataContext.CurrentBadge" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                        </MultiBinding>
+                                                    </DataTrigger.Binding>
+                                                    <!-- Visual bug: this says unlocked, not current. Need IsCurrent check. -->
+                                                    <!-- Simplified: Just white for now, cyan for current text below -->
+                                                </Style.Triggers>
+                                                <DataTrigger Binding="{Binding Title}" Value="{Binding DataContext.CurrentBadge.Title, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                                     <Setter Property="Foreground" Value="#00BCD4"/>
+                                                </DataTrigger>
+                                           </Style>
+                                   </TextBlock.Style>
+                        </TextBlock>
+
+                        <!-- Subtitle / Rank Status -->
+                        <StackPanel Grid.Row="2" Margin="0,5,0,0">
+                            <!-- Helper Text: Reach X Days -->
+                            <TextBlock TextAlignment="Center" FontSize="12" Foreground="Gray">
+                                <TextBlock.Text>
+                                    <StringFormat>Reach {0} Days</StringFormat>
+                                </TextBlock.Text>
+                                <TextBlock.DataContext>
+                                    <Binding Path="DayThreshold"/>
+                                </TextBlock.DataContext>
+                                 <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/> <!-- Default hidden -->
+                                         <Style.Triggers>
+                                            <DataTrigger Value="False">
+                                                <DataTrigger.Binding>
+                                                     <MultiBinding Converter="{StaticResource BadgeUnlockConverter}">
+                                                        <Binding Path="." />
+                                                        <Binding Path="DataContext.CurrentBadge" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <!-- Helper Text: CURRENT RANK -->
+                             <TextBlock Text="CURRENT RANK" 
+                                       Foreground="#00BCD4" FontSize="12" FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" LetterSpacing="1">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                             <DataTrigger Binding="{Binding Title}" Value="{Binding DataContext.CurrentBadge.Title, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                                 <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                             </TextBlock>
+                        </StackPanel>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <!-- Timer & Progress Section -->
-        <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,30">
-            <!-- Circular Progress (represented as Border for now, fully custom arc requires Path) -->
-            <Grid Width="150" Height="150">
-                <Ellipse Stroke="#333" StrokeThickness="5"/>
-                <!-- We would need a custom control or Path for actual partial arc progress -->
-                <Ellipse Stroke="#00BCD4" StrokeThickness="5" StrokeDashArray="100,100" /> <!-- Fake progress -->
-                
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="{Binding CurrentDays}" 
-                               Foreground="White" 
-                               FontSize="32" 
-                               FontWeight="Bold" 
-                               HorizontalAlignment="Center"/>
-                    <TextBlock Text="Days" 
-                               Foreground="Gray" 
-                               FontSize="12" 
-                               HorizontalAlignment="Center"/>
-                    <TextBlock Text="{Binding StrikeTimeText}" 
-                               Foreground="White" 
-                               FontSize="14" 
-                               Margin="0,5,0,0"
-                               HorizontalAlignment="Center"/>
+        <!-- Timer/Progress Section -->
+        <Grid Grid.Row="2" Margin="0,20" Width="140" Height="140">
+             <!-- Background Circle -->
+            <Ellipse Stroke="#2C2C2E" StrokeThickness="3" Width="120" Height="120"/>
+            
+            <!-- Progress Arc -->
+            <Path Stroke="#00BCD4" StrokeThickness="6" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                <Path.Data>
+                    <Binding Path="DailyProgress" Converter="{StaticResource ProgressToGeometryConverter}">
+                        <Binding.ConverterParameter>120</Binding.ConverterParameter>
+                    </Binding>
+                </Path.Data>
+                 <!-- Glow Effect -->
+                <Path.Effect>
+                    <DropShadowEffect Color="#00BCD4" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+                </Path.Effect>
+            </Path>
+            
+            <!-- Center Text -->
+             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding CurrentDays}" 
+                           Foreground="White" FontSize="32" FontWeight="Bold" 
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Days" 
+                           Foreground="Gray" FontSize="10" 
+                           HorizontalAlignment="Center" Margin="0,-2,0,2"/>
+                <TextBlock Text="{Binding DurationText}" 
+                           Foreground="White" FontSize="12" FontWeight="Medium"
+                           HorizontalAlignment="Center" LetterSpacing="1"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Info & Actions Section -->
+        <StackPanel Grid.Row="3" HorizontalAlignment="Center" Width="600" Margin="0,10">
+            
+            <!-- Turn Off Protection Button -->
+            <Button Command="{Binding TurnOffProtectionCommand}"
+                    Margin="0,0,0,20"
+                    HorizontalAlignment="Center"
+                    Background="Transparent"
+                    BorderBrush="#80E57373"
+                    BorderThickness="1">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" 
+                                            BorderBrush="{TemplateBinding BorderBrush}" 
+                                            BorderThickness="{TemplateBinding BorderThickness}" 
+                                            CornerRadius="12"
+                                            Padding="16,8">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                             <Path Data="M12,2L1,21H23M12,6L19.53,19H4.47M11,10V14H13V10M11,16V18H13V16" 
+                                                   Fill="#E57373" 
+                                                   Stretch="Uniform" 
+                                                   Width="16" Height="16"
+                                                   Margin="0,0,8,0"/>
+                                            <TextBlock Text="Turn Off Protection" 
+                                                       Foreground="#E57373" 
+                                                       FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <!-- Visibility Logic: Visible only if AdultBlockingEnabled is TRUE AND CurrentBadge is NOT Clown -->
+                        <!-- Note: DataTrigger binding to Enum string representation might be tricky without converter or precise string match -->
+                        <!-- Assuming ToString() of enum works defaults to name -->
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding AdultBlockingEnabled}" Value="True"/>
+                                    <!-- Add condition to check if NOT Clown. Since we default to Collapsed, we need a way to say 'Show if NOT clown' -->
+                                    <!-- Easier to set Visible default, then hide if Clown or Disabled. -->
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Visible"/> 
+                            </MultiDataTrigger>
+                            <DataTrigger Binding="{Binding CurrentBadge.Title}" Value="Clown">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                             <DataTrigger Binding="{Binding AdultBlockingEnabled}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Content="Why am I seeing this rank?" 
+                    Command="{Binding ToggleInfoCommand}"
+                    Background="Transparent" BorderThickness="0"
+                    Foreground="Gray" FontSize="12">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock Text="{TemplateBinding Content}" 
+                                   Foreground="{TemplateBinding Foreground}" 
+                                   TextDecorations="Underline" 
+                                   Cursor="Hand"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            
+            <!-- Expanded Info -->
+            <Border Background="#991E1E1E" BorderBrush="#4D00BCD4" BorderThickness="1" CornerRadius="12"
+                    Margin="0,10" Padding="16"
+                    Visibility="{Binding ShowInfo, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel>
+                     <TextBlock Text="Why am I seeing this rank?" Foreground="#00BCD4" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                     <TextBlock Foreground="#E6FFFFFF" FontSize="13" TextWrapping="Wrap" LineHeight="20">
+                        <Run Text="If you have turned on Adult Blocking or Prime Mode, this profile icon and ranking system appear by design."/>
+                        <LineBreak/><LineBreak/>
+                        <Run Text="This rank represents a social commitment to yourself — a promise that you are actively choosing to avoid harmful habits and adult content. While this mode is active, access to adult content is restricted to help protect your focus, discipline, and mental clarity."/>
+                        <LineBreak/><LineBreak/>
+                        <Run Text="As you stay consistent, your rank will improve day by day. Many users begin to notice positive changes within 1–3 days, including improved focus, stronger self-control, and better mood."/>
+                        <LineBreak/><LineBreak/>
+                        <Run Text="Control your habits today — and build a stronger future, one day at a time."/>
+                     </TextBlock>
                 </StackPanel>
-            </Grid>
+            </Border>
         </StackPanel>
+        
     </Grid>
 </UserControl>
