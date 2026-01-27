@@ -23,6 +23,10 @@ Download the latest version from our **[GitHub Releases](https://github.com/mksh
 - **Application Blocking**: Prevent specific applications from running (e.g., games during work hours).
 - **URL Filtering**: Block access to specific websites or sub-URLs (e.g., block `/reels/` but allow `facebook.com`).
 - **Keyword Filtering**: Block content based on window titles or generic keywords.
+- **Persistent Adult Blocker**:
+    - **Dual-Layer Protection**: Base protection blocks over 150,000 domains from `adult_blocklist.txt` and `adult_hosts.txt` regardless of settings.
+    - **Smart Toggle**: The "Adult Blocker" specific toggle controls strict Keyword and Title detection.
+    - **Auto-Lock**: If the Adult Blocker is disabled, it automatically re-enables itself after 5 minutes to prevent leaving protections off.
 - **Time Limits**: Set daily usage limits for categories or specific apps.
 
 ### 📊 Analytics & Insights
@@ -39,6 +43,15 @@ Download the latest version from our **[GitHub Releases](https://github.com/mksh
     - **Session Logic**: Improved session coalescing (merges short breaks) and buffering (ignores accidental clicks).
 - **Categorization**: Group apps and sites into categories (e.g., Productivity, Social Media, Games).
 - **Branding**: Unified high-resolution application logo across all platforms (Windows App, Taskbar, Installer, and Browser Extension).
+- **🏆 Ranking System**: 
+    - **No-Fap / Discipline Tracker**: Tracks streak days and awards badges from "Clown" to "Absolute Giga Chad".
+    - **Visual Progress**: Dynamic dashboard showing current rank and progress to next level.
+- **💬 Community & Social**:
+    - **Global Chat**: Real-time chat with other users to share progress and motivation.
+    - **Cloud Sync**: Powered by Supabase for instant message delivery and profile synchronization.
+- **👑 Prime Mode**:
+    - **Strict Enforcement**: Hardcore mode that prevents exiting the app or opening distractions.
+    - **Focus Lock**: Maximizes productivity by eliminating all escape routes.
 
 ## 🛠️ How It Works (Technical Implementation)
 

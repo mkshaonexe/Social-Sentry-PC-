@@ -31,9 +31,42 @@ namespace Social_Sentry.ViewModels
             ToggleCommand = new RelayCommand(Toggle);
         }
 
+        private System.Windows.Threading.DispatcherTimer? _reEnableTimer;
+
         private void Toggle()
         {
             IsEnabled = !IsEnabled;
+
+            if (!IsEnabled)
+            {
+                // User turned it OFF. Start timer to re-enable automatically.
+                if (_reEnableTimer == null)
+                {
+                    _reEnableTimer = new System.Windows.Threading.DispatcherTimer();
+                    _reEnableTimer.Interval = TimeSpan.FromMinutes(5); // 5 minutes delay
+                    _reEnableTimer.Tick += (s, e) => 
+                    {
+                        // Time's up! Re-enable.
+                        IsEnabled = true;
+                        StopTimer(); 
+                    };
+                }
+                _reEnableTimer.Start();
+            }
+            else
+            {
+                // User turned it ON. Stop timer if running.
+                StopTimer();
+            }
+        }
+
+        private void StopTimer()
+        {
+            if (_reEnableTimer != null)
+            {
+                _reEnableTimer.Stop();
+                _reEnableTimer = null;
+            }
         }
 
         private void SaveSettings()

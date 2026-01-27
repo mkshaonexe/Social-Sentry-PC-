@@ -143,6 +143,12 @@
                             Style="{StaticResource NavigationButtonStyle}"
                             Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Categories'}"/>
                             
+                    <Button Content="Ranking" 
+                            Command="{Binding NavigateCommand}" 
+                            CommandParameter="Ranking" 
+                            Style="{StaticResource NavigationButtonStyle}"
+                            Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Ranking'}"/>
+                            
                     <Button Content="Usage Limits" 
                             Command="{Binding NavigateCommand}" 
                             CommandParameter="Limit" 
@@ -222,10 +228,13 @@
                          <DataTemplate DataType="{x:Type vm:AdultBlockerViewModel}">
                              <views:AdultBlockerView/>
                          </DataTemplate>
-                         <DataTemplate DataType="{x:Type vm:PrimeModeViewModel}">
-                             <views:PrimeModeView/>
-                         </DataTemplate>
-                     </ContentControl.Resources>
+                          <DataTemplate DataType="{x:Type vm:PrimeModeViewModel}">
+                              <views:PrimeModeView/>
+                          </DataTemplate>
+                          <DataTemplate DataType="{x:Type vm:RankingViewModel}">
+                              <views:RankingView/>
+                          </DataTemplate>
+                      </ContentControl.Resources>
                  </ContentControl>
             </Border>
         </Grid>

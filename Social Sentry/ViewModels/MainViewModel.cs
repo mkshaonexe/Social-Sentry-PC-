@@ -43,6 +43,7 @@ namespace Social_Sentry.ViewModels
         public AdultBlockerViewModel AdultBlockerVM { get; }
         public CommunityViewModel CommunityVM { get; }
         public PrimeModeViewModel PrimeModeVM { get; }
+        public RankingViewModel RankingVM { get; }
 
         private bool _isDeveloperModeEnabled;
         public bool IsDeveloperModeEnabled
@@ -75,6 +76,7 @@ namespace Social_Sentry.ViewModels
             
             CommunityVM = new CommunityViewModel();
             PrimeModeVM = new PrimeModeViewModel();
+            RankingVM = new RankingViewModel();
             
             NavigateCommand = new RelayCommand<string>(Navigate);
             ToggleTrackingCommand = new RelayCommand(ToggleTracking);
@@ -127,6 +129,9 @@ namespace Social_Sentry.ViewModels
                     break;
                 case "Prime":
                     CurrentView = PrimeModeVM;
+                    break;
+                case "Ranking":
+                    CurrentView = RankingVM;
                     break;
             }
         }

@@ -143,5 +143,6 @@ namespace Social_Sentry.Services
         public bool IsReelsBlockerEnabled { get; set; } = false;
         public bool IsAdultBlockerEnabled { get; set; } = true;
         public bool IsDeveloperModeEnabled { get; set; } = false;
+        public long RankingStartTimestamp { get; set; } = 0;
     }
 }

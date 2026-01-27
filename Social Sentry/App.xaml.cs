@@ -164,7 +164,7 @@ namespace Social_Sentry
             Shutdown();
         }
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             
@@ -196,6 +196,13 @@ namespace Social_Sentry
                 // Start Local API Server for browser extension communication
                 Server = new Services.LocalApiServer();
                 Server.Start();
+
+                // Initialize Supabase
+                // Keys from .env
+                string supabaseUrl = "https://eckumaylnjynriffyzos.supabase.co";
+                string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVja3VtYXlsbmp5bnJpZmZ5em9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMTc5MzAsImV4cCI6MjA4MjU5MzkzMH0.BMnlodyQLrYz6BBmRn9T9nmz6VRuZqHuxED2CQBUQLg";
+                
+                await Services.SupabaseService.Instance.InitializeAsync(supabaseUrl, supabaseKey);
             }
             catch (System.Exception ex)
             {

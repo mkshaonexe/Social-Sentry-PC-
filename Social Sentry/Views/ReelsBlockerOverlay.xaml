@@ -40,40 +40,72 @@
                 <DropShadowEffect BlurRadius="30" Color="Black" Opacity="0.5"/>
             </Border.Effect>
             
-            <StackPanel Width="400">
-                <!-- Icon -->
-                <Border Width="80" Height="80" CornerRadius="40" Background="#33F44336" HorizontalAlignment="Center" Margin="0,0,0,24">
-                     <TextBlock Text="🚫" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#F44336"/>
-                </Border>
-                
-                <TextBlock Text="Reels Blocked" 
-                           FontSize="28" 
-                           FontWeight="Bold" 
-                           Foreground="White" 
-                           HorizontalAlignment="Center" 
-                           Margin="0,0,0,12"/>
-                
-                <TextBlock Text="Social Sentry has blocked this short-form content to help you stay focused." 
-                           FontSize="16" 
-                           Foreground="#AAAAAA" 
-                           TextWrapping="Wrap" 
-                           TextAlignment="Center" 
-                           Margin="0,0,0,32"/>
-                
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="Go Back" 
-                            Style="{StaticResource ActionBytes}" 
-                            Click="GoBack_Click"
-                            Margin="0,0,16,0"
-                            Width="120"/>
-                            
-                    <Button Content="Turn Off Blocker" 
-                            Style="{StaticResource ActionBytes}" 
-                            Click="TurnOff_Click"
-                            Background="#33F44336"
-                            Width="140"/>
+            <Grid>
+                <!-- Main Content Panel -->
+                <StackPanel x:Name="MainPanel" Width="400">
+                    <!-- Icon -->
+                    <Border Width="80" Height="80" CornerRadius="40" Background="#33F44336" HorizontalAlignment="Center" Margin="0,0,0,24">
+                        <TextBlock Text="🚫" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#F44336"/>
+                    </Border>
+                    
+                    <TextBlock Text="Reels Blocked" 
+                            FontSize="28" 
+                            FontWeight="Bold" 
+                            Foreground="White" 
+                            HorizontalAlignment="Center" 
+                            Margin="0,0,0,12"/>
+                    
+                    <TextBlock Text="Social Sentry has blocked this short-form content to help you stay focused." 
+                            FontSize="16" 
+                            Foreground="#AAAAAA" 
+                            TextWrapping="Wrap" 
+                            TextAlignment="Center" 
+                            Margin="0,0,0,32"/>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Go Back" 
+                                Style="{StaticResource ActionBytes}" 
+                                Click="GoBack_Click"
+                                Margin="0,0,16,0"
+                                Width="120"/>
+                                
+                        <Button Content="Turn Off Blocker" 
+                                Style="{StaticResource ActionBytes}" 
+                                Click="ShowTimeSelection_Click"
+                                Background="#33F44336"
+                                Width="140"/>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
+
+                <!-- Time Selection Panel (Initially Hidden) -->
+                <StackPanel x:Name="TimeSelectionPanel" Width="400" Visibility="Collapsed">
+                    <TextBlock Text="Pause Blocker" 
+                            FontSize="24" 
+                            FontWeight="Bold" 
+                            Foreground="White" 
+                            HorizontalAlignment="Center" 
+                            Margin="0,0,0,24"/>
+
+                    <TextBlock Text="Select how long to disable the blocker:" 
+                            FontSize="16" 
+                            Foreground="#AAAAAA" 
+                            HorizontalAlignment="Center" 
+                            Margin="0,0,0,20"/>
+
+                    <UniformGrid Columns="2" Rows="2" Margin="0,0,0,20"> <!-- Removed Gap, using Margins on buttons -->
+                        <Button Content="1 Minute" Click="TimeOption_Click" Tag="1" Style="{StaticResource ActionBytes}" Margin="5"/>
+                        <Button Content="2 Minutes" Click="TimeOption_Click" Tag="2" Style="{StaticResource ActionBytes}" Margin="5"/>
+                        <Button Content="5 Minutes" Click="TimeOption_Click" Tag="5" Style="{StaticResource ActionBytes}" Margin="5"/>
+                        <Button Content="10 Minutes" Click="TimeOption_Click" Tag="10" Style="{StaticResource ActionBytes}" Margin="5"/>
+                    </UniformGrid>
+
+                    <Button Content="Cancel" 
+                                Style="{StaticResource ActionBytes}" 
+                                Click="CancelSelection_Click"
+                                HorizontalAlignment="Center"
+                                Width="120"/>
+                </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </Window>

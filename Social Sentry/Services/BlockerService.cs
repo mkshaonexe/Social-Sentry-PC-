@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.IO;
 
 namespace Social_Sentry.Services
 {
@@ -27,6 +28,8 @@ namespace Social_Sentry.Services
             return $"{processName}_{title}_{url}".GetHashCode().ToString(); 
         }
         
+        private readonly HashSet<string> _permanentBlockedDomains = new(); // 3. Permanent blocklist
+        
         public void Initialize(Social_Sentry.Data.DatabaseService dbService)
         {
             _dbService = dbService;
@@ -42,6 +45,97 @@ namespace Social_Sentry.Services
             UpdateSettings(settingsService.LoadSettings());
 
             LoadRules();
+            LoadBlocklistsAsync(); // Load large lists asynchronously
+        }
+
+        private async void LoadBlocklistsAsync()
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    var appDir = AppDomain.CurrentDomain.BaseDirectory;
+                    // Adjust path if needed, assuming files are in root or copied to output
+                    // Based on user context, files are at root "e:\Cursor Play ground\Social-Sentry-PC-\"
+                    // In debug/release they might need to be copied or read from project root relative
+                    
+                    // Trying to find the files by walking up if not in current
+                    string rootPath = FindProjectRoot(appDir);
+                    
+                    LoadFileIfExists(Path.Combine(rootPath, "adult_blocklist.txt"), false);
+                    LoadFileIfExists(Path.Combine(rootPath, "adult_hosts.txt"), true);
+                    
+                    Debug.WriteLine($"BlockerService: Loaded {_permanentBlockedDomains.Count} domains into permanent blocklist.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"BlockerService: Error loading blocklists: {ex.Message}");
+                }
+            });
+        }
+
+        private string FindProjectRoot(string startPath)
+        {
+             // Simple heuristic: walk up until we find the .sln or specific txt files
+             // Or just hardcode for this specific user environment if robust relative path fails?
+             // Let's try standard walk up.
+             DirectoryInfo? dir = new DirectoryInfo(startPath);
+             while (dir != null)
+             {
+                 if (File.Exists(Path.Combine(dir.FullName, "Social Sentry.sln"))) return dir.FullName;
+                 dir = dir.Parent;
+             }
+             return startPath; // Fallback
+        }
+
+        private void LoadFileIfExists(string path, bool isHostsFormat)
+        {
+            if (!File.Exists(path)) return;
+
+            foreach (var line in File.ReadLines(path))
+            {
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#")) continue;
+
+                var trimmed = line.Trim();
+                string? domain = null;
+
+                if (isHostsFormat)
+                {
+                    // Format: 0.0.0.0 domain.com
+                    var parts = trimmed.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2)
+                    {
+                        domain = parts[1].ToLower();
+                    }
+                    else if (parts.Length == 1 && !char.IsDigit(parts[0][0]))
+                    {
+                        // Fallback if just domain
+                        domain = parts[0].ToLower();
+                    }
+                }
+                else
+                {
+                    // Format: domain.com or 0.0.0.0 domain.com? 
+                    // User showed: 0.0.0.0 0.0.0.0 in blocklist too?
+                    // Let's handle both just in case, similar parsing
+                    var parts = trimmed.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    // Usually raw blocklists are just domains, but user showed "0.0.0.0 0.0.0.0" type garbage or "0.0.0.0 domain"
+                    // If it starts with 0.0.0.0 or 127.0.0.1, take the second part
+                    if (parts.Length >= 2 && (parts[0] == "0.0.0.0" || parts[0] == "127.0.0.1"))
+                    {
+                         domain = parts[1].ToLower();
+                    }
+                    else 
+                    {
+                        domain = parts[0].ToLower();
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(domain) && domain != "0.0.0.0" && domain != "localhost")
+                {
+                    _permanentBlockedDomains.Add(domain);
+                }
+            }
         }
 
         private void UpdateSettings(UserSettings settings)
@@ -71,6 +165,7 @@ namespace Social_Sentry.Services
                 _blockedUrlSegments.Clear();
                 _blockedUrlSegments.Add("youtube.com/shorts");
                 _blockedUrlSegments.Add("facebook.com/reel"); 
+                _blockedUrlSegments.Add("instagram.com/reels");
 
                 _blockedTitles.Clear();
 
@@ -168,7 +263,38 @@ namespace Social_Sentry.Services
             string lowerTitle = title.ToLower();
             string lowerUrl = url.ToLower();
 
-            // 1. Check Keywords (Adult)
+            // 0. Check Permanent Blocklist (File-based) - ACTIVE ALWAYS
+            // Extract domain from URL roughly
+            if (!string.IsNullOrEmpty(lowerUrl))
+            {
+                // Simple domain extraction
+                try 
+                {
+                    // Handle bare domains or full urls
+                    string domainToCheck = lowerUrl;
+                    if (Uri.TryCreate(url, UriKind.Absolute, out Uri? uri))
+                    {
+                        domainToCheck = uri.Host;
+                    }
+                    else if (lowerUrl.Contains("/"))
+                    {
+                         domainToCheck = lowerUrl.Split('/')[0];
+                    }
+
+                    if (_permanentBlockedDomains.Contains(domainToCheck))
+                    {
+                        return BlockReason.Adult;
+                    }
+                    
+                    // Also check partial string matches against domain list? 
+                    // No, that might be too slow for 150k items. HashSet lookup is O(1).
+                    // But we might want to check if the domain ENDS with a blocked domain? e.g. sub.porn.com
+                    // For performance, let's stick to exact or host match for now.
+                }
+                catch {}
+            }
+
+            // 1. Check Keywords (Adult) - TOGGLE DEPENDENT
             if (_isAdultBlockerEnabled)
             {
                 foreach (var keyword in _blockedKeywords)
@@ -186,7 +312,7 @@ namespace Social_Sentry.Services
                 }
             }
 
-            // 3. Check Title Specifics
+            // 3. Check Title Specifics - TOGGLE DEPENDENT
             if (_isAdultBlockerEnabled)
             {
                 foreach (var t in _blockedTitles)

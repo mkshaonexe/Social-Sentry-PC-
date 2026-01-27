@@ -4,156 +4,118 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Social_Sentry.Views"
+             xmlns:vm="clr-namespace:Social_Sentry.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
-    <UserControl.Resources>
-        <Style x:Key="CommunitySectionButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-            <Setter Property="BorderBrush" Value="#33FFFFFF"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="0,0,0,16"/>
-            <Setter Property="Padding" Value="24"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="12"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
-                    <Setter Property="Background" Value="#1AFFFFFF"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Resources>
-    
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="32,24">
-            <!-- Header -->
-            <TextBlock Text="Community" FontSize="28" FontWeight="Bold" 
-                       Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,8"/>
-            <TextBlock Text="Connect with others on their digital wellbeing journey" 
-                       FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,32"/>
+    <UserControl.DataContext>
+        <vm:CommunityViewModel/>
+    </UserControl.DataContext>
 
-            <!-- Main Community Sections -->
-            <StackPanel>
-                <!-- Global Chat -->
-                <Button Command="{Binding OpenGlobalChatCommand}" Style="{StaticResource CommunitySectionButtonStyle}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <!-- Icon -->
-                        <Border Grid.Column="0" Width="56" Height="56" CornerRadius="12" Margin="0,0,24,0">
-                            <Border.Background>
-                                <SolidColorBrush Color="#00E676" Opacity="0.15"/>
-                            </Border.Background>
-                            <TextBlock Text="💬" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
+    <Grid Background="#121212">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Header -->
+            <RowDefinition Height="*"/>    <!-- Messages -->
+            <RowDefinition Height="Auto"/> <!-- Input -->
+        </Grid.RowDefinitions>
 
-                        <!-- Text -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Global Chat" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,4"/>
-                            <TextBlock Text="Join the real-time conversation with the global community" 
-                                       FontSize="14" Foreground="{StaticResource SecondaryTextBrush}"/>
-                        </StackPanel>
-
-                        <!-- Arrow -->
-                        <TextBlock Grid.Column="2" Text="➜" FontSize="24" Foreground="{StaticResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="16,0,0,0"/>
-                    </Grid>
-                </Button>
-
-                <!-- Global Challenge -->
-                <Button Command="{Binding OpenGlobalChallengeCommand}" Style="{StaticResource CommunitySectionButtonStyle}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Icon -->
-                        <Border Grid.Column="0" Width="56" Height="56" CornerRadius="12" Margin="0,0,24,0">
-                            <Border.Background>
-                                <SolidColorBrush Color="#FF9800" Opacity="0.15"/>
-                            </Border.Background>
-                            <TextBlock Text="🌍" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-
-                        <!-- Text -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Global Challenge" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,4"/>
-                            <TextBlock Text="Participate in collective challenges to reduce screen time" 
-                                       FontSize="14" Foreground="{StaticResource SecondaryTextBrush}"/>
-                        </StackPanel>
-
-                        <!-- Arrow -->
-                        <TextBlock Grid.Column="2" Text="➜" FontSize="24" Foreground="{StaticResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="16,0,0,0"/>
-                    </Grid>
-                </Button>
-
-                <!-- Your Story -->
-                <Button Command="{Binding OpenYourStoryCommand}" Style="{StaticResource CommunitySectionButtonStyle}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Icon -->
-                        <Border Grid.Column="0" Width="56" Height="56" CornerRadius="12" Margin="0,0,24,0">
-                            <Border.Background>
-                                <SolidColorBrush Color="#00BCD4" Opacity="0.15"/>
-                            </Border.Background>
-                            <TextBlock Text="📖" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-
-                        <!-- Text -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="Your Story" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,4"/>
-                            <TextBlock Text="Share your journey and inspire others" 
-                                       FontSize="14" Foreground="{StaticResource SecondaryTextBrush}"/>
-                        </StackPanel>
-
-                        <!-- Arrow -->
-                        <TextBlock Grid.Column="2" Text="➜" FontSize="24" Foreground="{StaticResource SecondaryTextBrush}" VerticalAlignment="Center" Margin="16,0,0,0"/>
-                    </Grid>
-                </Button>
+        <!-- Header -->
+        <Border Background="#1E1E1E" Padding="15">
+            <StackPanel Orientation="Horizontal">
+                 <TextBlock Text="Global Chat" 
+                           Foreground="White" 
+                           FontSize="18" 
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+                 
+                 <Button Command="{Binding RefreshCommand}" Content="Refresh" Margin="10,0,0,0" Padding="5,2"/>
             </StackPanel>
+        </Border>
 
-            <!-- Community Stats Section -->
-            <Border Background="{StaticResource CardBackgroundBrush}" CornerRadius="12" Padding="24" Margin="0,16,0,0">
-                <StackPanel>
-                    <TextBlock Text="Community Insights" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,16"/>
-                    <UniformGrid Columns="3">
-                        <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="12.5k" FontSize="24" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Active Members" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                        <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="452" FontSize="24" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Missions Completed" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                        <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="1.2k" FontSize="24" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Stories Shared" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </UniformGrid>
-                </StackPanel>
-            </Border>
-        </StackPanel>
-    </ScrollViewer>
+        <!-- Messages List -->
+        <ListBox Grid.Row="1" 
+                 ItemsSource="{Binding Messages}" 
+                 Background="Transparent"
+                 BorderThickness="0"
+                 HorizontalContentAlignment="Stretch"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="IsHitTestVisible" Value="False"/>
+                    <Setter Property="Focusable" Value="False"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <ContentPresenter/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="#1E1E1E" CornerRadius="8" Margin="5,5,5,5" Padding="10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Avatar Placeholder -->
+                            <Border Width="40" Height="40" Background="#333" CornerRadius="20" VerticalAlignment="Top">
+                                <TextBlock Text="{Binding Username}" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"
+                                           Foreground="White"
+                                           FontSize="10"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip="{Binding Username}"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                    <TextBlock Text="{Binding Username}" Foreground="#00BCD4" FontWeight="Bold"/>
+                                    <Border Background="#333" CornerRadius="4" Margin="10,0,0,0" Padding="5,2" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Rank}" Foreground="Gray" FontSize="10"/>
+                                    </Border>
+                                     <TextBlock Text="{Binding CreatedAt}" Foreground="Gray" FontSize="10" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Content}" Foreground="White" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Input Area -->
+        <Grid Grid.Row="2" Background="#1E1E1E" Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" 
+                     Background="#252525" 
+                     Foreground="White" 
+                     BorderThickness="0" 
+                     Padding="10"
+                     Height="40"
+                     VerticalContentAlignment="Center">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+
+            <Button Grid.Column="1" 
+                    Content="Send" 
+                    Command="{Binding SendMessageCommand}" 
+                    Background="#00BCD4"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Margin="10,0,0,0"
+                    Padding="15,0"
+                    Height="40"/>
+        </Grid>
+    </Grid>
 </UserControl>

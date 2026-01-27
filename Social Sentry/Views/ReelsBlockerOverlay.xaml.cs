@@ -18,16 +18,40 @@ namespace Social_Sentry.Views
             this.Close();
         }
 
-        private void TurnOff_Click(object sender, RoutedEventArgs e)
+        private void ShowTimeSelection_Click(object sender, RoutedEventArgs e)
+        {
+            MainPanel.Visibility = Visibility.Collapsed;
+            TimeSelectionPanel.Visibility = Visibility.Visible;
+        }
+
+        private void CancelSelection_Click(object sender, RoutedEventArgs e)
+        {
+            TimeSelectionPanel.Visibility = Visibility.Collapsed;
+            MainPanel.Visibility = Visibility.Visible;
+        }
+
+        private void TimeOption_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.Button btn && btn.Tag is string minutesStr && int.TryParse(minutesStr, out int minutes))
+            {
+                DisableBlocker(minutes);
+            }
+        }
+
+        private void DisableBlocker(int minutes)
         {
             try
             {
+                // Set the override duration in ViewModel
+                ViewModels.ReelsBlockerViewModel.TempDisableMinutes = minutes;
+
                 var settingsService = new SettingsService();
                 var settings = settingsService.LoadSettings();
                 settings.IsReelsBlockerEnabled = false;
-                settingsService.SaveSettings(settings); // triggers event in existing services
+                settingsService.SaveSettings(settings); 
                 
-                System.Windows.MessageBox.Show("Reels Blocker has been turned off.", "Social Sentry", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Optional: Show feedback or just close
+                // System.Windows.MessageBox.Show($"Reels Blocker paused for {minutes} minutes.", "Social Sentry", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.Close();
             }
             catch (Exception ex)
