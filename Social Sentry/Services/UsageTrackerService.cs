@@ -21,6 +21,12 @@ namespace Social_Sentry.Services
         private string _currentCategory = "Uncategorized"; // Track current category
         
         private string _currentMetadata = ""; // Store current metadata JSON
+        
+        // Session Coalescing State
+        private string _lastLoggedProcessName = "";
+        private DateTime _lastLoggedEndTime = DateTime.MinValue;
+
+        // Key: ProcessName
 
         // Key: ProcessName
         private readonly ConcurrentDictionary<string, AppUsageInfo> _dailyUsage = new();
@@ -58,6 +64,13 @@ namespace Social_Sentry.Services
                     Duration = TimeSpan.FromSeconds(kvp.Value),
                     SessionCount = 1 // Approximate, doesn't matter much for total time
                 };
+            }
+
+            // CRITICAL FIX: Load Hourly Stats on startup
+            var hourly = _databaseService.GetHourlyUsage(DateTime.Today);
+            foreach (var kvp in hourly)
+            {
+                _hourlyUsage[kvp.Key] = kvp.Value;
             }
         }
 
@@ -227,26 +240,40 @@ namespace Social_Sentry.Services
             var now = DateTime.Now;
             var duration = now - _lastSwitchTime;
 
-            if (duration.TotalSeconds < 0.1) return; // Ignore micro-switches
+            // 1. Session Buffering: Ignore sessions < 2s (configurable, was 0.1s)
+            if (duration.TotalSeconds < 2.0) return; 
+
+            // 2. Session Coalescing: Check if returning to same app within 5s
+            bool isContinuation = false;
+            if (_currentProcessName == _lastLoggedProcessName && (now - duration - _lastLoggedEndTime).TotalSeconds < 5.0)
+            {
+                isContinuation = true;
+            }
 
             // update app total
             _dailyUsage.AddOrUpdate(_currentProcessName,
-                new AppUsageInfo { ProcessName = _currentProcessName, Duration = duration },
+                new AppUsageInfo { ProcessName = _currentProcessName, Duration = duration, SessionCount = 1 },
                 (key, existing) =>
                 {
                     existing.Duration += duration;
-                    existing.SessionCount++;
+                    if (!isContinuation) 
+                    {
+                        existing.SessionCount++;
+                    }
                     return existing;
                 });
 
-            // update hourly bucket (simple approx: assign entire duration to the *end* hour for simplicity, or split?)
-            // Splitting is better but standard "Digital Wellbeing" often buckets by start or end strictly.
-            // Let's just add to the current hour bucket for simplicity of "when it happened".
+            // update hourly bucket
             int hour = now.Hour;
             _hourlyUsage.AddOrUpdate(hour, duration.TotalSeconds, (key, existing) => existing + duration.TotalSeconds);
 
-            // Log to DB
+            // Log to DB (ActivityLog + HourlyStats)
             _databaseService.LogActivity(_currentProcessName, _currentWindowTitle, _currentUrl, duration.TotalSeconds, _currentCategory, _currentMetadata);
+            _databaseService.UpdateHourlyStats(now, _currentProcessName, _currentCategory, duration.TotalSeconds);
+
+            // Update state for next coalescing check
+            _lastLoggedProcessName = _currentProcessName;
+            _lastLoggedEndTime = now;
 
             OnUsageUpdated?.Invoke();
         }

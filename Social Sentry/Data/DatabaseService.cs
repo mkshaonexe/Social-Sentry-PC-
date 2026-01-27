@@ -144,6 +144,19 @@ namespace Social_Sentry.Data
                         command.ExecuteNonQuery();
                     }
 
+                    // 6. Hourly Stats (Aggregated for Graph Performance)
+                    string createHourlyStats = @"
+                        CREATE TABLE IF NOT EXISTS HourlyStats (
+                            Date TEXT,
+                            Hour INTEGER,
+                            ProcessName TEXT,
+                            Category TEXT,
+                            TotalSeconds REAL,
+                            PRIMARY KEY (Date, Hour, ProcessName)
+                        );";
+                    command.CommandText = createHourlyStats;
+                    command.ExecuteNonQuery();
+
                     // 6. Classification Rules (Dynamic Categorization)
                     
                     // Simple migration/check: Ensure table has correct schema
@@ -406,6 +419,136 @@ namespace Social_Sentry.Data
             }
             return logs;
         }
+
+        public void UpdateHourlyStats(DateTime timestamp, string processName, string category, double durationSeconds)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+                string dateStr = timestamp.ToString("yyyy-MM-dd");
+                int hour = timestamp.Hour;
+
+                string upsert = @"
+                    INSERT INTO HourlyStats (Date, Hour, ProcessName, Category, TotalSeconds)
+                    VALUES (@date, @hour, @process, @category, @duration)
+                    ON CONFLICT(Date, Hour, ProcessName) 
+                    DO UPDATE SET TotalSeconds = TotalSeconds + @duration;";
+
+                using (var command = new SqliteCommand(upsert, connection))
+                {
+                    command.Parameters.AddWithValue("@date", dateStr);
+                    command.Parameters.AddWithValue("@hour", hour);
+                    command.Parameters.AddWithValue("@process", _encryptionService.Encrypt(processName));
+                    command.Parameters.AddWithValue("@category", _encryptionService.Encrypt(category));
+                    command.Parameters.AddWithValue("@duration", durationSeconds);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public Dictionary<int, double> GetHourlyUsage(DateTime date)
+        {
+            var result = new Dictionary<int, double>();
+            // Initialize 0-23
+            for (int i = 0; i < 24; i++) result[i] = 0;
+
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"
+                    SELECT Hour, SUM(TotalSeconds) 
+                    FROM HourlyStats 
+                    WHERE Date = @date
+                    GROUP BY Hour";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd"));
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int hour = reader.GetInt32(0);
+                            double seconds = reader.GetDouble(1);
+                            if (result.ContainsKey(hour))
+                                result[hour] = seconds; 
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        public Dictionary<DateTime, double> GetDailyUsageRange(DateTime start, DateTime end)
+        {
+            var result = new Dictionary<DateTime, double>();
+            // Pre-fill range
+            for (var day = start.Date; day <= end.Date; day = day.AddDays(1))
+            {
+                result[day] = 0;
+            }
+
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"
+                    SELECT Date, SUM(TotalSeconds)
+                    FROM HourlyStats
+                    WHERE Date >= @start AND Date <= @end
+                    GROUP BY Date";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@start", start.ToString("yyyy-MM-dd"));
+                    command.Parameters.AddWithValue("@end", end.ToString("yyyy-MM-dd"));
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (DateTime.TryParse(reader.GetString(0), out DateTime date))
+                            {
+                                result[date] = reader.GetDouble(1);
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+         public Dictionary<string, double> GetTopAppsForRange(DateTime start, DateTime end)
+        {
+            var usage = new Dictionary<string, double>();
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"
+                    SELECT ProcessName, SUM(TotalSeconds)
+                    FROM HourlyStats
+                    WHERE Date >= @start AND Date <= @end
+                    GROUP BY ProcessName";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@start", start.ToString("yyyy-MM-dd"));
+                    command.Parameters.AddWithValue("@end", end.ToString("yyyy-MM-dd"));
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string process = _encryptionService.Decrypt(reader.GetString(0));
+                            double seconds = reader.GetDouble(1);
+                            if (usage.ContainsKey(process))
+                                usage[process] += seconds;
+                            else
+                                usage[process] = seconds;
+                        }
+                    }
+                }
+            }
+            return usage;
+        }
+
     }
 
     public class ActivityLogItem
