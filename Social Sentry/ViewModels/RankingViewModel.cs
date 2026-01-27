@@ -11,7 +11,7 @@ namespace Social_Sentry.ViewModels
         private readonly RankingService _rankingService;
         private readonly DispatcherTimer _timer;
 
-        private RankingBadge _currentBadge;
+        private RankingBadge _currentBadge = RankingBadge.AllBadges[0];
         public RankingBadge CurrentBadge
         {
             get => _currentBadge;
@@ -69,7 +69,7 @@ namespace Social_Sentry.ViewModels
             }
         }
 
-        public ObservableCollection<RankingBadge> AllBadges { get; }
+        public ObservableCollection<RankingBadge> AllBadges { get; } = new ObservableCollection<RankingBadge>(RankingBadge.AllBadges);
 
         private string _durationText = "00:00:00";
         public string DurationText
@@ -114,10 +114,10 @@ namespace Social_Sentry.ViewModels
         }
 
         // Command to toggle info
-        public RelayCommand ToggleInfoCommand { get; }
+        public RelayCommand ToggleInfoCommand { get; } = null!;
         
         // Command to turn off protection
-        public RelayCommand TurnOffProtectionCommand { get; }
+        public RelayCommand TurnOffProtectionCommand { get; } = null!;
 
         public RankingViewModel()
         {
@@ -129,6 +129,7 @@ namespace Social_Sentry.ViewModels
              
              AllBadges = new ObservableCollection<RankingBadge>(RankingBadge.AllBadges);
              
+             // Constructor initialization of properties
              ToggleInfoCommand = new RelayCommand(ExecuteToggleInfo);
              TurnOffProtectionCommand = new RelayCommand(ExecuteTurnOffProtection);
 
@@ -141,12 +142,12 @@ namespace Social_Sentry.ViewModels
              UpdateData();
         }
 
-        private void ExecuteToggleInfo(object? parameter)
+        private void ExecuteToggleInfo()
         {
             ShowInfo = !ShowInfo;
         }
 
-        private void ExecuteTurnOffProtection(object? parameter)
+        private void ExecuteTurnOffProtection()
         {
             // TODO: Show disabling dialog/logic similar to Android
             // For now, toggle settings or show message.
