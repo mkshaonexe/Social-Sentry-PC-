@@ -5,120 +5,222 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Social_Sentry.Views"
              xmlns:vm="clr-namespace:Social_Sentry.ViewModels"
+             xmlns:converters="clr-namespace:Social_Sentry.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.DataContext>
         <vm:CommunityViewModel/>
     </UserControl.DataContext>
 
-    <Grid Background="#121212">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Header -->
-            <RowDefinition Height="*"/>    <!-- Messages -->
-            <RowDefinition Height="Auto"/> <!-- Input -->
-        </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        
+        <!-- Navigation Button Style -->
+        <Style x:Key="NavButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" CornerRadius="8">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#252525"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
 
-        <!-- Header -->
-        <Border Background="#1E1E1E" Padding="15">
-            <StackPanel Orientation="Horizontal">
-                 <TextBlock Text="Global Chat" 
-                           Foreground="White" 
-                           FontSize="18" 
-                           FontWeight="Bold"
-                           VerticalAlignment="Center"/>
-                 
-                 <Button Command="{Binding RefreshCommand}" Content="Refresh" Margin="10,0,0,0" Padding="5,2"/>
+    <Grid Background="#121212">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Navigation Panel -->
+        <Border Grid.Column="0" Background="#1E1E1E" BorderBrush="#333" BorderThickness="0,0,1,0">
+            <StackPanel Margin="10,20">
+                <TextBlock Text="Community" Foreground="White" FontSize="20" FontWeight="Bold" Margin="10,0,0,20"/>
+
+                <Button Content="Global Chat" Command="{Binding SwitchSectionCommand}" CommandParameter="GlobalChat" Style="{StaticResource NavButtonStyle}">
+                    <Button.Foreground>
+                        <Binding Path="IsGlobalChatVisible">
+                            <Binding.Converter>
+                                <converters:FlexibleBoolToColorConverter TrueColor="#00BCD4" FalseColor="Gray"/>
+                            </Binding.Converter>
+                        </Binding>
+                    </Button.Foreground>
+                </Button>
+
+                <Button Content="Global Mission" Command="{Binding SwitchSectionCommand}" CommandParameter="GlobalMission" Style="{StaticResource NavButtonStyle}">
+                    <Button.Foreground>
+                        <Binding Path="IsGlobalMissionVisible">
+                            <Binding.Converter>
+                                <converters:FlexibleBoolToColorConverter TrueColor="#FF9800" FalseColor="Gray"/>
+                            </Binding.Converter>
+                        </Binding>
+                    </Button.Foreground>
+                </Button>
+
+                <Button Content="Your Studies" Command="{Binding SwitchSectionCommand}" CommandParameter="YourStudies" Style="{StaticResource NavButtonStyle}">
+                    <Button.Foreground>
+                        <Binding Path="IsYourStudiesVisible">
+                            <Binding.Converter>
+                                <converters:FlexibleBoolToColorConverter TrueColor="#E91E63" FalseColor="Gray"/>
+                            </Binding.Converter>
+                        </Binding>
+                    </Button.Foreground>
+                </Button>
             </StackPanel>
         </Border>
 
-        <!-- Messages List -->
-        <ListBox Grid.Row="1" 
-                 ItemsSource="{Binding Messages}" 
-                 Background="Transparent"
-                 BorderThickness="0"
-                 HorizontalContentAlignment="Stretch"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="IsHitTestVisible" Value="False"/>
-                    <Setter Property="Focusable" Value="False"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListBoxItem">
-                                <ContentPresenter/>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border Background="#1E1E1E" CornerRadius="8" Margin="5,5,5,5" Padding="10">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <!-- Avatar Placeholder -->
-                            <Border Width="40" Height="40" Background="#333" CornerRadius="20" VerticalAlignment="Top">
-                                <TextBlock Text="{Binding Username}" 
-                                           HorizontalAlignment="Center" 
-                                           VerticalAlignment="Center"
-                                           Foreground="White"
-                                           FontSize="10"
-                                           TextTrimming="CharacterEllipsis"
-                                           ToolTip="{Binding Username}"/>
-                            </Border>
+        <!-- Right Content Area -->
+        <Grid Grid.Column="1">
+            
+            <!-- Global Chat View -->
+            <Grid Visibility="{Binding IsGlobalChatVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- Header -->
+                    <RowDefinition Height="*"/>    <!-- Messages -->
+                    <RowDefinition Height="Auto"/> <!-- Input -->
+                </Grid.RowDefinitions>
 
-                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                    <TextBlock Text="{Binding Username}" Foreground="#00BCD4" FontWeight="Bold"/>
-                                    <Border Background="#333" CornerRadius="4" Margin="10,0,0,0" Padding="5,2" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Rank}" Foreground="Gray" FontSize="10"/>
+                <!-- Header -->
+                <Border Background="#1E1E1E" Padding="15">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Global Chat" 
+                                   Foreground="White" 
+                                   FontSize="18" 
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+                        
+                        <Button Command="{Binding RefreshCommand}" Content="Refresh" Margin="10,0,0,0" Padding="5,2"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Messages List -->
+                <ListBox Grid.Row="1" 
+                         ItemsSource="{Binding Messages}" 
+                         Background="Transparent"
+                         BorderThickness="0"
+                         HorizontalContentAlignment="Stretch"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="IsHitTestVisible" Value="False"/>
+                            <Setter Property="Focusable" Value="False"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <ContentPresenter/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#1E1E1E" CornerRadius="8" Margin="5,5,5,5" Padding="10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- Avatar -->
+                                    <Border Width="40" Height="40" CornerRadius="20" VerticalAlignment="Top" Margin="0,0,10,0">
+                                        <Border.Background>
+                                            <ImageBrush ImageSource="{Binding AvatarUrl}" Stretch="UniformToFill"/>
+                                        </Border.Background>
+                                        
+                                        <!-- Fallback Text if Image Fails (Simplified) -->
+                                        <!-- Note: WPF doesn't have easy fallback for ImageBrush. 
+                                             We would ideally use a custom control or a trigger. 
+                                             For now, we put a background color on the border so it looks like a placeholder if image is null/empty. -->
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="#333"/>
+                                            </Style>
+                                        </Border.Style>
                                     </Border>
-                                     <TextBlock Text="{Binding CreatedAt}" Foreground="Gray" FontSize="10" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                                </StackPanel>
-                                <TextBlock Text="{Binding Content}" Foreground="White" TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
 
-        <!-- Input Area -->
-        <!-- Input Area -->
-        <Border Grid.Row="2" Background="#1E1E1E" Padding="10">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                                    <!-- Content -->
+                                    <StackPanel Grid.Column="1">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                            <TextBlock Text="{Binding Username}" Foreground="#00BCD4" FontWeight="Bold"/>
+                                            <Border Background="#333" CornerRadius="4" Margin="10,0,0,0" Padding="5,2" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Rank}" Foreground="Gray" FontSize="10"/>
+                                            </Border>
+                                             <TextBlock Text="{Binding CreatedAt}" Foreground="Gray" FontSize="10" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Content}" Foreground="White" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
-                <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" 
-                         Background="#252525" 
-                         Foreground="White" 
-                         BorderThickness="0" 
-                         Padding="10"
-                         Height="40"
-                         VerticalContentAlignment="Center">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}"/>
-                    </TextBox.InputBindings>
-                </TextBox>
+                <!-- Input Area -->
+                <Border Grid.Row="2" Background="#1E1E1E" Padding="10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="1" 
-                        Content="Send" 
-                        Command="{Binding SendMessageCommand}" 
-                        Background="#00BCD4"
-                        Foreground="White"
-                        FontWeight="Bold"
-                        BorderThickness="0"
-                        Margin="10,0,0,0"
-                        Padding="15,0"
-                        Height="40"/>
+                        <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" 
+                                 Background="#252525" 
+                                 Foreground="White" 
+                                 BorderThickness="0" 
+                                 Padding="10"
+                                 Height="40"
+                                 VerticalContentAlignment="Center">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+
+                        <Button Grid.Column="1" 
+                                Content="Send" 
+                                Command="{Binding SendMessageCommand}" 
+                                Background="#00BCD4"
+                                Foreground="White"
+                                FontWeight="Bold"
+                                BorderThickness="0"
+                                Margin="10,0,0,0"
+                                Padding="15,0"
+                                Height="40"/>
+                    </Grid>
+                </Border>
             </Grid>
-        </Border>
+
+            <!-- Global Mission Placeholder -->
+            <Grid Visibility="{Binding IsGlobalMissionVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="Global Mission" FontSize="24" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                    <TextBlock Text="Participate in community-wide challenges." Foreground="Gray" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Coming Soon" Foreground="#FF9800" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Your Studies Placeholder -->
+            <Grid Visibility="{Binding IsYourStudiesVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="Your Studies" FontSize="24" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                    <TextBlock Text="Inspire others with your journey." Foreground="Gray" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Coming Soon" Foreground="#E91E63" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>

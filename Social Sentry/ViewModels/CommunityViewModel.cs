@@ -44,6 +44,35 @@ namespace Social_Sentry.ViewModels
             }
         }
 
+        public enum CommunitySection
+        {
+            GlobalChat,
+            GlobalMission,
+            YourStudies
+        }
+
+        private CommunitySection _currentSection;
+        public CommunitySection CurrentSection
+        {
+            get => _currentSection;
+            set
+            {
+                if (_currentSection != value)
+                {
+                    _currentSection = value;
+                    OnPropertyChanged(nameof(CurrentSection));
+                    OnPropertyChanged(nameof(IsGlobalChatVisible));
+                    OnPropertyChanged(nameof(IsGlobalMissionVisible));
+                    OnPropertyChanged(nameof(IsYourStudiesVisible));
+                }
+            }
+        }
+
+        public bool IsGlobalChatVisible => CurrentSection == CommunitySection.GlobalChat;
+        public bool IsGlobalMissionVisible => CurrentSection == CommunitySection.GlobalMission;
+        public bool IsYourStudiesVisible => CurrentSection == CommunitySection.YourStudies;
+
+        public ICommand SwitchSectionCommand { get; }
         public ICommand SendMessageCommand { get; }
         public ICommand RefreshCommand { get; }
 
@@ -53,11 +82,29 @@ namespace Social_Sentry.ViewModels
             var settingsService = new SettingsService();
             _rankingService = new RankingService(settingsService);
 
+            SwitchSectionCommand = new RelayCommand(ExecuteSwitchSection);
             SendMessageCommand = new RelayCommand(ExecuteSendMessage);
             RefreshCommand = new RelayCommand(ExecuteRefresh);
 
+            CurrentSection = CommunitySection.GlobalChat; // Default
+
             LoadMessages();
             SubscribeToRealtime();
+        }
+
+        private void ExecuteSwitchSection(object parameter)
+        {
+            if (parameter is CommunitySection section)
+            {
+                CurrentSection = section;
+            }
+            else if (parameter is string sectionName)
+            {
+                 if (Enum.TryParse(sectionName, out CommunitySection parsedSection))
+                 {
+                     CurrentSection = parsedSection;
+                 }
+            }
         }
 
         private async void ExecuteRefresh()
@@ -72,7 +119,7 @@ namespace Social_Sentry.ViewModels
 
             try
             {
-                if (!_supabaseService.IsInitialized) return; // Should be initialized in App.xaml.cs
+                if (!_supabaseService.IsInitialized) return; 
 
                 var response = await _supabaseService.Client.From<Models.Message>()
                     .Order(x => x.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
@@ -103,25 +150,40 @@ namespace Social_Sentry.ViewModels
             IsBusy = true;
             try
             {
-                // Anonymous auth if not logged in?
-                // For now, assuming user is anonymous or we just send as "User"
-                // Android app sends much more metadata. We should try to match it.
-                
                 var currentRank = _rankingService.GetCurrentBadge();
                 var strikeTime = _rankingService.GetFormattedStrikeTime();
                 
-                // Determine user ID and Username
-                var userId = _supabaseService.CurrentUser?.Id ?? "anon_user_" + Guid.NewGuid().ToString().Substring(0, 8);
-                // Try to persist user ID in settings if possible, but for anon it changes strictly speaking.
-                // ideally we do auth. Assume Anon for now.
+                var currentUser = _supabaseService.CurrentUser;
+                var userId = currentUser?.Id ?? "anon_user_" + Guid.NewGuid().ToString().Substring(0, 8);
+                
+                // Try to get username and avatar from metadata
+                string username = "Desktop User";
+                string avatarUrl = null;
+
+                if (currentUser?.UserMetadata != null)
+                {
+                    if (currentUser.UserMetadata.ContainsKey("username"))
+                        username = currentUser.UserMetadata["username"]?.ToString();
+                    else if (currentUser.UserMetadata.ContainsKey("name"))
+                        username = currentUser.UserMetadata["name"]?.ToString();
+                        
+                    if (currentUser.UserMetadata.ContainsKey("avatar_url"))
+                        avatarUrl = currentUser.UserMetadata["avatar_url"]?.ToString();
+                }
+
+                if (string.IsNullOrEmpty(username) || username.Length < 3) 
+                {
+                     username = "User " + userId.Substring(0, 4);
+                }
 
                 var message = new Models.Message
                 {
                     Content = NewMessageContent,
                     UserId = userId,
-                    Username = "Desktop User", // TODO: Get from settings or auth
+                    Username = username, 
+                    AvatarUrl = avatarUrl,
                     Rank = currentRank.Title,
-                    Role = "member",
+                    Role = "member", // Default to member for now
                     StrikeTime = strikeTime,
                     CreatedAt = DateTime.UtcNow,
                     IsPinned = false,
@@ -131,8 +193,6 @@ namespace Social_Sentry.ViewModels
                 await _supabaseService.Client.From<Models.Message>().Insert(message);
                 
                 NewMessageContent = "";
-                // Realtime should handle adding it to the list, or we add manually
-                // Messages.Insert(0, message); // Optimistic add?
             }
             catch (Exception ex)
             {
@@ -147,29 +207,7 @@ namespace Social_Sentry.ViewModels
         private async void SubscribeToRealtime()
         {
              if (!_supabaseService.IsInitialized) return;
-
-             // await _supabaseService.Client.Realtime.ConnectAsync();
-             
-             // var channel = _supabaseService.Client.Realtime.Channel("realtime", "public", "messages");
-             
-             // // Different library versions handle this differently. 
-             // // Using generic 'OnInsert' pattern typical for Supabase C#
-             // channel.OnInsert += (sender, args) =>
-             // {
-             //     // Need to deserialize args.Payload to Message
-             //     // Or re-fetch. Re-fetching is safer for now if deserialization is complex.
-             //     // Ideally deserializing locally.
-             //     Application.Current.Dispatcher.Invoke(() => 
-             //     {
-             //         // Placeholder: simplest is to just re-fetch or insert if we can parse
-             //         // For now, let's trigger a refresh or parse if possible.
-             //         // C# Client might return a model directly?
-             //         // Verify library capabilities.
-             //         LoadMessages(); 
-             //     });
-             // };
-             
-             // await channel.Subscribe();
+             // Realtime implementation pending library verification
         }
     }
 }
