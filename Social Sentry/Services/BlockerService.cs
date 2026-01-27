@@ -113,7 +113,9 @@ namespace Social_Sentry.Services
             }
         }
 
-        private Views.BlackoutWindow? _currentOverlay;
+        private Window? _currentOverlay;
+
+        private enum BlockReason { None, Reels, Adult }
 
         public bool CheckAndBlock(string processName, string title, string url, int processId)
         {
@@ -129,23 +131,21 @@ namespace Social_Sentry.Services
                 return false; // Skip blocking
             }
 
-            if (ShouldBlock(title, url))
+            var reason = ShouldBlock(title, url);
+            if (reason != BlockReason.None)
             {
-                Debug.WriteLine($"Blocking content: {title} | {url}");
-                // For browser content, we might prefer Overlay or Close Tab.
-                // For apps, we might prefer Suspend.
-                // For now, let's try Overlay for Reels.
+                Debug.WriteLine($"Blocking content: {title} | {url} | Reason: {reason}");
                 
                 System.Windows.Application.Current.Dispatcher.Invoke(() => 
                 {
-                    PerformBlockingAction(key);
+                    PerformBlockingAction(key, reason);
                 });
                 return true;
             }
             return false;
         }
 
-        private async void PerformBlockingAction(string key)
+        private async void PerformBlockingAction(string key, BlockReason reason)
         {
             // 1. Navigate Back (Alt + Left Arrow)
             SimulateGoBack();
@@ -158,82 +158,12 @@ namespace Social_Sentry.Services
             await Task.Delay(300);
 
             // 3. Show Overlay
-            ShowOverlay("Restricted Content Detected", () => 
-            {
-                // ON UNLOCK: Add to allow list for 5 minutes
-                _temporarilyAllowed[key] = DateTime.Now.AddMinutes(5);
-            });
+            ShowOverlay(reason);
         }
 
-        private void SimulateTextClear()
+        private BlockReason ShouldBlock(string title, string url)
         {
-            // Simulate CTRL + A (Select All)
-            NativeMethods.INPUT[] inputsSelect = new NativeMethods.INPUT[4];
-
-            // Ctrl Down
-            inputsSelect[0].type = NativeMethods.INPUT_KEYBOARD;
-            inputsSelect[0].U.ki.wVk = NativeMethods.VK_CONTROL;
-            
-            // A Down
-            inputsSelect[1].type = NativeMethods.INPUT_KEYBOARD;
-            inputsSelect[1].U.ki.wVk = NativeMethods.VK_A;
-
-            // A Up
-            inputsSelect[2].type = NativeMethods.INPUT_KEYBOARD;
-            inputsSelect[2].U.ki.wVk = NativeMethods.VK_A;
-            inputsSelect[2].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
-
-            // Ctrl Up
-            inputsSelect[3].type = NativeMethods.INPUT_KEYBOARD;
-            inputsSelect[3].U.ki.wVk = NativeMethods.VK_CONTROL;
-            inputsSelect[3].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
-
-            NativeMethods.SendInput((uint)inputsSelect.Length, inputsSelect, NativeMethods.INPUT.Size);
-
-            // Simulate BACKSPACE (Delete Selection)
-            NativeMethods.INPUT[] inputsDelete = new NativeMethods.INPUT[2];
-
-            // Backspace Down
-            inputsDelete[0].type = NativeMethods.INPUT_KEYBOARD;
-            inputsDelete[0].U.ki.wVk = NativeMethods.VK_BACK;
-
-            // Backspace Up
-            inputsDelete[1].type = NativeMethods.INPUT_KEYBOARD;
-            inputsDelete[1].U.ki.wVk = NativeMethods.VK_BACK;
-            inputsDelete[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
-
-            NativeMethods.SendInput((uint)inputsDelete.Length, inputsDelete, NativeMethods.INPUT.Size);
-        }
-
-        private void SimulateGoBack()
-        {
-            // Simulate ALT + LEFT ARROW
-            NativeMethods.INPUT[] inputs = new NativeMethods.INPUT[4];
-
-            // Alt Down
-            inputs[0].type = NativeMethods.INPUT_KEYBOARD;
-            inputs[0].U.ki.wVk = NativeMethods.VK_MENU; 
-
-            // Left Down
-            inputs[1].type = NativeMethods.INPUT_KEYBOARD;
-            inputs[1].U.ki.wVk = NativeMethods.VK_LEFT; 
-
-            // Left Up
-            inputs[2].type = NativeMethods.INPUT_KEYBOARD;
-            inputs[2].U.ki.wVk = NativeMethods.VK_LEFT;
-            inputs[2].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
-
-            // Alt Up
-            inputs[3].type = NativeMethods.INPUT_KEYBOARD;
-            inputs[3].U.ki.wVk = NativeMethods.VK_MENU;
-            inputs[3].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
-
-            NativeMethods.SendInput((uint)inputs.Length, inputs, NativeMethods.INPUT.Size);
-        }
-
-        private bool ShouldBlock(string title, string url)
-        {
-            if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(url)) return false;
+            if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(url)) return BlockReason.None;
 
             string lowerTitle = title.ToLower();
             string lowerUrl = url.ToLower();
@@ -243,7 +173,7 @@ namespace Social_Sentry.Services
             {
                 foreach (var keyword in _blockedKeywords)
                 {
-                    if (lowerTitle.Contains(keyword) || lowerUrl.Contains(keyword)) return true;
+                    if (lowerTitle.Contains(keyword) || lowerUrl.Contains(keyword)) return BlockReason.Adult;
                 }
             }
 
@@ -252,38 +182,33 @@ namespace Social_Sentry.Services
             {
                 foreach (var segment in _blockedUrlSegments)
                 {
-                    if (lowerUrl.Contains(segment)) return true;
+                    if (lowerUrl.Contains(segment)) return BlockReason.Reels;
                 }
             }
 
             // 3. Check Title Specifics
-            // Assuming blocked titles are mostly related to adult content or specific blocks desired by user?
-            // If we don't know the category, we can default to checking them always OR map them.
-            // For now, let's assume they are "Adult" or "General" blocks. 
-            // If we want granular control, we need to categorize titles.
-            // Let's perform this check if EITHER is enabled, or maybe strictly Adult? 
-            // Let's assume broad blocking for now if Adult blocker is on.
             if (_isAdultBlockerEnabled)
             {
                 foreach (var t in _blockedTitles)
                 {
-                     if (lowerTitle.Contains(t.ToLower())) return true;
+                     if (lowerTitle.Contains(t.ToLower())) return BlockReason.Adult;
                 }
             }
 
-            return false;
+            return BlockReason.None;
         }
 
-        public void ShowOverlay(string reason, Action? onUnlockSuccess = null)
+        public void ShowOverlay(BlockReason reason)
         {
             if (_currentOverlay == null || !_currentOverlay.IsLoaded)
             {
-                _currentOverlay = new Views.BlackoutWindow();
-                
-                // Pass the callback to the window
-                if (onUnlockSuccess != null)
+                if (reason == BlockReason.Reels)
                 {
-                    _currentOverlay.OnUnlock += onUnlockSuccess;
+                    _currentOverlay = new Views.ReelsBlockerOverlay();
+                }
+                else
+                {
+                    _currentOverlay = new Views.AdultBlockerOverlay();
                 }
 
                 _currentOverlay.Closed += (s, e) => _currentOverlay = null;

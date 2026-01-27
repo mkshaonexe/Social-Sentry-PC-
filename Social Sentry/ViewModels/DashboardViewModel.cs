@@ -20,6 +20,8 @@ namespace Social_Sentry.ViewModels
         private DateTime _selectedDate = DateTime.Today;
         private bool _isLoading;
 
+        public IEnumerable<DashboardScope> Scopes => Enum.GetValues(typeof(DashboardScope)).Cast<DashboardScope>();
+
         // UI Properties
         public DashboardScope SelectedScope
         {

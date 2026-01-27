@@ -24,70 +24,103 @@
                 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="{StaticResource CardBackgroundBrush}" 
-                               CornerRadius="12" 
-                               Padding="24" 
-                               Margin="0,0,16,16"
-                               BorderThickness="1"
-                               BorderBrush="#33FFFFFF">
-                            <Border.Effect>
-                                <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
-                            </Border.Effect>
-                            
-                            <!-- Hover effect -->
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="BorderBrush" Value="{Binding AccentColor}"/>
-                                            <Setter Property="Cursor" Value="Hand"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
+                        <Grid Margin="0,0,16,16">
+                            <Border x:Name="CardBorder" 
+                                    Background="{StaticResource CardBackgroundBrush}" 
+                                    CornerRadius="12" 
+                                    BorderThickness="1"
+                                    BorderBrush="#33FFFFFF">
+                                
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
+                                </Border.Effect>
+                                
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <!-- Hover Logic -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="BorderBrush" Value="{Binding AccentColor}"/>
+                                                <Setter Property="Cursor" Value="Hand"/>
+                                            </Trigger>
+                                            
+                                            <!-- Active State Logic -->
+                                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{Binding AccentColor}"/>
+                                                <Setter Property="BorderThickness" Value="2"/>
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="{Binding AccentColor}" BlurRadius="15" Opacity="0.3" ShadowDepth="0"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
 
-                            <Border.InputBindings>
-                                <MouseBinding MouseAction="LeftClick" 
-                                              Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                              CommandParameter="{Binding Route}"/>
-                            </Border.InputBindings>
-                            
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" 
+                                                  Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                  CommandParameter="{Binding Route}"/>
+                                </Border.InputBindings>
                                 
-                                <!-- Icon -->
-                                <Border Grid.Column="0" 
-                                       Width="56" 
-                                       Height="56" 
-                                       CornerRadius="12" 
-                                       Margin="0,0,16,0"
-                                       VerticalAlignment="Top">
-                                    <Border.Background>
-                                        <SolidColorBrush Color="{Binding AccentColor}" Opacity="0.15"/>
-                                    </Border.Background>
-                                    <TextBlock Text="{Binding Icon}" 
-                                              FontSize="28" 
-                                              HorizontalAlignment="Center" 
-                                              VerticalAlignment="Center"/>
-                                </Border>
-                                
-                                <!-- Content -->
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Title}" 
-                                              FontSize="18" 
-                                              FontWeight="SemiBold"
-                                              Foreground="{StaticResource PrimaryTextBrush}" 
-                                              Margin="0,0,0,8"/>
-                                    <TextBlock Text="{Binding Description}" 
-                                              FontSize="13" 
-                                              Foreground="{StaticResource SecondaryTextBrush}"
-                                              TextWrapping="Wrap"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
+                                <Grid Margin="24">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- Icon -->
+                                    <Border Grid.Column="0" 
+                                           Width="56" 
+                                           Height="56" 
+                                           CornerRadius="12" 
+                                           Margin="0,0,16,0"
+                                           VerticalAlignment="Top">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding AccentColor}" Opacity="0.15"/>
+                                        </Border.Background>
+                                        <TextBlock Text="{Binding Icon}" 
+                                                  FontSize="28" 
+                                                  HorizontalAlignment="Center" 
+                                                  VerticalAlignment="Center"/>
+                                    </Border>
+                                    
+                                    <!-- Content -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}" 
+                                                  FontSize="18" 
+                                                  FontWeight="SemiBold"
+                                                  Foreground="{StaticResource PrimaryTextBrush}" 
+                                                  Margin="0,0,0,8"/>
+                                        <TextBlock Text="{Binding Description}" 
+                                                  FontSize="13" 
+                                                  Foreground="{StaticResource SecondaryTextBrush}"
+                                                  TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Red Dot Indicator for Inactive State -->
+                            <Border Width="12" Height="12" CornerRadius="6" Background="#FF5555" 
+                                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,12,12,0"
+                                    IsHitTestVisible="False"
+                                    ToolTip="Feature is Inactive">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="#FF5555" BlurRadius="4" ShadowDepth="0" Opacity="0.6"/>
+                                </Border.Effect>
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                        </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

@@ -137,7 +137,7 @@ namespace Social_Sentry.Services
         public bool IsDarkTheme { get; set; } = true;
         public string SelectedTheme { get; set; } = "Dark"; // "Dark", "Light", "Mica"
         public bool IsReelsBlockerEnabled { get; set; } = false;
-        public bool IsAdultBlockerEnabled { get; set; } = false;
+        public bool IsAdultBlockerEnabled { get; set; } = true;
         public bool IsDeveloperModeEnabled { get; set; } = false;
     }
 }
