@@ -121,6 +121,16 @@ namespace Social_Sentry.ViewModels
 
         public RankingViewModel()
         {
+             // Check for Design Mode to prevent VS Designer crashes
+             if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
+             {
+                 _currentBadge = RankingBadge.AllBadges[5]; // Example badge
+                 _strikeTimeText = "5 days 12 hours";
+                 _currentDays = 5;
+                 _dailyProgress = 0.5;
+                 return;
+             }
+
              // TODO: Dependency Injection would be better, but sticking to pattern
              var settingsService = new SettingsService(); 
              _rankingService = new RankingService(settingsService);
