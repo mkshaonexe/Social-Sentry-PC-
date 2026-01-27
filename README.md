@@ -32,6 +32,7 @@ Download the latest version from our **[GitHub Releases](https://github.com/mksh
     - **Data Integrity**: Self-healing statistics engine ensures accurate graphs even after crashes.
     - **Session Logic**: Improved session coalescing (merges short breaks) and buffering (ignores accidental clicks).
 - **Categorization**: Group apps and sites into categories (e.g., Productivity, Social Media, Games).
+- **Branding**: Unified high-resolution application logo across all platforms (Windows App, Taskbar, Installer, and Browser Extension).
 
 ## 🛠️ How It Works (Technical Implementation)
 
