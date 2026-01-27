@@ -97,24 +97,27 @@ namespace Social_Sentry
             // Try to load icon from Images/AppLogo.png and convert to Icon
             try 
             {
-                string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "AppLogo.png");
-                if (File.Exists(iconPath))
+                // Use resource stream instead of file path since Build Action is Resource
+                var uri = new Uri("pack://application:,,,/Images/AppLogo.png");
+                var resourceStream = System.Windows.Application.GetResourceStream(uri);
+                
+                if (resourceStream != null)
                 {
-                    using (var bitmap = new Bitmap(iconPath))
+                    using (var stream = resourceStream.Stream)
+                    using (var bitmap = new Bitmap(stream))
                     {
-                        // Get Hicon creates a handle to an icon. We must be careful with GDI+ handles but for single instance it's okay.
-                        // Ideally we clone it or manage handle destroy, but .NET Icon.FromHandle wraps it.
+                        // Get Hicon creates a handle to an icon. We must be careful with GDI+ handles.
                         _notifyIcon.Icon = System.Drawing.Icon.FromHandle(bitmap.GetHicon());
                     }
                 }
                 else
                 {
-                    // Fallback to system icon if file missing
                     _notifyIcon.Icon = SystemIcons.Shield; 
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Failed to load tray icon: {ex.Message}");
                 _notifyIcon.Icon = SystemIcons.Shield; // Safe fallback
             }
 

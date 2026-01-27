@@ -57,10 +57,16 @@ namespace Social_Sentry.Services
         /// </summary>
         public BitmapSource? GetProcessIcon(string processName)
         {
-            // Check cache first
-            if (_iconCache.TryGetValue(processName, out var cachedIcon))
+            // Handle media playback suffix (e.g. "brave (Media)")
+            if (processName.EndsWith(" (Media)", StringComparison.OrdinalIgnoreCase))
             {
-                return cachedIcon;
+                processName = processName.Replace(" (Media)", "", StringComparison.OrdinalIgnoreCase).Trim();
+            }
+
+            // Check cache again with cleaned name
+            if (_iconCache.TryGetValue(processName, out var cachedIconAfterClean))
+            {
+                return cachedIconAfterClean;
             }
 
             try
@@ -71,20 +77,17 @@ namespace Social_Sentry.Services
                 {
                      try 
                      {
-                         // Use the specific AppLogo.png for our own app
-                         var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "AppLogo.png");
-                         if (File.Exists(logoPath))
-                         {
-                             var bitmap = new BitmapImage();
-                             bitmap.BeginInit();
-                             bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                             bitmap.UriSource = new Uri(logoPath, UriKind.Absolute);
-                             bitmap.EndInit();
-                             bitmap.Freeze();
-                             
-                             _iconCache[processName] = bitmap;
-                             return bitmap;
-                         }
+                         // Use the specific AppLogo.png for our own app from resources
+                         var bitmap = new BitmapImage();
+                         bitmap.BeginInit();
+                         bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                         // Using pack URI for embedded resource
+                         bitmap.UriSource = new Uri("pack://application:,,,/Images/AppLogo.png", UriKind.Absolute);
+                         bitmap.EndInit();
+                         bitmap.Freeze();
+                         
+                         _iconCache[processName] = bitmap;
+                         return bitmap;
                      }
                      catch (Exception ex)
                      {
