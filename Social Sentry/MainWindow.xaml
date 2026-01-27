@@ -127,12 +127,7 @@
                                    VerticalAlignment="Center"
                                    Margin="0,0,8,0"/>
                         
-                        <!-- Enhanced Toggle Button -->
-                        <ToggleButton IsChecked="{Binding IsTrackingEnabled}" 
-                                      Style="{StaticResource ModernToggleStyle}"
-                                      VerticalAlignment="Center"
-                                      ToolTip="Toggle Tracking On/Off"
-                                      Cursor="Hand"/>
+
                     </StackPanel>
     
                     <!-- Menu Items -->

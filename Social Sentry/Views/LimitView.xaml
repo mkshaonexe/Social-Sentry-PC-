@@ -5,109 +5,213 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Social_Sentry.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="32,24">
-            <!-- Header -->
-            <TextBlock Text="Usage Limits" FontSize="28" FontWeight="Bold" 
-                      Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,24"/>
-            
-            <TextBlock Text="Set time limits for apps to help manage your screen time" 
-                      FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,32"/>
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="32,24">
+                <!-- Header -->
+                <TextBlock Text="Usage Limits" FontSize="28" FontWeight="Bold" 
+                          Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,8"/>
+                
+                <TextBlock Text="Set time limits for apps to help manage your screen time" 
+                          FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,32"/>
 
-            <!-- Daily Limit Card -->
-            <Border Background="{StaticResource CardBackgroundBrush}" 
-                   CornerRadius="12" Padding="24" Margin="0,0,0,20">
-                <StackPanel>
-                    <TextBlock Text="Daily Limit" FontSize="20" FontWeight="SemiBold"
-                              Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,16"/>
+                <!-- Daily Limit Card -->
+                <Border Background="{StaticResource CardBackgroundBrush}" 
+                       CornerRadius="12" Padding="24" Margin="0,0,0,24">
+                    <StackPanel>
+                        <TextBlock Text="Daily Limit" FontSize="20" FontWeight="SemiBold"
+                                  Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,16"/>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Total Screen Time" FontSize="14"
+                                          Foreground="{StaticResource SecondaryTextBrush}"/>
+                                <TextBlock Text="Set maximum daily usage across all apps" FontSize="12"
+                                          Foreground="{StaticResource SecondaryTextBrush}" Opacity="0.7"/>
+                            </StackPanel>
+                            
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <TextBox Width="80" Style="{StaticResource ModernTextBoxStyle}"
+                                        Text="{Binding DailyLimitHours, UpdateSourceTrigger=PropertyChanged}"
+                                        VerticalContentAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="hours" VerticalAlignment="Center"
+                                          Foreground="{StaticResource SecondaryTextBrush}"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- App-Specific Limits Header -->
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="App Limits" FontSize="20" FontWeight="SemiBold"
+                                  Foreground="{StaticResource PrimaryTextBrush}"/>
+                        <TextBlock Text="Limit specific applications" FontSize="12"
+                                  Foreground="{StaticResource SecondaryTextBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
                     
-                    <Grid Margin="0,0,0,16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Total Screen Time" FontSize="14"
-                                      Foreground="{StaticResource SecondaryTextBrush}"/>
-                            <TextBlock Text="Set maximum daily usage" FontSize="12"
-                                      Foreground="{StaticResource SecondaryTextBrush}" Opacity="0.7"/>
+                    <Button Grid.Column="1" Command="{Binding ShowAddAppCommand}"
+                            Background="Transparent" BorderThickness="0" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="+" FontSize="20" Foreground="{StaticResource AccentBrush}" FontWeight="Bold" Margin="0,0,4,0"/>
+                            <TextBlock Text="Add App" FontSize="14" Foreground="{StaticResource AccentBrush}" VerticalAlignment="Center"/>
                         </StackPanel>
-                        
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <TextBox Width="60" Height="32" FontSize="16" 
-                                    Text="{Binding DailyLimitHours, UpdateSourceTrigger=PropertyChanged}"
-                                    VerticalContentAlignment="Center" Margin="0,0,4,0"/>
-                            <TextBlock Text="hours" VerticalAlignment="Center"
-                                      Foreground="{StaticResource SecondaryTextBrush}"/>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
+                    </Button>
+                </Grid>
+
+                <ItemsControl ItemsSource="{Binding AppLimits}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource CardBackgroundBrush}" 
+                                   CornerRadius="12" Padding="20" Margin="0,0,0,12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding AppName}" FontSize="16" FontWeight="SemiBold"
+                                                  Foreground="{StaticResource PrimaryTextBrush}"/>
+                                        <TextBlock Text="{Binding CurrentUsage}" FontSize="12"
+                                                  Foreground="{StaticResource SecondaryTextBrush}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,24,0" VerticalAlignment="Center">
+                                        <TextBox Width="60" Style="{StaticResource ModernTextBoxStyle}"
+                                                Text="{Binding LimitMinutes, UpdateSourceTrigger=PropertyChanged}"
+                                                VerticalContentAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBlock Text="min/day" VerticalAlignment="Center"
+                                                  Foreground="{StaticResource SecondaryTextBrush}"/>
+                                    </StackPanel>
+                                    
+                                    <CheckBox Grid.Column="2" 
+                                             Style="{StaticResource ToggleSwitchStyle}"
+                                             IsChecked="{Binding BlockWhenExceeded}"
+                                             VerticalAlignment="Center"
+                                             ToolTip="Block app when limit reached"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Save Button -->
+                <Button Content="Save Limits" Background="{StaticResource AccentBrush}" 
+                       Foreground="Black" FontSize="15" FontWeight="SemiBold"
+                       Padding="32,12" Margin="0,24,0,0" HorizontalAlignment="Left"
+                       Command="{Binding SaveLimitsCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                               CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Opacity" Value="0.9"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+        
+        <!-- Add App Overlay -->
+        <Grid Visibility="{Binding IsAddAppVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Background="#AA000000">
+            <Border Background="{StaticResource WindowBackgroundBrush}" 
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                    CornerRadius="12" Width="500" Height="600"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Padding="24">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <DockPanel Grid.Row="0" Margin="0,0,0,16">
+                        <TextBlock Text="Add App to Limits" FontSize="20" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}"/>
+                        <Button Command="{Binding CloseAddAppCommand}" Content="✕" 
+                                DockPanel.Dock="Right" HorizontalAlignment="Right"
+                                Background="Transparent" BorderThickness="0" 
+                                Foreground="{StaticResource SecondaryTextBrush}" FontSize="18" Cursor="Hand"/>
+                    </DockPanel>
+                    
+                    <TextBox Grid.Row="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource ModernTextBoxStyle}"
+                             Tag="Search apps..." Margin="0,0,0,16" Padding="12,10"/>
+                             
+                    <ListBox Grid.Row="2" ItemsSource="{Binding FilteredApps}"
+                             Background="Transparent" BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="Border" Padding="12,12" Background="Transparent" CornerRadius="6" Margin="0,2" Cursor="Hand">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding}" Foreground="{StaticResource PrimaryTextBrush}" FontSize="14" VerticalAlignment="Center"/>
+                                                    <Button Grid.Column="1" Content="Add" 
+                                                            Command="{Binding DataContext.AddAppCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            Background="{StaticResource AccentBrush}" Foreground="Black" 
+                                                            FontSize="12" FontWeight="SemiBold" Padding="12,4"
+                                                            BorderThickness="0">
+                                                        <Button.Resources>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="CornerRadius" Value="4"/>
+                                                            </Style>
+                                                        </Button.Resources>
+                                                        <Button.Template>
+                                                            <ControlTemplate TargetType="Button">
+                                                                 <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                 </Border>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </Grid>
             </Border>
-
-            <!-- App-Specific Limits -->
-            <TextBlock Text="App-Specific Limits" FontSize="20" FontWeight="SemiBold"
-                      Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,16"/>
-
-            <ItemsControl ItemsSource="{Binding AppLimits}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Background="{StaticResource CardBackgroundBrush}" 
-                               CornerRadius="12" Padding="20" Margin="0,0,0,12">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Text="{Binding AppName}" FontSize="16" FontWeight="SemiBold"
-                                              Foreground="{StaticResource PrimaryTextBrush}"/>
-                                    <TextBlock Text="{Binding CurrentUsage}" FontSize="12"
-                                              Foreground="{StaticResource SecondaryTextBrush}"/>
-                                </StackPanel>
-                                
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,16,0">
-                                    <TextBox Width="50" Height="28" FontSize="14" 
-                                            Text="{Binding LimitMinutes, UpdateSourceTrigger=PropertyChanged}"
-                                            VerticalContentAlignment="Center" Margin="0,0,4,0"/>
-                                    <TextBlock Text="min/day" VerticalAlignment="Center"
-                                              Foreground="{StaticResource SecondaryTextBrush}"/>
-                                </StackPanel>
-                                
-                                <CheckBox Grid.Column="2" Content="Block when exceeded" 
-                                         IsChecked="{Binding BlockWhenExceeded}"
-                                         VerticalAlignment="Center"
-                                         Foreground="{StaticResource SecondaryTextBrush}"/>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-            <!-- Save Button -->
-            <Button Content="Save Limits" Background="{StaticResource AccentBrush}" 
-                   Foreground="White" FontSize="16" FontWeight="SemiBold"
-                   Padding="24,12" Margin="0,24,0,0" HorizontalAlignment="Left"
-                   Command="{Binding SaveLimitsCommand}">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" 
-                                           CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                        VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackPanel>
-    </ScrollViewer>
+        </Grid>
+    </Grid>
 </UserControl>

@@ -201,6 +201,42 @@ namespace Social_Sentry.Data
             }
         }
 
+
+        public string GetSetting(string key, string defaultValue = "")
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+                using (var command = new SqliteCommand("SELECT Value FROM Settings WHERE Key = @key", connection))
+                {
+                    command.Parameters.AddWithValue("@key", key);
+                    var result = command.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        return result.ToString();
+                    }
+                }
+            }
+            return defaultValue;
+        }
+
+        public void SaveSetting(string key, string value)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+                string query = @"
+                    INSERT INTO Settings (Key, Value) VALUES (@key, @value)
+                    ON CONFLICT(Key) DO UPDATE SET Value = @value";
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@key", key);
+                    command.Parameters.AddWithValue("@value", value);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
         public event Action? OnRulesChanged;
 
         public List<Models.Rule> GetRules()
@@ -630,6 +666,32 @@ namespace Social_Sentry.Data
             }
         }
 
+        public List<string> GetAllKnownApps()
+        {
+            var apps = new List<string>();
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT DISTINCT ProcessName FROM HourlyStats ORDER BY ProcessName";
+                using (var command = new SqliteCommand(query, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        try 
+                        {
+                             string decryptedObj = _encryptionService.Decrypt(reader.GetString(0));
+                             if (!string.IsNullOrEmpty(decryptedObj))
+                             {
+                                 apps.Add(decryptedObj);
+                             }
+                        }
+                        catch { }
+                    }
+                }
+            }
+            return apps.Distinct().OrderBy(x => x).ToList();
+        }
     }
 
     public class ActivityLogItem
