@@ -85,6 +85,20 @@ namespace Social_Sentry.ViewModels
             }
         }
 
+        private bool _showDesktopWidget;
+        public bool ShowDesktopWidget
+        {
+            get => _showDesktopWidget;
+            set
+            {
+                if (SetProperty(ref _showDesktopWidget, value))
+                {
+                    SaveSettings();
+                    App.ToggleDesktopWidget(value);
+                }
+            }
+        }
+
         public ICommand ExportDataCommand { get; }
         public ICommand ClearDataCommand { get; }
         public ICommand UnlockDeveloperModeCommand { get; }
@@ -101,6 +115,7 @@ namespace Social_Sentry.ViewModels
             _startWithWindows = _settingsService.IsStartWithWindowsEnabled();
             _startMinimized = settings.StartMinimized;
             _showNotifications = settings.ShowNotifications;
+            _showDesktopWidget = settings.ShowDesktopWidget;
 
             // Initialize Theme (Default to dark if not saved)
             _selectedTheme = settings.SelectedTheme; 
@@ -218,6 +233,7 @@ namespace Social_Sentry.ViewModels
                 StartWithWindows = _startWithWindows,
                 StartMinimized = _startMinimized,
                 ShowNotifications = _showNotifications,
+                ShowDesktopWidget = _showDesktopWidget,
 
                 SelectedTheme = _selectedTheme,
                 IsDeveloperModeEnabled = _isDeveloperModeEnabled

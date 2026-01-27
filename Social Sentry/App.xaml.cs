@@ -203,6 +203,27 @@ namespace Social_Sentry
                 string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVja3VtYXlsbmp5bnJpZmZ5em9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMTc5MzAsImV4cCI6MjA4MjU5MzkzMH0.BMnlodyQLrYz6BBmRn9T9nmz6VRuZqHuxED2CQBUQLg";
                 
                 await Services.SupabaseService.Instance.InitializeAsync(supabaseUrl, supabaseKey);
+
+                // Initialize Notification and Hakari Services
+                // Need access to UsageTrackerService usually created by MainWindow or global?
+                // Wait, UsageTrackerService is created in MainWindow or needs to be accessible here.
+                // Currently MainWindow creates it. We need it *before* or grab it from MainWindow.
+                
+                // Hack: We can initialize them after MainWindow loads or change architecture to be DI container based.
+                // For now, let's defer it slightly or check MainWindow availability.
+                // Actually, MainWindow is instantiated by StartupUri in App.xaml usually?
+                // No, App.xaml usually has StartupUri="MainWindow.xaml".
+                // Let's check App.xaml content if we can view it, or assume standard WPF.
+                // If StartupUri is set, MainWindow is created automatically.
+                // We can hook into MainWindow.Loaded in MainWindow.xaml.cs or here.
+                
+                // Let's rely on hooking into MainWindow's creation logic if possible, 
+                // OR we'll do it right after we know MainWindow exists.
+                // But wait, HakariCheckInService logic is background.
+                
+                // Alternative: Initialize here if we can create UsageTrackerService here.
+                // But UsageTrackerService is typically singleton per app session.
+                // Let's make UsageTrackerService available globally or wait for MainWindow.
             }
             catch (System.Exception ex)
             {
@@ -210,9 +231,67 @@ namespace Social_Sentry
                 ShowErrorAndExit(ex);
             }
         }
+        
+        public static Services.HakariCheckInService? HakariService { get; private set; }
+        
+        public static void InitializeHakariService(Services.UsageTrackerService usageTracker)
+        {
+             var notificationService = new Services.NotificationService();
+             _settingsService = _settingsService ?? new Services.SettingsService(); // Ensure loaded
+             
+             HakariService = new Services.HakariCheckInService(_settingsService, usageTracker, notificationService);
+             HakariService.Start();
+        }
+
+        public static void ToggleDesktopWidget(bool show)
+        {
+            if (Current is App app)
+            {
+                if (show)
+                    app.ShowDesktopWidget();
+                else
+                    app.CloseDesktopWidget();
+            }
+        }
+
+        private Views.DesktopWidgetWindow? _desktopWidget;
+
+        public void ShowDesktopWidget()
+        {
+            if (_desktopWidget == null)
+            {
+                if (System.Windows.Application.Current.MainWindow is MainWindow mainWin && mainWin.UsageTracker != null)
+                {
+                    // Create VM with real service
+                    var vm = new ViewModels.DesktopWidgetViewModel(mainWin.UsageTracker);
+                    _desktopWidget = new Views.DesktopWidgetWindow(vm);
+                    _desktopWidget.Show();
+                }
+                else
+                {
+                    // Retry slightly later if MainWindow isn't ready (e.g. startup race condition)
+                    // Or ignore if MainWindow is closed.
+                }
+            }
+            else
+            {
+                _desktopWidget.Show();
+                _desktopWidget.Activate();
+            }
+        }
+
+        public void CloseDesktopWidget()
+        {
+            if (_desktopWidget != null)
+            {
+                _desktopWidget.Close();
+                _desktopWidget = null;
+            }
+        }
 
         protected override void OnExit(ExitEventArgs e)
         {
+            CloseDesktopWidget();
             Server?.Dispose();
             base.OnExit(e);
         }

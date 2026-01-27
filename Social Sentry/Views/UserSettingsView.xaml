@@ -87,6 +87,25 @@
                                  Style="{StaticResource ToggleSwitchStyle}"/>
                     </Grid>
 
+                    <!-- Show Desktop Widget -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel>
+                            <TextBlock Text="Show Desktop Widget" FontSize="14"
+                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Display a floating widget with screen time stats" 
+                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        
+                        <CheckBox Grid.Column="1" IsChecked="{Binding ShowDesktopWidget}" 
+                                 VerticalAlignment="Center"
+                                 Style="{StaticResource ToggleSwitchStyle}"/>
+                    </Grid>
+
                     <!-- Show Notifications -->
                     <Grid>
                         <Grid.ColumnDefinitions>

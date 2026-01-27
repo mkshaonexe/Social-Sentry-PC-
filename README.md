@@ -52,6 +52,11 @@ Download the latest version from our **[GitHub Releases](https://github.com/mksh
 - **👑 Prime Mode**:
     - **Strict Enforcement**: Hardcore mode that prevents exiting the app or opening distractions.
     - **Focus Lock**: Maximizes productivity by eliminating all escape routes.
+- **🤖 AI Hakari & Rich Notifications**:
+    - **Waifu Personality**: "Hakari" - an AI companion that reacts to your screen time habits.
+    - **Smart Check-ins**: Hourly notifications with varied personalities (Gentle to Tsundere) based on usage intensity.
+    - **Rich Toast Notifications**: Native Windows toast notifications with actions and visual stats summaries.
+    - **Roast & Praise**: Gets stricter as you waste more time, or praises you for staying productive.
 
 ## 🛠️ How It Works (Technical Implementation)
 

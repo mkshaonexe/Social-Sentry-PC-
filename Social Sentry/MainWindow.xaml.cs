@@ -8,7 +8,7 @@ namespace Social_Sentry
 {
     public partial class MainWindow : Window
     {
-        private readonly Services.UsageTrackerService _usageTracker;
+        public readonly Services.UsageTrackerService UsageTracker;
         private readonly ViewModels.MainViewModel _viewModel;
         private readonly Social_Sentry.Data.DatabaseService _databaseService;
         private readonly Services.SettingsService _settingsService;
@@ -30,8 +30,8 @@ namespace Social_Sentry
             // Initialize async (fire and forget for ctor, or await in Loaded)
             _ = mediaDetector.InitializeAsync();
 
-            _usageTracker = new Services.UsageTrackerService(_databaseService, mediaDetector);
-            _viewModel = new ViewModels.MainViewModel(_usageTracker, _databaseService);
+            UsageTracker = new Services.UsageTrackerService(_databaseService, mediaDetector);
+            _viewModel = new ViewModels.MainViewModel(UsageTracker, _databaseService);
 
             // First Run Auto-Setup
             _settingsService = new Services.SettingsService();
@@ -59,12 +59,15 @@ namespace Social_Sentry
             _viewModel.OnTrackingToggled += OnTrackingToggled;
 
             // Start tracking by default - ALWAYS, regardless of UI state
-            _usageTracker.Start();
+            UsageTracker.Start();
+
+            // Initialize Background Hakari Service
+            App.InitializeHakariService(UsageTracker);
 
             // Connect Extension Server to Usage Tracker if available
             if (App.Server != null)
             {
-                App.Server.OnActivityReceived += (s, data) => _usageTracker.HandleExtensionActivity(data);
+                App.Server.OnActivityReceived += (s, data) => UsageTracker.HandleExtensionActivity(data);
             }
 
             Closing += MainWindow_Closing;
@@ -207,12 +210,13 @@ namespace Social_Sentry
         {
             if (isEnabled)
             {
-                _usageTracker.Start();
+                UsageTracker.Start();
             }
             else
             {
-                _usageTracker.Stop();
+                UsageTracker.Stop();
             }
+
         }
 
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
@@ -232,7 +236,7 @@ namespace Social_Sentry
             // }
             else
             {
-                 _usageTracker.Stop();
+                 UsageTracker.Stop();
             
                  try 
                  {

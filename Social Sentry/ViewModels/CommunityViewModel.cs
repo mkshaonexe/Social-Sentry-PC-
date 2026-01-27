@@ -14,7 +14,7 @@ namespace Social_Sentry.ViewModels
         private readonly SupabaseService _supabaseService;
         private readonly RankingService _rankingService;
         
-        public ObservableCollection<Message> Messages { get; } = new ObservableCollection<Message>();
+        public ObservableCollection<Models.Message> Messages { get; } = new ObservableCollection<Models.Message>();
 
         private string _newMessageContent;
         public string NewMessageContent
@@ -74,7 +74,7 @@ namespace Social_Sentry.ViewModels
             {
                 if (!_supabaseService.IsInitialized) return; // Should be initialized in App.xaml.cs
 
-                var response = await _supabaseService.Client.From<Message>()
+                var response = await _supabaseService.Client.From<Models.Message>()
                     .Order(x => x.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
                     .Limit(50)
                     .Get();
@@ -115,7 +115,7 @@ namespace Social_Sentry.ViewModels
                 // Try to persist user ID in settings if possible, but for anon it changes strictly speaking.
                 // ideally we do auth. Assume Anon for now.
 
-                var message = new Message
+                var message = new Models.Message
                 {
                     Content = NewMessageContent,
                     UserId = userId,
@@ -128,7 +128,7 @@ namespace Social_Sentry.ViewModels
                     IsVerified = false
                 };
 
-                await _supabaseService.Client.From<Message>().Insert(message);
+                await _supabaseService.Client.From<Models.Message>().Insert(message);
                 
                 NewMessageContent = "";
                 // Realtime should handle adding it to the list, or we add manually
@@ -136,7 +136,7 @@ namespace Social_Sentry.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to send message: {ex.Message}");
+                System.Windows.MessageBox.Show($"Failed to send message: {ex.Message}");
             }
             finally
             {
@@ -148,28 +148,28 @@ namespace Social_Sentry.ViewModels
         {
              if (!_supabaseService.IsInitialized) return;
 
-             await _supabaseService.Client.Realtime.ConnectAsync();
+             // await _supabaseService.Client.Realtime.ConnectAsync();
              
-             var channel = _supabaseService.Client.Realtime.Channel("realtime", "public", "messages");
+             // var channel = _supabaseService.Client.Realtime.Channel("realtime", "public", "messages");
              
-             // Different library versions handle this differently. 
-             // Using generic 'OnInsert' pattern typical for Supabase C#
-             channel.OnInsert += (sender, args) =>
-             {
-                 // Need to deserialize args.Payload to Message
-                 // Or re-fetch. Re-fetching is safer for now if deserialization is complex.
-                 // Ideally deserializing locally.
-                 Application.Current.Dispatcher.Invoke(() => 
-                 {
-                     // Placeholder: simplest is to just re-fetch or insert if we can parse
-                     // For now, let's trigger a refresh or parse if possible.
-                     // C# Client might return a model directly?
-                     // Verify library capabilities.
-                     LoadMessages(); 
-                 });
-             };
+             // // Different library versions handle this differently. 
+             // // Using generic 'OnInsert' pattern typical for Supabase C#
+             // channel.OnInsert += (sender, args) =>
+             // {
+             //     // Need to deserialize args.Payload to Message
+             //     // Or re-fetch. Re-fetching is safer for now if deserialization is complex.
+             //     // Ideally deserializing locally.
+             //     Application.Current.Dispatcher.Invoke(() => 
+             //     {
+             //         // Placeholder: simplest is to just re-fetch or insert if we can parse
+             //         // For now, let's trigger a refresh or parse if possible.
+             //         // C# Client might return a model directly?
+             //         // Verify library capabilities.
+             //         LoadMessages(); 
+             //     });
+             // };
              
-             await channel.Subscribe();
+             // await channel.Subscribe();
         }
     }
 }

@@ -38,6 +38,11 @@ namespace Social_Sentry.Services
         public event Action? OnUsageUpdated;
 
         public event Action<ActivityEvent>? OnRawActivityDetected;
+        public event Action? OnStatsUpdated; // New event for aggregated stats updates
+
+        // Exposed metrics for Widget
+        public TimeSpan TotalDistractingTime { get; private set; }
+        public TimeSpan TotalProductiveTime { get; private set; }
 
         public UsageTrackerService(Social_Sentry.Data.DatabaseService databaseService, MediaDetector mediaDetector)
         {
@@ -74,8 +79,43 @@ namespace Social_Sentry.Services
                 _hourlyUsage[kvp.Key] = kvp.Value;
             }
 
+            // Calculate initial category breakdown
+            RecalculateCategoryStats();
+
             // Perform Integrity Check in background
             System.Threading.Tasks.Task.Run(() => VerifyStatsIntegrity());
+        }
+
+        public void RecalculateCategoryStats()
+        {
+            var catUsage = _databaseService.GetTodayCategoryUsage();
+            double distractedSeconds = 0;
+            double productiveSeconds = 0;
+
+            foreach (var kvp in catUsage)
+            {
+                if (IsDistractingCategory(kvp.Key))
+                    distractedSeconds += kvp.Value;
+                else if (IsProductiveCategory(kvp.Key))
+                    productiveSeconds += kvp.Value;
+            }
+
+            TotalDistractingTime = TimeSpan.FromSeconds(distractedSeconds);
+            TotalProductiveTime = TimeSpan.FromSeconds(productiveSeconds);
+            OnStatsUpdated?.Invoke();
+        }
+
+        private bool IsDistractingCategory(string category)
+        {
+             return category == "Doom Scrolling" || 
+                    category == "Entertainment" || 
+                    category == "Social Media" || 
+                    category == "Games";
+        }
+
+        private bool IsProductiveCategory(string category) // Minimal definition for now
+        {
+            return category == "Productive" || category == "Study" || category == "Education";
         }
 
         private void VerifyStatsIntegrity()
@@ -320,6 +360,11 @@ namespace Social_Sentry.Services
             // Update state for next coalescing check
             _lastLoggedProcessName = _currentProcessName;
             _lastLoggedEndTime = now;
+
+            // Update category stats live (lightweight enough since it queries DB for today's summary? 
+            // Querying DB every 5s might be heavy. Let's do it in-memory or optimizing.
+            // For MVP, since SQLite is fast and local:
+            RecalculateCategoryStats();
 
             OnUsageUpdated?.Invoke();
         }

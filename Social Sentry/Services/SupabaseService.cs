@@ -10,7 +10,7 @@ namespace Social_Sentry.Services
         private static SupabaseService _instance;
         public static SupabaseService Instance => _instance ??= new SupabaseService();
 
-        public Client Client { get; private set; }
+        public Supabase.Client Client { get; private set; }
 
         private string _url;
         private string _key;

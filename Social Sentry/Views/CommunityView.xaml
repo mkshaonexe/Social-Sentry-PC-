@@ -88,34 +88,37 @@
         </ListBox>
 
         <!-- Input Area -->
-        <Grid Grid.Row="2" Background="#1E1E1E" Padding="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+        <!-- Input Area -->
+        <Border Grid.Row="2" Background="#1E1E1E" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" 
-                     Background="#252525" 
-                     Foreground="White" 
-                     BorderThickness="0" 
-                     Padding="10"
-                     Height="40"
-                     VerticalContentAlignment="Center">
-                <TextBox.InputBindings>
-                    <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}"/>
-                </TextBox.InputBindings>
-            </TextBox>
+                <TextBox Text="{Binding NewMessageContent, UpdateSourceTrigger=PropertyChanged}" 
+                         Background="#252525" 
+                         Foreground="White" 
+                         BorderThickness="0" 
+                         Padding="10"
+                         Height="40"
+                         VerticalContentAlignment="Center">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
 
-            <Button Grid.Column="1" 
-                    Content="Send" 
-                    Command="{Binding SendMessageCommand}" 
-                    Background="#00BCD4"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    BorderThickness="0"
-                    Margin="10,0,0,0"
-                    Padding="15,0"
-                    Height="40"/>
-        </Grid>
+                <Button Grid.Column="1" 
+                        Content="Send" 
+                        Command="{Binding SendMessageCommand}" 
+                        Background="#00BCD4"
+                        Foreground="White"
+                        FontWeight="Bold"
+                        BorderThickness="0"
+                        Margin="10,0,0,0"
+                        Padding="15,0"
+                        Height="40"/>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

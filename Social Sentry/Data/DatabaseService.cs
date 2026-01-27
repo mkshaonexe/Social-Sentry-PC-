@@ -422,6 +422,38 @@ namespace Social_Sentry.Data
             return usage;
         }
 
+        public Dictionary<string, double> GetTodayCategoryUsage()
+        {
+            var usage = new Dictionary<string, double>();
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+                // Aggregate duration by CATEGORY for today
+                string query = @"
+                    SELECT Category, SUM(DurationSeconds) 
+                    FROM ActivityLog 
+                    WHERE date(Timestamp) = date('now', 'localtime')
+                    GROUP BY Category";
+
+                using (var command = new SqliteCommand(query, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string category = _encryptionService.Decrypt(reader.GetString(0));
+                        if (string.IsNullOrEmpty(category)) category = "Uncategorized";
+
+                        double seconds = reader.GetDouble(1);
+                        if (usage.ContainsKey(category))
+                            usage[category] += seconds;
+                        else
+                            usage[category] = seconds;
+                    }
+                }
+            }
+            return usage;
+        }
+
         public List<ActivityLogItem> GetRecentActivityLogs(int limit = 100)
         {
             var logs = new List<ActivityLogItem>();

@@ -143,6 +143,12 @@ namespace Social_Sentry.Services
         public bool IsReelsBlockerEnabled { get; set; } = false;
         public bool IsAdultBlockerEnabled { get; set; } = true;
         public bool IsDeveloperModeEnabled { get; set; } = false;
+        public bool ShowDesktopWidget { get; set; } = true; // Default True
         public long RankingStartTimestamp { get; set; } = 0;
+
+        // Hakari Check-In State
+        public bool IsHakariNotificationEnabled { get; set; } = true;
+        public int HakariLastNotifiedHour { get; set; } = 0;
+        public long HakariLastNotifiedDate { get; set; } = 0;
     }
 }
