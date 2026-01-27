@@ -42,6 +42,14 @@ namespace Social_Sentry.ViewModels
         public ReelsBlockerViewModel ReelsBlockerVM { get; }
         public AdultBlockerViewModel AdultBlockerVM { get; }
         public CommunityViewModel CommunityVM { get; }
+        public PrimeModeViewModel PrimeModeVM { get; }
+
+        private bool _isDeveloperModeEnabled;
+        public bool IsDeveloperModeEnabled
+        {
+            get => _isDeveloperModeEnabled;
+            set => SetProperty(ref _isDeveloperModeEnabled, value);
+        }
 
         public ICommand NavigateCommand { get; }
         public ICommand ToggleTrackingCommand { get; }
@@ -66,11 +74,22 @@ namespace Social_Sentry.ViewModels
             AdultBlockerVM = new AdultBlockerViewModel();
             
             CommunityVM = new CommunityViewModel();
+            PrimeModeVM = new PrimeModeViewModel();
             
             NavigateCommand = new RelayCommand<string>(Navigate);
             ToggleTrackingCommand = new RelayCommand(ToggleTracking);
 
             CurrentView = DashboardVM; // Default view
+
+            // Initialize Developer Mode state
+            var settingsService = new Services.SettingsService();
+            IsDeveloperModeEnabled = settingsService.LoadSettings().IsDeveloperModeEnabled;
+            Services.SettingsService.SettingsChanged += OnSettingsChanged;
+        }
+
+        private void OnSettingsChanged(Services.UserSettings settings)
+        {
+            IsDeveloperModeEnabled = settings.IsDeveloperModeEnabled;
         }
 
 
@@ -105,6 +124,9 @@ namespace Social_Sentry.ViewModels
                     break;
                 case "AdultBlocker":
                     CurrentView = AdultBlockerVM;
+                    break;
+                case "Prime":
+                    CurrentView = PrimeModeVM;
                     break;
             }
         }

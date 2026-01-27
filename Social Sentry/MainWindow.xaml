@@ -151,7 +151,8 @@
                             Command="{Binding NavigateCommand}" 
                             CommandParameter="Raw" 
                             Style="{StaticResource NavigationButtonStyle}"
-                            Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Raw'}"/>
+                            Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Raw'}"
+                            Visibility="{Binding IsDeveloperModeEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             
                     <Button Content="Community" 
                             Command="{Binding NavigateCommand}" 
@@ -159,11 +160,17 @@
                             Style="{StaticResource NavigationButtonStyle}"
                             Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Community'}"/>
                             
-                    <Button Content="All Features" 
+                     <Button Content="All Features" 
                             Command="{Binding NavigateCommand}" 
                             CommandParameter="AllFeatures" 
                             Style="{StaticResource NavigationButtonStyle}"
                             Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='AllFeatures'}"/>
+
+                    <Button Content="Prime Mode" 
+                            Command="{Binding NavigateCommand}" 
+                            CommandParameter="Prime" 
+                            Style="{StaticResource NavigationButtonStyle}"
+                            Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Prime'}"/>
     
                     <Separator Background="#333" Margin="0,16"/>
     
@@ -212,6 +219,9 @@
                          </DataTemplate>
                          <DataTemplate DataType="{x:Type vm:AdultBlockerViewModel}">
                              <views:AdultBlockerView/>
+                         </DataTemplate>
+                         <DataTemplate DataType="{x:Type vm:PrimeModeViewModel}">
+                             <views:PrimeModeView/>
                          </DataTemplate>
                      </ContentControl.Resources>
                  </ContentControl>
