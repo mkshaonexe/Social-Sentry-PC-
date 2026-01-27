@@ -37,7 +37,7 @@
                                   ItemsSource="{Binding AvailableThemes}" 
                                   SelectedItem="{Binding SelectedTheme}"
                                   VerticalAlignment="Center"
-                                  Padding="8,4"/>
+                                  Style="{StaticResource ModernComboBoxStyle}"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -64,7 +64,8 @@
                         </StackPanel>
                         
                         <CheckBox Grid.Column="1" IsChecked="{Binding StartWithWindows}" 
-                                 VerticalAlignment="Center"/>
+                                 VerticalAlignment="Center"
+                                 Style="{StaticResource ToggleSwitchStyle}"/>
                     </Grid>
 
                     <!-- Start Minimized -->
@@ -82,7 +83,8 @@
                         </StackPanel>
                         
                         <CheckBox Grid.Column="1" IsChecked="{Binding StartMinimized}" 
-                                 VerticalAlignment="Center"/>
+                                 VerticalAlignment="Center"
+                                 Style="{StaticResource ToggleSwitchStyle}"/>
                     </Grid>
 
                     <!-- Show Notifications -->
@@ -100,7 +102,8 @@
                         </StackPanel>
                         
                         <CheckBox Grid.Column="1" IsChecked="{Binding ShowNotifications}" 
-                                 VerticalAlignment="Center"/>
+                                 VerticalAlignment="Center"
+                                 Style="{StaticResource ToggleSwitchStyle}"/>
                     </Grid>
                 </StackPanel>
             </Border>

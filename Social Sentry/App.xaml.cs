@@ -98,16 +98,18 @@ namespace Social_Sentry
             // 2. Handle Custom Window Styles
             if (themeName == "Mica")
             {
-                // ... Existing Mica Logic ...
+                // Mica theme: Keep custom title bar with improved WindowChrome
                 window.WindowStyle = WindowStyle.None;
-                window.AllowsTransparency = false; 
+                window.AllowsTransparency = false;
                 
                 var chrome = new System.Windows.Shell.WindowChrome
                 {
                     CaptionHeight = 32,
-                    CornerRadius = new CornerRadius(8),
-                    GlassFrameThickness = new Thickness(0),
-                    ResizeBorderThickness = new Thickness(4)
+                    CornerRadius = new CornerRadius(0), // Use 0 for proper resize/maximize behavior
+                    GlassFrameThickness = new Thickness(-1), // Enable glass frame
+                    ResizeBorderThickness = new Thickness(4),
+                    NonClientFrameEdges = System.Windows.Shell.NonClientFrameEdges.None,
+                    UseAeroCaptionButtons = false
                 };
                 System.Windows.Shell.WindowChrome.SetWindowChrome(window, chrome);
                 

@@ -94,10 +94,9 @@ namespace Social_Sentry
             _notifyIcon = new Forms.NotifyIcon();
             _notifyIcon.Text = "Social Sentry";
             
-            // Try to load icon from Images/AppLogo.png and convert to Icon
+            // Load icon from AppLogo.png resource (consistent branding)
             try 
             {
-                // Use resource stream instead of file path since Build Action is Resource
                 var uri = new Uri("pack://application:,,,/Images/AppLogo.png");
                 var resourceStream = System.Windows.Application.GetResourceStream(uri);
                 
@@ -106,7 +105,7 @@ namespace Social_Sentry
                     using (var stream = resourceStream.Stream)
                     using (var bitmap = new Bitmap(stream))
                     {
-                        // Get Hicon creates a handle to an icon. We must be careful with GDI+ handles.
+                        // Convert PNG to icon handle
                         _notifyIcon.Icon = System.Drawing.Icon.FromHandle(bitmap.GetHicon());
                     }
                 }
