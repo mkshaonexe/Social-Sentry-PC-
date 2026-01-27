@@ -89,6 +89,14 @@ namespace Social_Sentry
             var settings = _settingsService.LoadSettings();
             string theme = !string.IsNullOrEmpty(settings.SelectedTheme) ? settings.SelectedTheme : (settings.IsDarkTheme ? "Dark" : "Light");
             App.UpdateWindowStyle(this, theme);
+
+            // Self-healing: Enforce startup registry key if enabled
+            if (settings.StartWithWindows)
+            {
+                // This re-writes the key to point to the CURRENT exe path, fixing issues 
+                // where the app was moved or the key was deleted.
+                _settingsService.SetStartWithWindows(true);
+            }
         }
 
         private void InitializeTrayIcon()

@@ -90,9 +90,13 @@ namespace Social_Sentry.Services
                 {
                     if (enable)
                     {
-                        var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                        // For .NET 6+, we need to get the executable path differently
-                        exePath = exePath.Replace(".dll", ".exe");
+                        var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+                        if (string.IsNullOrEmpty(exePath))
+                        {
+                            // Fallback if MainModule is null for some reason
+                            exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                            exePath = exePath.Replace(".dll", ".exe");
+                        }
                         // Add --startup argument to detect silent boot startup
                         key.SetValue(APP_NAME, $"\"{exePath}\" --startup");
                     }
