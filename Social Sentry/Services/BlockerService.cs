@@ -115,7 +115,7 @@ namespace Social_Sentry.Services
 
         private Window? _currentOverlay;
 
-        private enum BlockReason { None, Reels, Adult }
+        public enum BlockReason { None, Reels, Adult }
 
         public bool CheckAndBlock(string processName, string title, string url, int processId)
         {
