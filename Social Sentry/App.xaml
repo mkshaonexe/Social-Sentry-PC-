@@ -327,6 +327,9 @@
                                           Grid.Column="2" 
                                           ClickMode="Press" 
                                           Focusable="false" 
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
                                           IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                                 <ToggleButton.Template>
                                     <ControlTemplate TargetType="ToggleButton">
@@ -344,7 +347,7 @@
                                                 <!-- Arrow -->
                                                 <Path x:Name="Arrow" 
                                                       Grid.Column="1" 
-                                                      Fill="{TemplateBinding Foreground}" 
+                                                      Fill="{DynamicResource PrimaryTextBrush}" 
                                                       HorizontalAlignment="Center" 
                                                       VerticalAlignment="Center" 
                                                       Data="M0,0 L4,4 L8,0"/>

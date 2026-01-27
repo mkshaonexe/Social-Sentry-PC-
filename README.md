@@ -5,6 +5,12 @@ A powerful Windows native application designed for digital well-being, parental 
 ## 📥 Download
 Download the latest version from our **[GitHub Releases](https://github.com/mkshaonexe/Social-Sentry-PC-/releases/latest)** page.
 
+### 🚀 Release Notes v1.0.1.0
+- **Unified Branding**: Updated application logo across all components (Installer, Taskbar, App).
+- **UI Enhancements**: Improved Dark Mode consistency and Settings UI.
+- **Performance**: Optimized Dashboard charts and data visualization.
+- **Fixes**: Resolved minor UI glitches in the "Limit" section.
+
 ## ✨ Features
 
 ### 🔍 Real-Time Activity Tracking

@@ -100,7 +100,6 @@ namespace Social_Sentry
             {
                 // Mica theme: Keep custom title bar with improved WindowChrome
                 window.WindowStyle = WindowStyle.None;
-                window.AllowsTransparency = false;
                 
                 var chrome = new System.Windows.Shell.WindowChrome
                 {
@@ -123,7 +122,6 @@ namespace Social_Sentry
                 // Revert to standard window for "Dark" and "Light" to get standard OS chrome 
                 // but with the DWM dark mode applied above.
                 window.WindowStyle = WindowStyle.SingleBorderWindow;
-                window.AllowsTransparency = false;
                 System.Windows.Shell.WindowChrome.SetWindowChrome(window, null);
                 
                 if (window is MainWindow mainWin)

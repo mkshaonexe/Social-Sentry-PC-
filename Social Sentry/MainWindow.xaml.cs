@@ -77,16 +77,18 @@ namespace Social_Sentry
                 // Start hidden - don't show window
                 WindowState = WindowState.Minimized;
                 Hide();
-                
-                // Optional: Show balloon tip on first startup
-                // Notification disabled per user request
-                // if (_settings.ShowNotifications && _isTrayIconVisible)
-                // {
-                //     _notifyIcon?.ShowBalloonTip(3000, "Social Sentry", 
-                //         "Running in background. Double-click tray icon to open.", 
-                //         Forms.ToolTipIcon.Info);
-                // }
             }
+
+            Loaded += MainWindow_Loaded;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Fix for "Start Mode" issue: Ensure the correct window chrome style is applied
+            // after the window handle differs creation.
+            var settings = _settingsService.LoadSettings();
+            string theme = !string.IsNullOrEmpty(settings.SelectedTheme) ? settings.SelectedTheme : (settings.IsDarkTheme ? "Dark" : "Light");
+            App.UpdateWindowStyle(this, theme);
         }
 
         private void InitializeTrayIcon()
