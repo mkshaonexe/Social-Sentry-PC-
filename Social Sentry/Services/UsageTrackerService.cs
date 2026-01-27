@@ -12,6 +12,7 @@ namespace Social_Sentry.Services
         private readonly BlockerService _blockerService;
         private readonly Social_Sentry.Data.DatabaseService _databaseService;
         private readonly IconExtractionService _iconExtractionService;
+        public IconExtractionService IconExtractor => _iconExtractionService;
         private readonly MediaDetector _mediaDetector;
 
         private DateTime _lastSwitchTime;

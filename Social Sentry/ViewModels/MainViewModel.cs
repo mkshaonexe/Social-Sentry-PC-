@@ -54,7 +54,7 @@ namespace Social_Sentry.ViewModels
 
             var classificationService = new Services.ClassificationService(databaseService);
 
-            DashboardVM = new DashboardViewModel(usageTracker);
+            DashboardVM = new DashboardViewModel(usageTracker, databaseService);
             RawDataVM = new RawDataViewModel(usageTracker);
             CategoryVM = new CategoryViewModel(usageTracker, classificationService);
             LimitVM = new LimitViewModel(usageTracker, databaseService);
