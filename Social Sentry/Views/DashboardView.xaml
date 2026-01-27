@@ -35,10 +35,10 @@
 
                 <!-- Scope Selector (Right) -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <ComboBox ItemsSource="{Binding Scopes}" SelectedItem="{Binding SelectedScope}"
-                              Foreground="{StaticResource PrimaryTextBrush}"
-                              Background="{StaticResource CardBackgroundBrush}"
-                              Padding="8,4" MinWidth="100" BorderThickness="1" BorderBrush="#333">
+                    <ComboBox ItemsSource="{Binding Scopes}" 
+                              SelectedItem="{Binding SelectedScope}"
+                              Style="{StaticResource ModernComboBoxStyle}"
+                              MinWidth="100">
                     </ComboBox>
                 </StackPanel>
             </Grid>
