@@ -51,5 +51,15 @@ namespace Social_Sentry.Services
                 .AddText($"Today: {todayTime} | Average: {averageTime}")
                 .Show();
         }
+
+        public void ShowPrimeModeActive(bool enabled)
+        {
+            var status = enabled ? "Enabled" : "Disabled";
+            var message = enabled ? "Strict enforcement preventing distraction." : "Prime Mode deactivated.";
+             new ToastContentBuilder()
+                .AddText($"Prime Mode {status}")
+                .AddText(message)
+                .Show();
+        }
     }
 }

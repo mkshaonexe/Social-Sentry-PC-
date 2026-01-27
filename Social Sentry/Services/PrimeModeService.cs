@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Social_Sentry.Services
 {
@@ -8,6 +9,8 @@ namespace Social_Sentry.Services
     {
         private bool _isActive;
         private readonly SelfProtectionService _selfProtectionService;
+        private readonly NotificationService _notificationService;
+        private System.Windows.Media.MediaPlayer _mediaPlayer;
 
         public bool IsPrimeModeActive => _isActive;
 
@@ -16,6 +19,8 @@ namespace Social_Sentry.Services
         public PrimeModeService()
         {
             _selfProtectionService = new SelfProtectionService();
+            _notificationService = new NotificationService();
+            _mediaPlayer = new System.Windows.Media.MediaPlayer();
         }
 
         public void EnablePrimeMode()
@@ -25,10 +30,12 @@ namespace Social_Sentry.Services
             // Strict enforcement logic
             // 1. Enable watchdog if not already
             _selfProtectionService.StartWatchdog();
-            
-            // 2. Prevent Task Manager (Simplified: Watchdog kills it or we set registry)
-            // Implementation of TaskMgr blocking usually requires admin registry edit.
-            // For now, we will rely on SelfProtectionService.
+
+            // Play Sound
+            PlayActivationSound();
+
+            // Show Notification
+            _notificationService.ShowPrimeModeActive(true);
             
             _isActive = true;
             PrimeModeChanged?.Invoke(true);
@@ -40,12 +47,29 @@ namespace Social_Sentry.Services
 
             // Relax enforcement
             // Note: SelfProtection might stay on if regular blocking is active.
+
+            // Show Notification
+            _notificationService.ShowPrimeModeActive(false);
             
             _isActive = false;
             PrimeModeChanged?.Invoke(false);
         }
 
-        // Additional Logic mirroring Android's "Strict blocking"
-        // e.g. preventing uninstall, etc.
+        private void PlayActivationSound()
+        {
+            try
+            {
+                string soundPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Sounds", "prime_mode.mp3");
+                if (File.Exists(soundPath))
+                {
+                    _mediaPlayer.Open(new Uri(soundPath));
+                    _mediaPlayer.Play();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error playing sound: {ex.Message}");
+            }
+        }
     }
 }

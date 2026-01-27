@@ -82,13 +82,13 @@ namespace Social_Sentry.ViewModels
             var settingsService = new SettingsService();
             _rankingService = new RankingService(settingsService);
 
-            SwitchSectionCommand = new RelayCommand(ExecuteSwitchSection);
+            SwitchSectionCommand = new RelayCommand<object>(ExecuteSwitchSection);
             SendMessageCommand = new RelayCommand(ExecuteSendMessage);
             RefreshCommand = new RelayCommand(ExecuteRefresh);
 
             CurrentSection = CommunitySection.GlobalChat; // Default
 
-            LoadMessages();
+            _ = LoadMessages();
             SubscribeToRealtime();
         }
 
@@ -204,7 +204,7 @@ namespace Social_Sentry.ViewModels
             }
         }
 
-        private async void SubscribeToRealtime()
+        private void SubscribeToRealtime()
         {
              if (!_supabaseService.IsInitialized) return;
              // Realtime implementation pending library verification

@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Resource Include="Images\**\*" />
+    <Resource Include="Assets\**\*" />
   </ItemGroup>
 
 </Project>

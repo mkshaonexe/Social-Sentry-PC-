@@ -6,42 +6,70 @@
              xmlns:local="clr-namespace:Social_Sentry.Views"
              xmlns:vm="clr-namespace:Social_Sentry.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="1000">
     <UserControl.DataContext>
         <vm:PrimeModeViewModel/>
     </UserControl.DataContext>
     
-    <Grid Background="#121212">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <!-- Crown Icon -->
-            <TextBlock Text="👑" 
-                       FontSize="80" 
-                       HorizontalAlignment="Center" 
-                       Margin="0,0,0,24"/>
+    <Grid Background="#0A0A0A">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Main Content Container with Glow -->
+        <Border Background="#1E1E1E" 
+                CornerRadius="24" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center"
+                Padding="60"
+                MaxWidth="600">
+            <Border.Effect>
+                 <DropShadowEffect BlurRadius="30" ShadowDepth="0" Color="Black" Opacity="0.6"/>
+            </Border.Effect>
             
-            <TextBlock Text="Prime Mode" 
-                       FontSize="32" 
-                       FontWeight="Bold" 
-                       Foreground="White" 
-                       HorizontalAlignment="Center" 
-                       Margin="0,0,0,10"/>
-            
-            <TextBlock Text="Strict enforcement preventing distraction." 
-                       FontSize="16" 
-                       Foreground="Gray" 
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,30"/>
-            
-            <!-- Toggle (Checkbox styled as toggle simplified) -->
-            <CheckBox IsChecked="{Binding IsPrimeModeEnabled}" 
-                      Content="Enable Prime Mode"
-                      Foreground="White"
-                      FontSize="18"
-                      HorizontalAlignment="Center">
-                <CheckBox.LayoutTransform>
-                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
-                </CheckBox.LayoutTransform>
-            </CheckBox>
-        </StackPanel>
+            <StackPanel HorizontalAlignment="Center">
+                 <!-- Optimus Prime Image -->
+                <Image Source="/Social Sentry;component/Assets/Images/optimus_prime.png"
+                       Width="180"
+                       Height="180"
+                       Margin="0,0,0,32"
+                       RenderOptions.BitmapScalingMode="HighQuality">
+                       <Image.Effect>
+                            <DropShadowEffect BlurRadius="20" Color="#00E676" Opacity="0.15" ShadowDepth="0"/> 
+                       </Image.Effect>
+                </Image>
+
+                <TextBlock Text="Prime Mode" 
+                           FontSize="36" 
+                           FontWeight="Bold" 
+                           Foreground="White" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,0,0,12"/>
+                
+                <TextBlock Text="Strict enforcement preventing distraction." 
+                           FontSize="16" 
+                           Foreground="#AAAAAA" 
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,48"
+                           TextAlignment="Center"/>
+                
+                <!-- Toggle -->
+                <CheckBox IsChecked="{Binding IsPrimeModeEnabled}" 
+                          Style="{StaticResource ToggleSwitchStyle}"
+                          HorizontalAlignment="Center"
+                          Cursor="Hand">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="1.8" ScaleY="1.8"/>
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
+                
+                <TextBlock Text="{Binding IsPrimeModeEnabled, Converter={StaticResource BooleanToStringConverter}, FallbackValue='Disabled'}"
+                           Foreground="{Binding IsPrimeModeEnabled, Converter={StaticResource BooleanToColorConverter}}"
+                           HorizontalAlignment="Center"
+                           Margin="0,24,0,0"
+                           FontSize="16"
+                           FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

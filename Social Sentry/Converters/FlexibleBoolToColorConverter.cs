@@ -7,8 +7,8 @@ namespace Social_Sentry.Converters
 {
     public class FlexibleBoolToColorConverter : IValueConverter
     {
-        public SolidColorBrush TrueColor { get; set; } = Brushes.Green;
-        public SolidColorBrush FalseColor { get; set; } = Brushes.Gray;
+        public SolidColorBrush TrueColor { get; set; } = System.Windows.Media.Brushes.Green;
+        public SolidColorBrush FalseColor { get; set; } = System.Windows.Media.Brushes.Gray;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
