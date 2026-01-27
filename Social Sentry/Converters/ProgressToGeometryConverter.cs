@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using Point = System.Windows.Point;
+using Size = System.Windows.Size;
 
 namespace Social_Sentry.Converters
 {
