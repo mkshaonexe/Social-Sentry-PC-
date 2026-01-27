@@ -35,8 +35,7 @@
                 HorizontalAlignment="Center" 
                 VerticalAlignment="Center" 
                 Padding="40" 
-                CornerRadius="20"
-                Effect="{StaticResource {x:Static DropShadowEffect.ShadowDepthProperty}}">
+                CornerRadius="20">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="30" Color="Black" Opacity="0.5"/>
             </Border.Effect>
