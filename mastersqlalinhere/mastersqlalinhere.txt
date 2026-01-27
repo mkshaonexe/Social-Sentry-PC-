@@ -49,3 +49,14 @@ CREATE TABLE IF NOT EXISTS ClassificationRules (
     Category TEXT,
     Priority INTEGER
 );
+
+
+-- 6. Hourly Stats (Aggregated for Graph Performance)
+CREATE TABLE IF NOT EXISTS HourlyStats (
+    Date TEXT,
+    Hour INTEGER,
+    ProcessName TEXT,
+    Category TEXT,
+    TotalSeconds REAL,
+    PRIMARY KEY (Date, Hour, ProcessName)
+);
