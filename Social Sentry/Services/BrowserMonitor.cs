@@ -87,7 +87,30 @@ namespace Social_Sentry.Services
 
         public bool IsBrowser(string processName)
         {
-            string[] browsers = { "chrome", "msedge", "firefox", "brave" };
+            string[] browsers = { 
+                "chrome", 
+                "msedge", 
+                "firefox", 
+                "brave",
+                "opera",
+                "opera_gx", 
+                "vivaldi",
+                "chromium",
+                "waterfox",
+                "palemoon",
+                "librewolf",
+                "thorium",
+                "yandex", 
+                "browser", // Generic name often used by Yandex or others
+                "arc",
+                "duckduckgo",
+                "maxthon",
+                "qqbrowser",
+                "sogouexplorer",
+                "ucbrowser",
+                "360se", 
+                "360chrome"
+            };
             return browsers.Contains(processName.ToLower());
         }
     }
