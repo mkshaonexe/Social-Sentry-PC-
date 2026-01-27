@@ -22,6 +22,10 @@ Download the latest version from our **[GitHub Releases](https://github.com/mksh
 ### 📊 Analytics & Insights
 - **Dashboard**: Visual breakdown of your daily habits with charts and graphs.
 - **Detailed Logs**: View raw activity logs to see exactly where time is spent.
+- **Intelligent Categorization**: 
+    - **Smart Logic**: Automatically detects "Doom Scrolling" (Shorts/Reels) separate from general "Entertainment".
+    - **Context Awareness**: Identifies "Study" sessions based on window titles (e.g., "Math Lecture").
+    - **Modern UI**: Revamped Categories view with Hero Cards and sleek animations.
 - **Categorization**: Group apps and sites into categories (e.g., Productivity, Social Media, Games).
 
 ## 🛠️ How It Works (Technical Implementation)

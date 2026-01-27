@@ -9,6 +9,8 @@ namespace Social_Sentry.ViewModels
         private readonly Services.UsageTrackerService _usageTracker;
         private readonly Services.ClassificationService _classificationService;
 
+        public CategoryGroup? DominantCategory { get; private set; }
+        public ObservableCollection<CategoryGroup> OtherCategories { get; } = new();
         public ObservableCollection<CategoryGroup> Categories { get; } = new();
 
         public CategoryViewModel(Services.UsageTrackerService usageTracker, Services.ClassificationService classificationService)
@@ -21,6 +23,7 @@ namespace Social_Sentry.ViewModels
         public void LoadCategories()
         {
             Categories.Clear();
+            OtherCategories.Clear();
 
             // Get all apps from usage tracker
             var apps = _usageTracker.GetTopApps();
@@ -28,28 +31,71 @@ namespace Social_Sentry.ViewModels
             // Group apps by category using ClassificationService
             var groupedApps = apps.GroupBy(a => _classificationService.Categorize(a.Name, ""));
 
-            // Desired Order of categories to appear
+            // Calculate Totals first to determine dominance
+            var allGroups = new System.Collections.Generic.List<CategoryGroup>();
             var desiredCategories = new[] { "Entertainment", "Productive", "Study", "Doom Scrolling", "Communication" };
             
-            // Create CategoryGroups for defined categories (ensures they appear even if empty if we want, or just consistent order)
             foreach (var categoryName in desiredCategories)
             {
                 var appsInGroup = groupedApps.FirstOrDefault(g => g.Key == categoryName)?.ToList() ?? new System.Collections.Generic.List<Social_Sentry.Models.AppUsageItem>();
-                
-                Categories.Add(CreateCategoryGroup(categoryName, appsInGroup));
+                allGroups.Add(CreateCategoryGroup(categoryName, appsInGroup));
             }
-
+            
             // Handle "Uncategorized" or any other dynamic categories not in the desired list
             foreach (var group in groupedApps)
             {
                 if (!desiredCategories.Contains(group.Key))
                 {
-                    Categories.Add(CreateCategoryGroup(group.Key, group.ToList()));
+                    allGroups.Add(CreateCategoryGroup(group.Key, group.ToList()));
                 }
             }
 
-            // Calculate Totals
-            CalculateTotals();
+            // Calculate Totals for All Groups
+            var appDurations = apps.ToDictionary(a => a.Name, a => a.RawDuration);
+            TimeSpan totalUsage = TimeSpan.Zero;
+
+            foreach (var category in allGroups)
+            {
+                TimeSpan catDuration = TimeSpan.Zero;
+                foreach (var appName in category.Apps)
+                {
+                    if (appDurations.TryGetValue(appName, out var dur))
+                    {
+                        catDuration += dur;
+                    }
+                }
+                category.TotalDuration = catDuration;
+                category.FormattedDuration = FormatDuration(category.TotalDuration);
+                totalUsage += catDuration;
+            }
+
+            // Verify total usage to avoid division by zero
+            double totalSeconds = totalUsage.TotalSeconds;
+            if (totalSeconds < 1) totalSeconds = 1;
+
+            foreach (var category in allGroups)
+            {
+                category.Percentage = category.TotalDuration.TotalSeconds / totalSeconds;
+            }
+            
+            TotalUsageFormatted = FormatDuration(totalUsage);
+
+            // Determine Dominant Category
+            var sorted = allGroups.OrderByDescending(c => c.TotalDuration).ToList();
+            if (sorted.Any())
+            {
+                DominantCategory = sorted.First();
+                OnPropertyChanged(nameof(DominantCategory)); // Notify UI
+
+                // Add others to OtherCategories
+                foreach (var c in sorted.Skip(1))
+                {
+                    OtherCategories.Add(c);
+                    Categories.Add(c); // Keep backward compatibility just in case, or for debug
+                }
+                // Add dominant to Categories [0] if we want the full list there, but UI will likely use dedicated props
+                Categories.Insert(0, DominantCategory);
+            }
         }
 
         private CategoryGroup CreateCategoryGroup(string name, System.Collections.Generic.List<Social_Sentry.Models.AppUsageItem> apps)
@@ -148,6 +194,8 @@ namespace Social_Sentry.ViewModels
         public ObservableCollection<string> Apps { get; set; } = new();
         public string AppCount => $"{Apps.Count} apps";
         
+        public string TopAppsSummary => string.Join(", ", Apps.Take(3)) + (Apps.Count > 3 ? "..." : "");
+
         public TimeSpan TotalDuration { get; set; }
         public string FormattedDuration { get; set; } = "";
         public double Percentage { get; set; }

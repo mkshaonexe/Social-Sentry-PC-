@@ -123,6 +123,12 @@ namespace Social_Sentry.Services
             // Determine Category from Extension Data
             _currentCategory = DetermineCategory(data);
 
+            // Context-Aware Process Naming Override
+            if (_currentCategory == "Study" && !_currentProcessName.Contains("(Study)"))
+            {
+                _currentProcessName = $"{_currentProcessName} (Study)";
+            }
+
             // Serialize Metadata
             try 
             {
@@ -161,6 +167,13 @@ namespace Social_Sentry.Services
             {
                 var uri = new Uri(data.Url);
                 string host = uri.Host.ToLower();
+                string path = uri.AbsolutePath.ToLower();
+
+                // Doom Scrolling Specifics
+                if (host.Contains("youtube.com") && (path.Contains("/shorts") || data.ContentType == "Shorts")) return "YouTube Shorts";
+                if (host.Contains("facebook.com") && (path.Contains("/reel") || data.ContentType == "Reels")) return "Facebook Reels";
+                if (host.Contains("instagram.com") && (path.Contains("/reels") || data.ContentType == "Reels")) return "Instagram Reels";
+                if (host.Contains("tiktok.com")) return "TikTok";
 
                 if (host.Contains("youtube.com")) return "YouTube";
                 if (host.Contains("facebook.com")) return "Facebook";
@@ -176,8 +189,28 @@ namespace Social_Sentry.Services
 
         private string DetermineCategory(ExtensionActivityData data)
         {
-            // V2 Logic
+            // 1. Doom Scrolling Check
             if (data.ContentType == "Shorts" || data.ContentType == "Reels") return "Doom Scrolling";
+            if (!string.IsNullOrEmpty(data.Url))
+            {
+                if (data.Url.Contains("youtube.com/shorts")) return "Doom Scrolling";
+                if (data.Url.Contains("facebook.com/reel")) return "Doom Scrolling";
+                if (data.Url.Contains("instagram.com/reels")) return "Doom Scrolling";
+                if (data.Url.Contains("tiktok.com")) return "Doom Scrolling";
+            }
+
+            // 2. Study Context Check (Title based)
+            if (!string.IsNullOrEmpty(data.Title))
+            {
+                var lowerTitle = data.Title.ToLower();
+                var studyKeywords = new[] { "study", "lecture", "tutorial", "course", "assignment", "thesis", "research", "math", "physics", "chemistry", "exam" };
+                if (studyKeywords.Any(k => lowerTitle.Contains(k)))
+                {
+                    return "Study";
+                }
+            }
+
+            // V2 Logic
             if (data.ContentType == "Video") return "Entertainment";
 
             // Fallback Logic

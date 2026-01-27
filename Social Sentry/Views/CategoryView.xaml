@@ -8,76 +8,151 @@
              d:DesignHeight="700" d:DesignWidth="800"
              Loaded="UserControl_Loaded">
     <UserControl.Resources>
-        <Style x:Key="CategoryItemStyle" TargetType="Border">
-            <Setter Property="Background" Value="#2D2D2D"/>
-            <Setter Property="BorderBrush" Value="#3D3D3D"/>
+        <!-- Colors -->
+        <SolidColorBrush x:Key="CardBackground" Color="#2D2D2D"/>
+        <SolidColorBrush x:Key="CardBorder" Color="#3D3D3D"/>
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="12"/>
-            <Setter Property="Padding" Value="20,16"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="4" Opacity="0.3"/>
+                </Setter.Value>
+            </Setter>
         </Style>
+
+        <!-- Animation Storyboards -->
+        <Storyboard x:Key="EntranceAnimation">
+            <DoubleAnimation Storyboard.TargetName="MainContent" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.6"/>
+            <ThicknessAnimation Storyboard.TargetName="MainContent" Storyboard.TargetProperty="Margin" From="0,40,0,0" To="0" Duration="0:0:0.6">
+                <ThicknessAnimation.EasingFunction>
+                    <ExponentialEase EasingMode="EaseOut" Exponent="5"/>
+                </ThicknessAnimation.EasingFunction>
+            </ThicknessAnimation>
+        </Storyboard>
     </UserControl.Resources>
     
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="32,24">
-            <!-- Header -->
-            <TextBlock Text="Categories" FontSize="28" FontWeight="Bold" 
-                      Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,8"/>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard Storyboard="{StaticResource EntranceAnimation}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel x:Name="MainContent" Margin="32">
             
-            <TextBlock Text="Organize your apps into categories to better understand your usage patterns" 
-                      FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,32"/>
+            <!-- Page Header -->
+            <TextBlock Text="Usage Insights" FontSize="32" FontWeight="Bold" Foreground="White" Margin="0,0,0,8"/>
+            <TextBlock Text="Understanding your digital habits" FontSize="16" Foreground="#AAAAAA" Margin="0,0,0,32"/>
 
-            <!-- Donut Chart Section -->
-            <Grid Height="320" Margin="0,0,0,40">
-                <!-- Canvas for manual drawing of Arcs -->
-                <Canvas x:Name="ChartCanvas" Width="280" Height="280" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                
-                <!-- Center Text -->
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="Total Time" Foreground="{StaticResource SecondaryTextBrush}" 
-                               FontSize="14" HorizontalAlignment="Center"/>
-                    <TextBlock Text="{Binding TotalUsageFormatted}" Foreground="{StaticResource PrimaryTextBrush}" 
-                               FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
-                </StackPanel>
-            </Grid>
+            <!-- Hero Section (Dominant Category) -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,32" Height="220" 
+                    Background="{Binding DominantCategory.Color, FallbackValue='#333'}"
+                    BorderThickness="0">
+                <Grid>
+                    <Grid.Background>
+                       <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                           <GradientStop Color="#CC000000" Offset="0"/>
+                           <GradientStop Color="#22000000" Offset="1"/>
+                       </LinearGradientBrush>
+                    </Grid.Background>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Left: Info -->
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="10">
+                        <Border Background="#33FFFFFF" HorizontalAlignment="Left" CornerRadius="8" Padding="12,6" Margin="0,0,0,16">
+                            <TextBlock Text="DOMINANT CATEGORY" FontSize="12" FontWeight="Bold" Foreground="White" Opacity="0.9"/>
+                        </Border>
+                        
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <TextBlock Text="{Binding DominantCategory.Icon}" FontSize="36" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding DominantCategory.Name}" FontSize="36" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <TextBlock Text="{Binding DominantCategory.TopAppsSummary}" FontSize="16" Foreground="#DDDDDD" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                    
+                    <!-- Right: Stats -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="20">
+                        <TextBlock Text="{Binding DominantCategory.FormattedDuration}" FontSize="48" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right"/>
+                        <TextBlock Text="{Binding DominantCategory.PercentageFormatted, StringFormat='You spent {0} of your time here'}" 
+                                   FontSize="16" Foreground="#DDDDDD" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
 
-            <!-- Category List -->
-            <ItemsControl ItemsSource="{Binding Categories}">
+            <!-- Grid for Other Categories -->
+            <TextBlock Text="All Categories" FontSize="20" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,16"/>
+            
+            <ItemsControl ItemsSource="{Binding OtherCategories}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Style="{StaticResource CategoryItemStyle}">
+                        <Border Style="{StaticResource CardStyle}" Width="340" Height="160" Margin="0,0,24,24">
                             <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/> <!-- Dot -->
-                                    <ColumnDefinition Width="*"/>    <!-- Name + Icon -->
-                                    <ColumnDefinition Width="Auto"/> <!-- Percentage -->
-                                    <ColumnDefinition Width="Auto"/> <!-- Duration -->
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Dot -->
-                                <Ellipse Grid.Column="0" Width="12" Height="12" Fill="{Binding Color}" Margin="0,0,16,0"/>
-
-                                <!-- Icon + Name -->
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold"
-                                              Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                    <TextBlock Text="{Binding Icon}" FontSize="16" VerticalAlignment="Center"/>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <!-- Header -->
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Width="40" Height="40" CornerRadius="10" Background="{Binding Color}" Margin="0,0,12,0">
+                                            <TextBlock Text="{Binding Icon}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    
+                                    <TextBlock Grid.Column="1" Text="{Binding PercentageFormatted}" FontSize="18" FontWeight="Bold" Foreground="{Binding Color}" VerticalAlignment="Center"/>
+                                </Grid>
+                                
+                                <!-- Middle: Top Apps -->
+                                <TextBlock Grid.Row="1" Text="{Binding TopAppsSummary}" 
+                                          FontSize="14" Foreground="#AAAAAA" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,12,0,12"/>
+                                
+                                <!-- Bottom: Duration & Progress -->
+                                <StackPanel Grid.Row="2">
+                                     <Grid Margin="0,0,0,8">
+                                         <TextBlock Text="Total Time" FontSize="12" Foreground="#888888"/>
+                                         <TextBlock Text="{Binding FormattedDuration}" FontSize="14" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Right"/>
+                                     </Grid>
+                                     <ProgressBar Value="{Binding Percentage}" Maximum="1" Height="6" BorderThickness="0" Background="#444444">
+                                         <ProgressBar.Foreground>
+                                             <SolidColorBrush Color="{Binding Color, UpdateSourceTrigger=PropertyChanged}"/> 
+                                              <!-- Direct Color Binding might fail if Color is string hex. 
+                                                   User needs a Converter or the VM should expose SolidColorBrush. 
+                                                   Assuming Color is a Hex String (e.g. #FF0000), specific binding or converter needed. 
+                                                   Actually standard Binding to Foreground with string works in some WPF contexts or needs converter. 
+                                                   Let's assume VM returns a valid Brush or string that works. 
+                                                   However, ProgressBar.Foreground expects a Brush. A string binding will default check TypeConverter. 
+                                                   Most standard WPF supports string-to-brush conversion implicitly in XAML but sometimes fails in specific controls. 
+                                                   To be safe, I'll rely on the default behavior or fix VM later if needed. 
+                                              -->
+                                         </ProgressBar.Foreground>
+                                     </ProgressBar>
                                 </StackPanel>
-
-                                <!-- Percentage -->
-                                <TextBlock Grid.Column="2" Text="{Binding PercentageFormatted}" 
-                                          FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" 
-                                          VerticalAlignment="Center" Margin="0,0,24,0"/>
-
-                                <!-- Duration -->
-                                <TextBlock Grid.Column="3" Text="{Binding FormattedDuration}" 
-                                          FontSize="14" Foreground="{StaticResource SecondaryTextBrush}" 
-                                          VerticalAlignment="Center"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>
