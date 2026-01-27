@@ -110,6 +110,10 @@ namespace Social_Sentry.ViewModels
             ClearDataCommand = new RelayCommand(ClearData);
             UnlockDeveloperModeCommand = new RelayCommand(UnlockDeveloperMode);
             InstallExtensionCommand = new RelayCommand<string>(InstallExtension);
+            
+            // Developer Commands
+            OpenDevLogsCommand = new RelayCommand(OpenDevLogs);
+            OpenDataFolderCommand = new RelayCommand(OpenDataFolder);
 
             // Initialize Extensions
             BrowserExtensions = new ObservableCollection<BrowserExtension>
@@ -136,6 +140,9 @@ namespace Social_Sentry.ViewModels
             _extensionService.OpenBrowserWithInstructions(browser);
         }
 
+        public ICommand OpenDevLogsCommand { get; }
+        public ICommand OpenDataFolderCommand { get; }
+
         private void UnlockDeveloperMode()
         {
             if (_isDeveloperModeEnabled) return;
@@ -145,7 +152,62 @@ namespace Social_Sentry.ViewModels
             {
                 IsDeveloperModeEnabled = true;
                 _developerClicks = 0;
-                System.Windows.MessageBox.Show("Developer Mode Activated!", "Social Sentry", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                System.Windows.MessageBox.Show("You are now a developer!", "Social Sentry", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
+            else if (_developerClicks > 2)
+            {
+                 // Optional: Toast notification "You are X steps away from being a developer"
+                 // For now, just debug log or silent
+                 System.Diagnostics.Debug.WriteLine($"{CLICKS_TO_UNLOCK - _developerClicks} steps away from developer mode.");
+            }
+        }
+
+        private void OpenDevLogs()
+        {
+            try 
+            {
+                // Placeholder: Open temp folder or log file
+                var logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "build_log.txt");
+                if (File.Exists(logPath))
+                {
+                    new System.Diagnostics.Process
+                    {
+                        StartInfo = new System.Diagnostics.ProcessStartInfo(logPath)
+                        {
+                            UseShellExecute = true
+                        }
+                    }.Start();
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("No log file found.", "Developer Mode", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Error opening logs: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+        }
+
+        private void OpenDataFolder()
+        {
+            try
+            {
+                var appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SocialSentry");
+                if (Directory.Exists(appDataPath))
+                {
+                    new System.Diagnostics.Process
+                    {
+                        StartInfo = new System.Diagnostics.ProcessStartInfo(appDataPath)
+                        {
+                            UseShellExecute = true
+                        }
+                    }.Start();
+                }
+            }
+             catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Error opening folder: {ex.Message}", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
         }
 
