@@ -264,7 +264,6 @@ namespace Social_Sentry.ViewModels
                 ShowDesktopWidget = _showDesktopWidget,
 
                 SelectedTheme = _selectedTheme,
-                SelectedTheme = _selectedTheme,
                 IsDeveloperModeEnabled = _isDeveloperModeEnabled,
                 IsRawDataEnabled = _isRawDataEnabled,
                 IsRankingEnabled = _isRankingEnabled
