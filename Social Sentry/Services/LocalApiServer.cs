@@ -144,16 +144,34 @@ namespace Social_Sentry.Services
 
         public void Stop()
         {
-            _isRunning = false;
-            _cts.Cancel();
-            _listener.Stop();
+            if (_isRunning)
+            {
+                _isRunning = false;
+                try
+                {
+                    _cts?.Cancel();
+                    if (_listener.IsListening)
+                    {
+                        _listener.Stop();
+                    }
+                }
+                catch (ObjectDisposedException) { }
+                catch (Exception ex) 
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error stopping LocalApiServer: {ex.Message}");
+                }
+            }
         }
 
         public void Dispose()
         {
             Stop();
-            _listener.Close();
-            _cts.Dispose();
+            try
+            {
+                _listener.Close();
+                _cts?.Dispose();
+            }
+            catch (Exception) { }
         }
     }
 

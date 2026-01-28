@@ -238,14 +238,12 @@ namespace Social_Sentry
                 e.Cancel = true;
                 Hide();
                 
+                // Stealth Mode: Hide tray icon when window is closed
+                if (_notifyIcon != null)
+                {
+                    _notifyIcon.Visible = false;
+                }
             }
-            // else
-            // {
-            //    if (_isTrayIconVisible && _settings.ShowNotifications)
-            //    {
-            //        _notifyIcon?.ShowBalloonTip(2000, "Social Sentry", "Running in background", Forms.ToolTipIcon.Info);
-            //    }
-            // }
             else
             {
                  UsageTracker.Stop();

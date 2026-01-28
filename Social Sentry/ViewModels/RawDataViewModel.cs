@@ -2,6 +2,8 @@ using System;
 using System.Collections.ObjectModel;
 using Social_Sentry.Services;
 
+using Social_Sentry.Models;
+
 namespace Social_Sentry.ViewModels
 {
     public class RawDataViewModel : ViewModelBase
@@ -30,7 +32,7 @@ namespace Social_Sentry.ViewModels
             _usageTracker.OnRawActivityDetected += OnActivityDetected;
         }
 
-        private void OnActivityDetected(ActivityEvent evt)
+        private void OnActivityDetected(Models.ActivityEvent evt)
         {
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {

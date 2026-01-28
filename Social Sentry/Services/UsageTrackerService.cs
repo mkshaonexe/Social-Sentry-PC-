@@ -37,7 +37,7 @@ namespace Social_Sentry.Services
 
         public event Action? OnUsageUpdated;
 
-        public event Action<ActivityEvent>? OnRawActivityDetected;
+        public event Action<Social_Sentry.Models.ActivityEvent>? OnRawActivityDetected;
         public event Action? OnStatsUpdated; // New event for aggregated stats updates
 
         // Exposed metrics for Widget
@@ -181,7 +181,7 @@ namespace Social_Sentry.Services
             _activityTracker.Stop();
         }
 
-        private void HandleActivityChanged(ActivityEvent newEvent)
+        private void HandleActivityChanged(Social_Sentry.Models.ActivityEvent newEvent)
         {
             // Update raw log subscribers
             OnRawActivityDetected?.Invoke(newEvent);
@@ -292,7 +292,7 @@ namespace Social_Sentry.Services
             _lastSwitchTime = DateTime.Now;
 
             // Notify raw data subscribers (Dashboard)
-            var evt = new ActivityEvent 
+            var evt = new Social_Sentry.Models.ActivityEvent 
             {
                 ProcessName = _currentProcessName, 
                 WindowTitle = _currentWindowTitle,

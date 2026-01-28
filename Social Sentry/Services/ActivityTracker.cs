@@ -3,16 +3,10 @@ using System.Diagnostics;
 using System.Text;
 using System.Timers;
 
+using Social_Sentry.Models;
+
 namespace Social_Sentry.Services
 {
-    public class ActivityEvent
-    {
-        public string ProcessName { get; set; } = string.Empty;
-        public int ProcessId { get; set; } // Added ProcessId
-        public string WindowTitle { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty; // Added URL property
-        public DateTime Timestamp { get; set; }
-    }
 
     public class ActivityTracker
     {
@@ -24,7 +18,7 @@ namespace Social_Sentry.Services
         private System.Timers.Timer _debounceTimer;
         private const int DebounceInterval = 250; // ms
 
-        public event Action<ActivityEvent>? OnActivityChanged;
+        public event Action<Social_Sentry.Models.ActivityEvent>? OnActivityChanged;
 
         private readonly BrowserMonitor _browserMonitor;
         private readonly IdleDetector _idleDetector;
@@ -165,7 +159,7 @@ namespace Social_Sentry.Services
                     }
                 }
 
-                OnActivityChanged?.Invoke(new ActivityEvent
+                OnActivityChanged?.Invoke(new Social_Sentry.Models.ActivityEvent
                 {
                     ProcessName = processName,
                     ProcessId = (int)processId,

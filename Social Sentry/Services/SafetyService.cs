@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Social_Sentry.Views;
+using Social_Sentry.Models;
 
 namespace Social_Sentry.Services
 {
@@ -49,7 +50,7 @@ namespace Social_Sentry.Services
             }
         }
 
-        private void HandleActivity(Models.ActivityEvent evt)
+        private void HandleActivity(Social_Sentry.Models.ActivityEvent evt)
         {
             _lastActivityTime = DateTime.Now;
         }
@@ -97,6 +98,9 @@ namespace Social_Sentry.Services
 
                     // 2. Check for Break Trigger
                     var sessionDuration = now - _sessionStartTime;
+                    var remaining = TimeSpan.FromMinutes(MAX_CONTINUOUS_MINUTES) - sessionDuration;
+                    OnTimeRemainingChanged?.Invoke(remaining);
+
                     if (sessionDuration.TotalMinutes >= MAX_CONTINUOUS_MINUTES)
                     {
                         TriggerBreak();
@@ -117,7 +121,7 @@ namespace Social_Sentry.Services
         {
             _isBreakActive = true;
             
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 var overlay = new SafetyOverlayWindow();
                 overlay.Closed += (s, e) => 
