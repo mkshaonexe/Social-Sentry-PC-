@@ -5,12 +5,11 @@ A powerful Windows native application designed for digital well-being, parental 
 ## 📥 Download
 Download the latest version from our **[GitHub Releases](https://github.com/mkshaonexe/Social-Sentry-PC-/releases/latest)** page.
 
-### 🚀 Release Notes v1.0.3.0
-- **Installer**: Unified MSI installer for easy deployment.
-- **Unified Branding**: Updated application logo across all components.
-- **UI Enhancements**: Improved Dark Mode consistency, sleek animations, and optimized dashboard.
-- **Performance**: Faster charts, reduced memory usage, and self-healing statistics.
-- **New Features**: Prime Mode, AI Hakari, Smart Reels Blocker, Global Community Chat, and improved Desktop Widget.
+### 🚀 Release Notes v1.1.0
+- **Hardened Adult Blocker**: Removed "Turn Off" loophole; added safe navigation controls.
+- **Improved Security**: Enhanced overlay with "Close Browser" and "Go Back" options.
+- **Stability**: Refined browser interaction logic.
+- **Previous Features**: Unified MSI Installer, Prime Mode, AI Hakari, Smart Reels Blocker.
 
 ## ✨ Features
 
