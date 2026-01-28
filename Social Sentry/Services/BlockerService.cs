@@ -380,7 +380,7 @@ namespace Social_Sentry.Services
             NativeMethods.SendInput((uint)inputsUp.Length, inputsUp, NativeMethods.INPUT.Size);
         }
 
-        private void SimulateGoBack()
+        public static void SimulateGoBack()
         {
             // Simulate Alt + Left Arrow
             NativeMethods.INPUT[] inputsDown = new NativeMethods.INPUT[2];
@@ -400,6 +400,35 @@ namespace Social_Sentry.Services
 
             inputsUp[0].type = NativeMethods.INPUT_KEYBOARD;
             inputsUp[0].U.ki.wVk = NativeMethods.VK_LEFT;
+            inputsUp[0].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            inputsUp[1].type = NativeMethods.INPUT_KEYBOARD;
+            inputsUp[1].U.ki.wVk = NativeMethods.VK_MENU;
+            inputsUp[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            NativeMethods.SendInput((uint)inputsUp.Length, inputsUp, NativeMethods.INPUT.Size);
+        }
+
+        public static void SimulateCloseBrowser()
+        {
+            // Simulate Alt + F4
+            NativeMethods.INPUT[] inputsDown = new NativeMethods.INPUT[2];
+
+            inputsDown[0].type = NativeMethods.INPUT_KEYBOARD;
+            inputsDown[0].U.ki.wVk = NativeMethods.VK_MENU; // VK_MENU is Alt
+            inputsDown[0].U.ki.dwFlags = 0;
+
+            inputsDown[1].type = NativeMethods.INPUT_KEYBOARD;
+            inputsDown[1].U.ki.wVk = NativeMethods.VK_F4;
+            inputsDown[1].U.ki.dwFlags = 0;
+
+            NativeMethods.SendInput((uint)inputsDown.Length, inputsDown, NativeMethods.INPUT.Size);
+
+            // Release
+            NativeMethods.INPUT[] inputsUp = new NativeMethods.INPUT[2];
+
+            inputsUp[0].type = NativeMethods.INPUT_KEYBOARD;
+            inputsUp[0].U.ki.wVk = NativeMethods.VK_F4;
             inputsUp[0].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
 
             inputsUp[1].type = NativeMethods.INPUT_KEYBOARD;

@@ -14,25 +14,14 @@ namespace Social_Sentry.Views
 
         private void GoBack_Click(object sender, RoutedEventArgs e)
         {
+            BlockerService.SimulateGoBack();
             this.Close();
         }
 
-        private void TurnOff_Click(object sender, RoutedEventArgs e)
+        private void CloseBrowser_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var settingsService = new SettingsService();
-                var settings = settingsService.LoadSettings();
-                settings.IsAdultBlockerEnabled = false;
-                settingsService.SaveSettings(settings); 
-                
-                System.Windows.MessageBox.Show("Adult Blocker has been turned off.", "Social Sentry", MessageBoxButton.OK, MessageBoxImage.Information);
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show("Failed to update settings: " + ex.Message);
-            }
+            BlockerService.SimulateCloseBrowser();
+            this.Close();
         }
     }
 }

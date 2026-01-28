@@ -90,6 +90,7 @@ namespace Social_Sentry.Services
         public const ushort VK_RETURN = 0x0D;
         public const ushort VK_L = 0x4C;
         public const ushort VK_M = 0x4D;
+        public const ushort VK_F4 = 0x73;
         public const uint KEYEVENTF_UNICODE = 0x0004;
 
         // Event Hook Constants
