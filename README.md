@@ -10,6 +10,7 @@ Download the latest version from our **[GitHub Releases](https://github.com/mksh
 - **UI Enhancements**: Improved Dark Mode consistency and Settings UI.
 - **Performance**: Optimized Dashboard charts and data visualization.
 - **Fixes**: Resolved minor UI glitches in the "Limit" section.
+- **Maintenance**: Fixed build errors (ambiguous references) for smoother development.
 
 ## ✨ Features
 

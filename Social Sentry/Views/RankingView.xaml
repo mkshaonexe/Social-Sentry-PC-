@@ -12,6 +12,7 @@
     <UserControl.Resources>
         <conv:ProgressToGeometryConverter x:Key="ProgressToGeometryConverter"/>
         <conv:BadgeUnlockConverter x:Key="BadgeUnlockConverter"/>
+        <conv:StringToUpperConverter x:Key="StringToUpperConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
         <Style x:Key="CarouselListBoxStyle" TargetType="ListBox">
@@ -50,21 +51,21 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             
-            <!-- Back Button placeholder logic if needed, visually present -->
-            <Button Style="{StaticResource IconButtonStyle}" Visibility="Hidden">
+            <!-- Back Button -->
+            <Button Style="{StaticResource IconButtonStyle}" Command="{Binding BackCommand}">
                 <Path Data="M20,11H7.83L13.42,5.41L12,4L4,12L12,20L13.41,18.59L7.83,13H20V11Z" Fill="White" Stretch="Uniform" Width="24" Height="24"/>
             </Button>
             
             <TextBlock Grid.Column="1" Text="NO FAP RANK" 
                        Foreground="#E6FFFFFF" 
-                       FontSize="16" 
+                       FontSize="18" 
                        FontWeight="Bold" 
                        HorizontalAlignment="Center" 
                        VerticalAlignment="Center"/>
 
-            <Button Grid.Column="2" Style="{StaticResource IconButtonStyle}" Command="{Binding ToggleInfoCommand}">
-                 <!-- Settings Icon or Info Icon -->
-               <Path Data="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z" Fill="White" Stretch="Uniform" Width="24" Height="24"/>
+            <!-- Settings/Gear Icon -->
+            <Button Grid.Column="2" Style="{StaticResource IconButtonStyle}" Command="{Binding OpenSettingsCommand}">
+               <Path Data="M19.43,12.98C19.47,12.66 19.5,12.34 19.5,12C19.5,11.66 19.47,11.34 19.43,11.02L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.97 19.05,5.05L16.56,6.05C16.04,5.65 15.48,5.32 14.87,5.07L14.49,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.51,2.42L9.13,5.07C8.52,5.32 7.96,5.65 7.44,6.05L4.95,5.05C4.73,4.97 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11.02C4.53,11.34 4.5,11.66 4.5,12C4.5,12.34 4.53,12.66 4.57,12.98L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.95C7.96,18.35 8.52,18.68 9.13,18.93L9.51,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.49,21.58L14.87,18.93C15.48,18.68 16.04,18.35 16.56,17.95L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.98M12,15.5C10.07,15.5 8.5,13.93 8.5,12C8.5,10.07 10.07,8.5 12,8.5C13.93,8.5 15.5,10.07 15.5,12C15.5,13.93 13.93,15.5 12,15.5Z" Fill="White" Stretch="Uniform" Width="24" Height="24"/>
             </Button>
         </Grid>
 
@@ -76,7 +77,7 @@
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Padding" Value="0"/>
-                    <Setter Property="Margin" Value="20,0"/>
+                    <Setter Property="Margin" Value="40,0"/> <!-- Increased spacing -->
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="Template">
                         <Setter.Value>
@@ -89,7 +90,7 @@
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid Width="220" Height="280">
+                    <Grid Width="260" Height="320"> <!-- Increased card size -->
                         <!-- Unlock Status Logic -->
                         <Grid.Resources>
                              <MultiBinding x:Key="IsUnlocked" Converter="{StaticResource BadgeUnlockConverter}">
@@ -106,7 +107,7 @@
                         </Grid.RowDefinitions>
                         
                         <!-- Badge Image -->
-                        <Grid Width="140" Height="140" HorizontalAlignment="Center" Margin="0,0,0,20">
+                        <Grid Width="180" Height="180" HorizontalAlignment="Center" Margin="0,0,0,10">
                             <Image Source="{Binding ImagePath}" Stretch="Uniform">
                                 <Image.Style>
                                     <Style TargetType="Image">
@@ -119,7 +120,7 @@
                                                     </MultiBinding>
                                                 </DataTrigger.Binding>
 
-                                                <Setter Property="Opacity" Value="0.4"/>
+                                                <Setter Property="Opacity" Value="0.3"/> <!-- Darker for locked -->
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -130,7 +131,7 @@
                             <Path Data="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z" 
                                   Fill="#80FFFFFF" 
                                   Stretch="Uniform" 
-                                  Width="40" Height="40"
+                                  Width="50" Height="50"
                                   HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Path.Style>
                                     <Style TargetType="Path">
@@ -152,16 +153,16 @@
                         </Grid>
                         
                         <!-- Title -->
-                        <TextBlock Grid.Row="1" Text="{Binding Title}" 
-                                   Foreground="White" FontWeight="Bold" FontSize="20" 
-                                   HorizontalAlignment="Center" TextAlignment="Center">
-                                   <!-- Logic to color Cyan if current -->
+                        <TextBlock Grid.Row="1" Text="{Binding Title, Converter={StaticResource StringToUpperConverter}}" 
+                                   Foreground="White" FontWeight="Bold" FontSize="32" 
+                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                   Margin="0,0,0,5">
                                    <TextBlock.Style>
                                        <Style TargetType="TextBlock">
-                                           <Setter Property="Foreground" Value="White"/>
+                                           <Setter Property="Foreground" Value="#80FFFFFF"/> <!-- Default Grey for others -->
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Title}" Value="{Binding DataContext.CurrentBadge.Title, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                                                     <Setter Property="Foreground" Value="#00BCD4"/>
+                                                     <Setter Property="Foreground" Value="#00BCD4"/> <!-- Cyan for current -->
                                                 </DataTrigger>
                                             </Style.Triggers>
                                            </Style>
@@ -169,10 +170,11 @@
                         </TextBlock>
 
                         <!-- Subtitle / Rank Status -->
-                        <StackPanel Grid.Row="2" Margin="0,5,0,0">
+                        <StackPanel Grid.Row="2">
                             <!-- Helper Text: Reach X Days -->
                             <TextBlock Text="{Binding DayThreshold, StringFormat='Reach {0} Days'}" 
-                                       TextAlignment="Center" FontSize="12" Foreground="Gray">
+                                       TextAlignment="Center" FontSize="14" Foreground="#80FFFFFF"
+                                       Margin="0,5">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Visibility" Value="Collapsed"/> <!-- Default hidden -->
@@ -193,7 +195,7 @@
 
                             <!-- Helper Text: CURRENT RANK -->
                              <TextBlock Text="CURRENT RANK" 
-                                       Foreground="#00BCD4" FontSize="12" FontWeight="SemiBold"
+                                       Foreground="#00BCD4" FontSize="16" FontWeight="SemiBold"
                                        HorizontalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">

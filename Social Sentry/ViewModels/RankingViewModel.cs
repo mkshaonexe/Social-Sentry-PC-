@@ -118,6 +118,8 @@ namespace Social_Sentry.ViewModels
         
         // Command to turn off protection
         public RelayCommand TurnOffProtectionCommand { get; } = null!;
+        public RelayCommand BackCommand { get; } = null!;
+        public RelayCommand OpenSettingsCommand { get; } = null!;
 
         public RankingViewModel()
         {
@@ -142,6 +144,8 @@ namespace Social_Sentry.ViewModels
              // Constructor initialization of properties
              ToggleInfoCommand = new RelayCommand(ExecuteToggleInfo);
              TurnOffProtectionCommand = new RelayCommand(ExecuteTurnOffProtection);
+             BackCommand = new RelayCommand(ExecuteBack);
+             OpenSettingsCommand = new RelayCommand(ExecuteOpenSettings);
 
              // Start timer
              _timer = new DispatcherTimer();
@@ -166,6 +170,16 @@ namespace Social_Sentry.ViewModels
             // This is a placeholder action. In a real scenario, this would trigger
             // the penalty dialog or navigation to settings.
             System.Windows.MessageBox.Show("Disabling protection will reset your streak. Are you sure?", "Warning", System.Windows.MessageBoxButton.YesNo);
+        }
+
+        private void ExecuteBack()
+        {
+            // Placeholder: Check if navigation service exists or just log
+        }
+
+        private void ExecuteOpenSettings()
+        {
+            // Placeholder: Navigate to settings
         }
 
         private void Timer_Tick(object? sender, EventArgs e)
