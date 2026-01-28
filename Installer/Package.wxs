@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package Name="Social Sentry" Manufacturer="MK Shaon" Version="1.0.2.0" UpgradeCode="7dff9e2b-4653-48cb-bea5-ba0c7fc6094d">
+  <Package Name="Social Sentry" Manufacturer="MK Shaon" Version="1.0.3.0" UpgradeCode="7dff9e2b-4653-48cb-bea5-ba0c7fc6094d">
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 
     <MediaTemplate EmbedCab="yes" />

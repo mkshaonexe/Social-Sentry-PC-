@@ -391,8 +391,8 @@ namespace Social_Sentry.ViewModels
 
     public class BrowserExtension
     {
-        public string Name { get; set; }
-        public string Icon { get; set; } 
+        public string Name { get; set; } = string.Empty;
+        public string Icon { get; set; } = string.Empty;
         public bool IsInstalled { get; set; }
     }
 }
