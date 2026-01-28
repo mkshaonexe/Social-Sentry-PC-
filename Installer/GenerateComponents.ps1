@@ -23,9 +23,12 @@ function Process-Directory {
         # Substring logic
         $rel = $file.FullName.Substring($sourceDir.Path.Length + 1)
         
+        # Escape special XML characters in path
+        $relEscaped = $rel -replace "&", "&amp;" -replace "<", "&lt;" -replace ">", "&gt;" -replace '"', "&quot;" -replace "'", "&apos;"
+        
         $localContent += @"
             <Component Id="$id" Guid="$([Guid]::NewGuid())" Bitness="always64">
-                <File Id="$fileId" Source="source\$rel" KeyPath="yes" />
+                <File Id="$fileId" Source="source\$relEscaped" KeyPath="yes" />
             </Component>
 "@
         $script:componentRefs += $id

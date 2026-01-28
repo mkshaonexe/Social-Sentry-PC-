@@ -54,13 +54,10 @@ Write-Host "Publishing Watchdog..." -ForegroundColor Cyan
 dotnet publish $watchdogProject -c Release -r win-x64 --self-contained true -o $sourceDir /p:DebugType=None /p:DebugSymbols=false
 if ($LASTEXITCODE -ne 0) { Write-Error "Watchdog Publish Failed" }
 
-# 4. Copy Extension Files (If needed, assume they are in specific folder)
-$extSrc = Join-Path $projectRoot "Social Sentry\extension"
-$extDest = Join-Path $sourceDir "extension"
-if (Test-Path $extSrc) {
-    Write-Host "Copying Browser Extension..." -ForegroundColor Cyan
-    Copy-Item $extSrc -Destination $extDest -Recurse -Force
-}
+# 4. Copy Extension Files (Handled by .csproj Publish - Removed manual copy to avoid duplication)
+# The extension folder is defined in Social Sentry.csproj as "CopyToOutputDirectory"
+# So 'dotnet publish' already places it in $sourceDir.
+
 
 # 5. Generate WiX Components (Auto-Harvesting)
 Write-Host "Harvesting files..." -ForegroundColor Yellow
