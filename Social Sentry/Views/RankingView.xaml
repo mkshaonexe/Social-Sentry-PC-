@@ -13,6 +13,7 @@
         <conv:ProgressToGeometryConverter x:Key="ProgressToGeometryConverter"/>
         <conv:BadgeUnlockConverter x:Key="BadgeUnlockConverter"/>
         <conv:StringToUpperConverter x:Key="StringToUpperConverter"/>
+        <conv:EqualityConverter x:Key="EqualityConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
         <Style x:Key="CarouselListBoxStyle" TargetType="ListBox">
@@ -157,12 +158,18 @@
                                    Foreground="White" FontWeight="Bold" FontSize="32" 
                                    HorizontalAlignment="Center" TextAlignment="Center"
                                    Margin="0,0,0,5">
-                                   <TextBlock.Style>
+                       <TextBlock.Style>
                                        <Style TargetType="TextBlock">
                                            <Setter Property="Foreground" Value="#80FFFFFF"/> <!-- Default Grey for others -->
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Title}" Value="{Binding DataContext.CurrentBadge.Title, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                                                     <Setter Property="Foreground" Value="#00BCD4"/> <!-- Cyan for current -->
+                                                <DataTrigger Value="True">
+                                                    <DataTrigger.Binding>
+                                                        <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                                            <Binding Path="Title" />
+                                                            <Binding Path="DataContext.CurrentBadge.Title" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                                                        </MultiBinding>
+                                                    </DataTrigger.Binding>
+                                                    <Setter Property="Foreground" Value="#00BCD4"/> <!-- Cyan for current -->
                                                 </DataTrigger>
                                             </Style.Triggers>
                                            </Style>
@@ -201,8 +208,14 @@
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Visibility" Value="Collapsed"/>
                                         <Style.Triggers>
-                                             <DataTrigger Binding="{Binding Title}" Value="{Binding DataContext.CurrentBadge.Title, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                                                 <Setter Property="Visibility" Value="Visible"/>
+                                            <DataTrigger Value="True">
+                                                <DataTrigger.Binding>
+                                                    <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                                        <Binding Path="Title" />
+                                                        <Binding Path="DataContext.CurrentBadge.Title" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>

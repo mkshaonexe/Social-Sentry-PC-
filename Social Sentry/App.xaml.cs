@@ -160,6 +160,15 @@ namespace Social_Sentry
                 errorMessage += $"\n\nInner Exception:\n{ex.InnerException.Message}";
             }
 
+            try
+            {
+                string desktopPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
+                string logPath = System.IO.Path.Combine(desktopPath, "social_sentry_crash_log.txt");
+                string logContent = $"[{System.DateTime.Now}] CRASH REPORT:\n{errorMessage}\n------------------------------------------------\n";
+                System.IO.File.AppendAllText(logPath, logContent);
+            }
+            catch { /* Ignore logging errors during crash */ }
+
             System.Windows.MessageBox.Show(errorMessage, "Social Sentry Crash Report", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
         }
