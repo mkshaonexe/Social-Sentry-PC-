@@ -144,7 +144,7 @@ namespace Social_Sentry.Services
         public bool IsAdultBlockerEnabled { get; set; } = true;
         public bool IsDeveloperModeEnabled { get; set; } = false;
         public bool IsRawDataEnabled { get; set; } = false; // Default hidden
-        public bool IsRankingEnabled { get; set; } = true;  // Default visible
+        public bool IsRankingEnabled { get; set; } = false;  // Default hidden
         public bool ShowDesktopWidget { get; set; } = true; // Default True
         public long RankingStartTimestamp { get; set; } = 0;
 

@@ -199,6 +199,35 @@
                     
                     <TextBlock Text="Advanced debugging tools." FontSize="14" 
                               Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,0,0,16"/>
+
+                    <!-- Toggle Features (New) -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Ranking Page" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Show the Global Ranking page in sidebar" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding IsRankingEnabled}" 
+                                  VerticalAlignment="Center" Style="{StaticResource ToggleSwitchStyle}"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Raw Data" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Show the Raw Data page in sidebar" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding IsRawDataEnabled}" 
+                                  VerticalAlignment="Center" Style="{StaticResource ToggleSwitchStyle}"/>
+                    </Grid>
+
+                    <Separator Background="#333" Margin="0,8,0,24"/>
                               
                     <!-- Debug Features -->
                      <Grid Margin="0,0,0,12">
