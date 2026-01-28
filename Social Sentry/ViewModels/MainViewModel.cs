@@ -68,6 +68,7 @@ namespace Social_Sentry.ViewModels
 
         public ICommand NavigateCommand { get; }
         public ICommand ToggleTrackingCommand { get; }
+        public ICommand GetHelpCommand { get; }
 
         public event System.Action<bool>? OnTrackingToggled;
 
@@ -94,6 +95,7 @@ namespace Social_Sentry.ViewModels
             
             NavigateCommand = new RelayCommand<string>(Navigate);
             ToggleTrackingCommand = new RelayCommand(ToggleTracking);
+            GetHelpCommand = new RelayCommand(OpenGetHelp);
 
             CurrentView = DashboardVM; // Default view
 
@@ -158,6 +160,23 @@ namespace Social_Sentry.ViewModels
         private void ToggleTracking()
         {
             IsTrackingEnabled = !IsTrackingEnabled;
+        }
+
+        private void OpenGetHelp()
+        {
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "https://t.me/socialsentryapp",
+                    UseShellExecute = true
+                };
+                System.Diagnostics.Process.Start(psi);
+            }
+            catch (System.Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error opening help link: {ex.Message}");
+            }
         }
     }
 }

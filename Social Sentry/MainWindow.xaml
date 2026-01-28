@@ -192,6 +192,7 @@
                             Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Settings'}"/>
                             
                     <Button Content="Get Help" 
+                            Command="{Binding GetHelpCommand}"
                             Style="{StaticResource NavigationButtonStyle}" 
                             VerticalAlignment="Bottom"/>
                 </StackPanel>
