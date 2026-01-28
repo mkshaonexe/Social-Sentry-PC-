@@ -212,10 +212,24 @@ namespace Social_Sentry
 
         private void ExitApplication()
         {
-            _isExplicitExit = true;
-            _notifyIcon?.Dispose();
-            _notifyIcon = null;
-            System.Windows.Application.Current.Shutdown();
+            // FAKE EXIT -> Stealth Mode
+            // The user wants "Exit" from tray to hide the tray icon but keep running silently.
+            
+            _isTrayIconVisible = false;
+            if (_notifyIcon != null)
+            {
+                _notifyIcon.Visible = false;
+            }
+
+            // Update settings so it remembers strictly stealth if needed, 
+            // or just for this session. User said "remove it from the background tray".
+            
+            if (IsVisible)
+            {
+                Hide();
+            }
+            
+            // Do NOT call Shutdown();
         }
 
         private void OnTrackingToggled(bool isEnabled)
@@ -228,21 +242,23 @@ namespace Social_Sentry
             {
                 UsageTracker.Stop();
             }
-
         }
 
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Always cancel closing and hide, unless we legitimately want to kill the process 
+            // (which now can only be done via Task Manager as per "Parental Control" request)
+            
+            // If we ever invoke Shutdown() explicitly, we must set _isExplicitExit = true;
+            // But currently "Exit" button just goes stealth. So _isExplicitExit is rarely true unless we add a specific "Admin Exit" later.
+            
             if (!_isExplicitExit)
             {
                 e.Cancel = true;
                 Hide();
                 
-                // Stealth Mode: Hide tray icon when window is closed
-                if (_notifyIcon != null)
-                {
-                    _notifyIcon.Visible = false;
-                }
+                // Behavior Change: Do NOT hide tray icon here. 
+                // Tray icon remains until user explicitly "Exits" from tray.
             }
             else
             {
