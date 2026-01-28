@@ -617,6 +617,47 @@ namespace Social_Sentry.Data
             return usage;
         }
 
+        public TimeSpan GetLast7DaysAverageUsage()
+        {
+            try
+            {
+                using (var connection = new SqliteConnection(_connectionString))
+                {
+                    connection.Open();
+                    // Calculate start date (7 days ago) and end date (yesterday)
+                    // We notify about "Average daily usage", usually based on past performace.
+                    // Let's exclude "today" so the average is stable throughout the day? 
+                    // Or include it? Usually "Your average is X" implies past data. 
+                    // Let's stick to last 7 completed days.
+                    var end = DateTime.Today.AddDays(-1);
+                    var start = end.AddDays(-6); 
+
+                    string query = @"
+                        SELECT SUM(TotalSeconds) 
+                        FROM HourlyStats 
+                        WHERE date(Date) >= date(@start) AND date(Date) <= date(@end)";
+
+                    using (var command = new SqliteCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@start", start.ToString("yyyy-MM-dd"));
+                        command.Parameters.AddWithValue("@end", end.ToString("yyyy-MM-dd"));
+
+                        object result = command.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            double totalSeconds = Convert.ToDouble(result);
+                            return TimeSpan.FromSeconds(totalSeconds / 7.0);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error calculating average: {ex.Message}");
+            }
+            return TimeSpan.Zero;
+        }
+
         public void RebuildHourlyStats(DateTime date)
         {
             using (var connection = new SqliteConnection(_connectionString))

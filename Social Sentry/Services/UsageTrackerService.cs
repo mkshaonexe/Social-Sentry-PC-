@@ -52,6 +52,7 @@ namespace Social_Sentry.Services
             _blockerService = new BlockerService();
             _blockerService.Initialize(_databaseService);
             _iconExtractionService = new IconExtractionService();
+            _notificationService = new NotificationService();
 
             _activityTracker.OnActivityChanged += HandleActivityChanged;
 
@@ -366,6 +367,8 @@ namespace Social_Sentry.Services
             // For MVP, since SQLite is fast and local:
             RecalculateCategoryStats();
 
+            CheckNotifications();
+
             OnUsageUpdated?.Invoke();
         }
 
@@ -441,11 +444,39 @@ namespace Social_Sentry.Services
             return $"{ts.Seconds}s";
         }
 
+        private readonly NotificationService _notificationService;
+        private int _lastNotifiedHour = 0;
+        private DateTime _lastDailyReportDate = DateTime.MinValue;
+
         private class AppUsageInfo
         {
             public string ProcessName { get; set; } = "";
             public TimeSpan Duration { get; set; }
             public int SessionCount { get; set; } = 1;
+        }
+
+        private void CheckNotifications()
+        {
+            var now = DateTime.Now;
+            var totalDuration = TimeSpan.FromSeconds(_dailyUsage.Values.Sum(u => u.Duration.TotalSeconds));
+            int currentHourTotal = (int)totalDuration.TotalHours;
+
+            // 1. Hourly Notification (e.g., at 1h, 2h, 3h...)
+            //    Check if we crossed a new hour threshold
+            if (currentHourTotal > _lastNotifiedHour && currentHourTotal > 0)
+            {
+                _lastNotifiedHour = currentHourTotal;
+                var avg = _databaseService.GetLast7DaysAverageUsage();
+                _notificationService.ShowHourlyScreenTimeNotification(FormatDuration(totalDuration), FormatDuration(avg));
+            }
+
+            // 2. Daily Summary at 9:00 PM (21:00)
+            if (now.Hour == 21 && now.Minute == 0 && _lastDailyReportDate.Date != now.Date)
+            {
+                _lastDailyReportDate = now.Date;
+                var avg = _databaseService.GetLast7DaysAverageUsage();
+                _notificationService.ShowDailyReport(FormatDuration(totalDuration), FormatDuration(avg));
+            }
         }
     }
 }

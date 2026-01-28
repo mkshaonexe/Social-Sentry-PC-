@@ -61,5 +61,13 @@ namespace Social_Sentry.Services
                 .AddText(message)
                 .Show();
         }
+        public void ShowHourlyScreenTimeNotification(string currentUsage, string averageUsage)
+        {
+             new ToastContentBuilder()
+                .AddText("Hourly Check-In")
+                .AddText($"Current Screen Time: {currentUsage}")
+                .AddText($"7-Day Average: {averageUsage}")
+                .Show();
+        }
     }
 }
