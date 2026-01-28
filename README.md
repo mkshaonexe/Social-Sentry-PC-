@@ -2,72 +2,41 @@
 
 **Reclaim your attention. Master your digital life.**
 
-Social Sentry PC is a powerful, native Windows application designed for digital well-being, parental control, and high-performance productivity monitoring. Unlike basic screen time tools, Social Sentry actively intervenes to prevent doom-scrolling, enforces break times for eye health, and uses AI to keep you accountable.
+Social Sentry PC is a robust, native Windows application designed for digital well-being, parental control, and high-performance productivity monitoring. It actively intervenes to prevent doom-scrolling, enforces eye health breaks, and uses AI for accountability.
 
 ## 📥 Download & Installation
 
-Download the latest version from our **[GitHub Releases](https://github.com/mkshaonexe/Social-Sentry-PC-/releases/latest)** page.
+**[Download the Latest Version Here](https://github.com/mkshaonexe/Social-Sentry-PC-/releases/latest)**
 
-### How to Install
-1.  Download `SocialSentry.msi` from the latest release.
+1.  Download `SocialSentry.msi` from the release page.
 2.  Run the installer.
-3.  Launch **Social Sentry** from your desktop or start menu.
+3.  Launch **Social Sentry** from your desktop.
 
 ---
 
-## 🔥 Key Features
+## 🔥 Capabilities
 
-### 🕶️ Stealth Mode (New!)
-Social Sentry is designed to run silently without cluttering your workspace.
--   **Minimize to Tray**: Closing the main window (clicking 'X') will hide the application to the System Tray, keeping it accessible.
--   **Complete Stealth**: To remove the icon from the tray while keeping the protection active, right-click the Tray Icon and select **"Exit"**. The application will enter **Stealth Mode**—running invisibly in the background to continue monitoring and blocking without any visual trace.
-
-### 🏥 Safety & Eye Health
-Prevent digital eye strain and burnout with our automated safety system.
--   **50/30 Rule**: After **50 minutes** of continuous computer usage, Social Sentry enforces a **30-second break**.
--   **Break Overlay**: A full-screen overlay blocks interaction, encouraging you to look away and rest your eyes.
--   **Smart Idle Detection**: The timer automatically resets if you take a break (idle for 5+ minutes) on your own.
-
-### 🤖 Hakari AI Companion
-Meet Hakari, your personal AI accountability partner.
--   **Context-Aware**: Hakari analyzes your usage patterns in real-time.
--   **Dynamic Reactions**: Get roasted for spending too much time on social media, or praised for deep work sessions.
--   **Notifications**: Hakari checks in on you with greetings and reminders based on your activity context (e.g., late-night gaming vs. morning coding).
-
-### 🛡️ Smart Blocking & Filtering
--   **Reels & Shorts Blocker**: Intelligently detects and blocks short-form content loops (YouTube Shorts, Instagram Reels, Facebook Reels) to prevent "doom scrolling".
-    -   *Smart Redirect*: Redirects you back to the main feed or homepage.
-    -   *Instant Mute*: Silences distracting audio immediately.
--   **Adult Content Blocker**: Strict filtering for 150,000+ adult domains with hardened protection to prevent bypass.
--   **App Blocking**: Block specific distracting applications completely.
-
-### 🖥️ Desktop Widget
-A beautiful, non-intrusive widget for your desktop.
--   **Live Stats**: See your Total Screen Time and Distracting Time at a glance.
--   **Graph Mode**: Visualize your daily usage trend.
--   **Always on Top**: Optional setting to keep your stats visible over other windows.
-
-### 📊 Analytics & Reporting
--   **Hourly Check-Ins**: Get an hourly notification summary of your current screen time vs. your 7-day average.
--   **Daily Summary**: A comprehensive report delivered at 9 PM every day.
--   **Detailed Dashboard**: View granular activity logs, categorized day/week/month breakdowns.
-
-### 🏆 Gamification
--   **Ranks**: Level up from "Clown" to "Giga Chad" based on your discipline and productivity streaks.
--   **Community**: Connect with other users, compete on leaderboards, and share your progress.
-
-### 👑 Prime Mode
-For when you need absolute focus.
--   **Hardcore Lockdown**: Activates strict enforcement protocols.
--   **No Escape**: Prevents exiting the app or disabling filters until the timer expires.
--   **Optimus Prime Theme**: Engages a special UI theme and sound effects to get you into the "zone".
+*   **Stealth Mode**: Runs silently. Closing the window minimizes to tray; exiting from tray activates invisible background monitoring.
+*   **Safety & Eye Health**: Enforces the 50/30 rule (30-second break every 50 minutes) with a full-screen overlay to prevent eye strain.
+*   **Hakari AI Companion**: A context-aware AI that roasts or praises you based on your activity and gives you reminders.
+*   **Smart Blocking**:
+    *   **Reels & Shorts Blocker**: Stops doom-scrolling loops on YouTube, Instagram, and Facebook.
+    *   **Adult Content Blocker**: Filters 150,000+ adult domains.
+    *   **App Blocking**: Restricts access to distracting applications.
+*   **Desktop Widget**: A non-intrusive widget showing live screen time and productivity stats.
+*   **Analytics**: Hourly notifications and daily summaries at 9 PM to keep you tracking your progress.
+*   **Gamification**: Rank up from "Clown" to "Giga Chad" and compete on community leaderboards.
+*   **Prime Mode**: A hardcore focus mode with strict enforcement and special themes.
 
 ---
 
-## 👨‍💻 Developer Note
-Developed by **MK Shaon**
--   **Role**: Lead Developer & Architect
--   **Mission**: To build the ultimate tool for digital self-mastery.
+## 👨‍💻 Developer Information
 
-## 📄 License
-All rights reserved.
+**Developed by MK Shaon**
+*   **Role**: Solo Individual Developer
+*   **Passion**: Made with love in Bangladesh 🇧🇩
+*   **Mission**: Creating the ultimate tool for digital self-mastery.
+
+---
+
+*This software is designed for personal improvement and well-being.*
