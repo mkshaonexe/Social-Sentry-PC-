@@ -27,6 +27,8 @@ namespace Social_Sentry.Services
 
         private void SeedDefaultRules()
         {
+            var defaults = new List<DatabaseService.ClassificationRule>
+            {
                 // Doom Scrolling (Browser Only guard implemented in Categorize)
                 new() { Pattern = "shorts", Category = "Doom Scrolling", MatchType = "Contains", Priority = 100 },
                 new() { Pattern = "reels", Category = "Doom Scrolling", MatchType = "Contains", Priority = 100 },
