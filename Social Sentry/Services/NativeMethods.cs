@@ -31,7 +31,7 @@ namespace Social_Sentry.Services
 
         // Send input (keystrokes, mouse) - Used for blocking/closing tabs
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] INPUT[] pInputs, int cbSize);
+        public static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
         // Structures for SendInput
         [StructLayout(LayoutKind.Sequential)]
@@ -87,6 +87,10 @@ namespace Social_Sentry.Services
         public const ushort VK_W = 0x57;
         public const ushort VK_A = 0x41;
         public const ushort VK_BACK = 0x08; 
+        public const ushort VK_RETURN = 0x0D;
+        public const ushort VK_L = 0x4C;
+        public const ushort VK_M = 0x4D;
+        public const uint KEYEVENTF_UNICODE = 0x0004;
 
         // Event Hook Constants
         public const uint EVENT_SYSTEM_FOREGROUND = 0x0003;

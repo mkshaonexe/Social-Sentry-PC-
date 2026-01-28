@@ -240,21 +240,7 @@ namespace Social_Sentry.Services
             return false;
         }
 
-        private async void PerformBlockingAction(string key, BlockReason reason)
-        {
-            // 1. Navigate Back (Alt + Left Arrow)
-            SimulateGoBack();
 
-            // 2. Clear Text (Ctrl + A -> Backspace) to remove keyword if typed
-            SimulateTextClear();
-
-            // Wait a moment for the browser to process the input and navigate back
-            // BEFORE we steal focus with the overlay.
-            await Task.Delay(300);
-
-            // 3. Show Overlay
-            ShowOverlay(reason);
-        }
 
         private BlockReason ShouldBlock(string title, string url)
         {
@@ -459,6 +445,136 @@ namespace Social_Sentry.Services
             backspace[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
 
             NativeMethods.SendInput((uint)backspace.Length, backspace, NativeMethods.INPUT.Size);
+        }
+
+        // Loop Detection
+        private readonly Dictionary<string, (int Count, DateTime LastBlockTime)> _blockLoopTracker = new();
+
+        private async void PerformBlockingAction(string key, BlockReason reason)
+        {
+            // 1. INSTANT MUTE (Simulate 'm' key)
+            SimulateMute();
+
+            // 2. LOOP DETECTION Logic
+            int loopCount = 0;
+            if (_blockLoopTracker.TryGetValue(key, out var record))
+            {
+                // If last block was less than 10 seconds ago, count it as a loop/repeat
+                if ((DateTime.Now - record.LastBlockTime).TotalSeconds < 10)
+                {
+                    loopCount = record.Count + 1;
+                }
+            }
+            _blockLoopTracker[key] = (loopCount, DateTime.Now);
+
+            // 3. NAVIGATION DECISION
+            if (loopCount == 0)
+            {
+                // First time: Try to go back
+                Debug.WriteLine("Blocking: Attempting Go Back");
+                SimulateGoBack();
+                
+                // Also clear text just in case
+                SimulateTextClear();
+            }
+            else
+            {
+                // Loop detected: Force Redirect
+                Debug.WriteLine($"Blocking: Loop detected ({loopCount}), Forcing Redirect");
+                // Determine platform from key or context? 
+                // We'll infer from the key or just assume usually YouTube/Facebook.
+                // Since 'key' is a hash, let's pass the URL to PerformBlockingAction? 
+                // Refactoring slightly to just try YouTube or Facebook base.
+                // Ideally this method needs the raw URL, but we only passed key. 
+                // Let's use a default safe fallback or assume YouTube for now if reason is Reels.
+                // Wait, we can't easily know which one, but we can guess or try to redirect to a generic safe page (New Tab?).
+                // Better: RedirectToSafePage.
+                RedirectToPlatformHome();
+            }
+
+            // Wait a moment for layout to settle
+            await Task.Delay(300);
+
+            // 4. Show Overlay
+            ShowOverlay(reason);
+        }
+
+        private void SimulateMute()
+        {
+            // Simulate 'm' key press (Standard mute shortcut for YT/FB)
+            NativeMethods.INPUT[] input = new NativeMethods.INPUT[2];
+            input[0].type = NativeMethods.INPUT_KEYBOARD;
+            input[0].U.ki.wVk = NativeMethods.VK_M;
+            input[0].U.ki.dwFlags = 0;
+
+            input[1].type = NativeMethods.INPUT_KEYBOARD;
+            input[1].U.ki.wVk = NativeMethods.VK_M;
+            input[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            NativeMethods.SendInput((uint)input.Length, input, NativeMethods.INPUT.Size);
+        }
+
+        private void RedirectToPlatformHome()
+        {
+            // 1. Focus Address Bar (Ctrl + L)
+            NativeMethods.INPUT[] focusUrl = new NativeMethods.INPUT[2];
+            focusUrl[0].type = NativeMethods.INPUT_KEYBOARD;
+            focusUrl[0].U.ki.wVk = NativeMethods.VK_CONTROL;
+            focusUrl[0].U.ki.dwFlags = 0;
+
+            focusUrl[1].type = NativeMethods.INPUT_KEYBOARD;
+            focusUrl[1].U.ki.wVk = NativeMethods.VK_L;
+            focusUrl[1].U.ki.dwFlags = 0;
+
+            NativeMethods.SendInput((uint)focusUrl.Length, focusUrl, NativeMethods.INPUT.Size);
+
+            // Release
+            NativeMethods.INPUT[] releaseFocus = new NativeMethods.INPUT[2];
+            releaseFocus[0].type = NativeMethods.INPUT_KEYBOARD;
+            releaseFocus[0].U.ki.wVk = NativeMethods.VK_L;
+            releaseFocus[0].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            releaseFocus[1].type = NativeMethods.INPUT_KEYBOARD;
+            releaseFocus[1].U.ki.wVk = NativeMethods.VK_CONTROL;
+            releaseFocus[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            NativeMethods.SendInput((uint)releaseFocus.Length, releaseFocus, NativeMethods.INPUT.Size);
+
+            System.Threading.Thread.Sleep(50);
+
+            // 2. Type "youtube.com" (Default safe haven for now)
+            // TODO: Ideally pass the actual domain to redirect intelligently.
+            // For now, hardcoded to YouTube as it's the primary use case.
+            string url = "youtube.com"; 
+            
+            List<NativeMethods.INPUT> typingInputs = new List<NativeMethods.INPUT>();
+            foreach (char c in url)
+            {
+                NativeMethods.INPUT down = new NativeMethods.INPUT();
+                down.type = NativeMethods.INPUT_KEYBOARD;
+                down.U.ki.wScan = (ushort)c;
+                down.U.ki.dwFlags = NativeMethods.KEYEVENTF_UNICODE;
+                typingInputs.Add(down);
+
+                NativeMethods.INPUT up = new NativeMethods.INPUT();
+                up.type = NativeMethods.INPUT_KEYBOARD;
+                up.U.ki.wScan = (ushort)c;
+                up.U.ki.dwFlags = NativeMethods.KEYEVENTF_UNICODE | NativeMethods.KEYEVENTF_KEYUP;
+                typingInputs.Add(up);
+            }
+            NativeMethods.SendInput((uint)typingInputs.Count, typingInputs.ToArray(), NativeMethods.INPUT.Size);
+
+            // 3. Press Enter
+            NativeMethods.INPUT[] enter = new NativeMethods.INPUT[2];
+            enter[0].type = NativeMethods.INPUT_KEYBOARD;
+            enter[0].U.ki.wVk = NativeMethods.VK_RETURN;
+            enter[0].U.ki.dwFlags = 0;
+
+            enter[1].type = NativeMethods.INPUT_KEYBOARD;
+            enter[1].U.ki.wVk = NativeMethods.VK_RETURN;
+            enter[1].U.ki.dwFlags = NativeMethods.KEYEVENTF_KEYUP;
+
+            NativeMethods.SendInput((uint)enter.Length, enter, NativeMethods.INPUT.Size);
         }
     }
 }

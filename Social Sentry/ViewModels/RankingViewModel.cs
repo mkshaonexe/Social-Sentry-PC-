@@ -123,6 +123,7 @@ namespace Social_Sentry.ViewModels
 
         public RankingViewModel()
         {
+             Services.TraceLogger.Log("RankingViewModel Constructor Start");
              // Check for Design Mode to prevent VS Designer crashes
              if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
              {
@@ -137,9 +138,11 @@ namespace Social_Sentry.ViewModels
              var settingsService = new SettingsService(); 
              _rankingService = new RankingService(settingsService);
              
+             Services.TraceLogger.Log("RankingViewModel: Initializing Ranking Service");
              _rankingService.InitializeRankingIfNew();
              
              AllBadges = new ObservableCollection<RankingBadge>(RankingBadge.AllBadges);
+             Services.TraceLogger.Log("RankingViewModel: Badges Collection Created");
              
              // Constructor initialization of properties
              ToggleInfoCommand = new RelayCommand(ExecuteToggleInfo);
@@ -153,7 +156,9 @@ namespace Social_Sentry.ViewModels
              _timer.Tick += Timer_Tick;
              _timer.Start();
 
+             Services.TraceLogger.Log("RankingViewModel: Updating Data");
              UpdateData();
+             Services.TraceLogger.Log("RankingViewModel Constructor End");
         }
 
         private void ExecuteToggleInfo()
@@ -189,15 +194,17 @@ namespace Social_Sentry.ViewModels
 
         private void UpdateData()
         {
-             CurrentBadge = _rankingService.GetCurrentBadge();
-             StrikeTimeText = _rankingService.GetFormattedStrikeTime();
-             CurrentDays = _rankingService.GetCurrentStrikeDays();
-             DurationText = _rankingService.GetDurationText();
-             DailyProgress = _rankingService.GetDailyProgress();
-             
-             // Sync with settings
-             var settings = new SettingsService().LoadSettings();
-             AdultBlockingEnabled = settings.IsAdultBlockerEnabled;
+              // Services.TraceLogger.Log("RankingViewModel.UpdateData Start"); // Commented out to reduce spam
+              CurrentBadge = _rankingService.GetCurrentBadge();
+              StrikeTimeText = _rankingService.GetFormattedStrikeTime();
+              CurrentDays = _rankingService.GetCurrentStrikeDays();
+              DurationText = _rankingService.GetDurationText();
+              DailyProgress = _rankingService.GetDailyProgress();
+              
+              // Sync with settings
+              var settings = new SettingsService().LoadSettings();
+              AdultBlockingEnabled = settings.IsAdultBlockerEnabled;
+              // Services.TraceLogger.Log("RankingViewModel.UpdateData End");
         }
         
         private void UpdateProgress()

@@ -6,7 +6,9 @@ namespace Social_Sentry.Views
     {
         public RankingView()
         {
+            Services.TraceLogger.Log("RankingView Constructor Start");
             InitializeComponent();
+            Services.TraceLogger.Log("RankingView Constructor End");
         }
     }
 }
