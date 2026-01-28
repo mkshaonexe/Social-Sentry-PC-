@@ -19,66 +19,106 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
 
-    <Border Background="#CC1A1C1E" CornerRadius="20" BorderBrush="#33FFFFFF" BorderThickness="1">
+    <Border Background="{DynamicResource WidgetBackgroundBrush}" CornerRadius="12" BorderBrush="#33FFFFFF" BorderThickness="1">
         <Border.Effect>
             <DropShadowEffect BlurRadius="15" ShadowDepth="4" Direction="270" Opacity="0.5"/>
         </Border.Effect>
+        <Border.Resources>
+            <SolidColorBrush x:Key="WidgetBackgroundBrush" Color="#CC1A1C1E"/>
+        </Border.Resources>
         
         <Grid Margin="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            <!-- Minimal View -->
+            <Grid x:Name="MinimalView">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding WidgetStyle}" Value="Minimal">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <!-- Header / Status -->
-            <Grid Grid.Row="0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="Social Sentry" Foreground="#B0B3B8" FontSize="11" Margin="0,0,0,4"/>
-                </StackPanel>
+                <Grid Grid.Row="0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="Social Sentry" Foreground="#B0B3B8" FontSize="11" Margin="0,0,0,4"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding ScreenTimeText}" FontSize="22" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Total Screen Time" FontSize="10" Foreground="#B0B3B8" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <Rectangle Grid.Column="1" Width="1" Fill="#33FFFFFF" Margin="8,4"/>
+
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding DistractingTimeText}" FontSize="22" FontWeight="Bold" Foreground="#FF5252" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Distracting Time" FontSize="10" Foreground="#B0B3B8" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
 
-            <!-- Main Stats -->
-            <Grid Grid.Row="1" VerticalAlignment="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/> <!-- Separator -->
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <!-- Graph View -->
+            <Grid x:Name="GraphView">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding WidgetStyle}" Value="Graph">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <!-- Total Time -->
-                <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding ScreenTimeText}" 
-                               FontSize="22" 
-                               FontWeight="Bold" 
-                               Foreground="White" 
-                               HorizontalAlignment="Center"/>
-                    <TextBlock Text="Total Screen Time" 
-                               FontSize="10" 
-                               Foreground="#B0B3B8" 
-                               HorizontalAlignment="Center"
-                               Margin="0,2,0,0"/>
+                <!-- Header -->
+                <StackPanel Grid.Row="0" Margin="0,0,0,8">
+                     <TextBlock Foreground="White" FontSize="14">
+                        <Run Text="Total Screen Time: " Foreground="#B0B3B8"/>
+                        <Run Text="{Binding ScreenTimeText}" FontWeight="Bold"/>
+                    </TextBlock>
                 </StackPanel>
 
-                <Rectangle Grid.Column="1" Width="1" Fill="#33FFFFFF" Margin="8,4"/>
-
-                <!-- Distracting Time -->
-                <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding DistractingTimeText}" 
-                               FontSize="22" 
-                               FontWeight="Bold" 
-                               Foreground="#FF5252" 
-                               HorizontalAlignment="Center"/>
-                    <TextBlock Text="Distracting Time" 
-                               FontSize="10" 
-                               Foreground="#B0B3B8" 
-                               HorizontalAlignment="Center"
-                               Margin="0,2,0,0"/>
-                </StackPanel>
+                <!-- Graph -->
+                <Grid Grid.Row="1" ClipToBounds="True">
+                     <Polygon Points="{Binding ChartPoints}" Fill="#00E676" Opacity="0.8" Stretch="Fill"/>
+                     <Polyline Points="{Binding ChartPoints}" Stroke="#00C853" StrokeThickness="2" Stretch="Fill"/>
+                </Grid>
+                
+                <!-- X Axis Labels -->
+                <Grid Grid.Row="2" Margin="0,4,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="00:00" FontSize="9" Foreground="#66FFFFFF"/>
+                    <TextBlock Grid.Column="2" Text="12:00" FontSize="9" Foreground="#66FFFFFF" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="4" Text="18:00" FontSize="9" Foreground="#66FFFFFF"/>
+                </Grid>
             </Grid>
-
-            <!-- Interaction Prompt (Optional) -->
-            <!-- <TextBlock Grid.Row="2" Text="Double click to open" FontSize="9" Foreground="#66FFFFFF" HorizontalAlignment="Center" Margin="0,4,0,0"/> -->
         </Grid>
     </Border>
 </Window>

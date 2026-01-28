@@ -125,6 +125,27 @@ namespace Social_Sentry.ViewModels
             }
         }
 
+        private Services.WidgetStyle _selectedWidgetStyle;
+        public Services.WidgetStyle SelectedWidgetStyle
+        {
+            get => _selectedWidgetStyle;
+            set
+            {
+                if (SetProperty(ref _selectedWidgetStyle, value))
+                {
+                    var settings = _settingsService.LoadSettings();
+                    settings.WidgetStyle = value;
+                    _settingsService.SaveSettings(settings);
+                }
+            }
+        }
+
+        public ObservableCollection<Services.WidgetStyle> WidgetStyles { get; } = new ObservableCollection<Services.WidgetStyle>
+        {
+            Services.WidgetStyle.Minimal,
+            Services.WidgetStyle.Graph
+        };
+
         public ICommand ExportDataCommand { get; }
         public ICommand ClearDataCommand { get; }
         public ICommand UnlockDeveloperModeCommand { get; }
@@ -141,7 +162,9 @@ namespace Social_Sentry.ViewModels
             _startWithWindows = _settingsService.IsStartWithWindowsEnabled();
             _startMinimized = settings.StartMinimized;
             _showNotifications = settings.ShowNotifications;
+            _showNotifications = settings.ShowNotifications;
             _showDesktopWidget = settings.ShowDesktopWidget;
+            _selectedWidgetStyle = settings.WidgetStyle;
 
             // Initialize Theme (Default to dark if not saved)
             _selectedTheme = settings.SelectedTheme; 

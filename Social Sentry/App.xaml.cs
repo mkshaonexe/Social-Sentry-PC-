@@ -252,12 +252,12 @@ namespace Social_Sentry
              HakariService.Start();
         }
 
-        public static void ToggleDesktopWidget(bool show)
+        public static void ToggleDesktopWidget(bool show, Services.UsageTrackerService? tracker = null)
         {
             if (Current is App app)
             {
                 if (show)
-                    app.ShowDesktopWidget();
+                    app.ShowDesktopWidget(tracker);
                 else
                     app.CloseDesktopWidget();
             }
@@ -265,14 +265,20 @@ namespace Social_Sentry
 
         private Views.DesktopWidgetWindow? _desktopWidget;
 
-        public void ShowDesktopWidget()
+        public void ShowDesktopWidget(Services.UsageTrackerService? tracker = null)
         {
             if (_desktopWidget == null)
             {
-                if (System.Windows.Application.Current.MainWindow is MainWindow mainWin && mainWin.UsageTracker != null)
+                // Try to resolve tracker if not provided
+                if (tracker == null && System.Windows.Application.Current.MainWindow is MainWindow mainWin)
+                {
+                    tracker = mainWin.UsageTracker;
+                }
+
+                if (tracker != null)
                 {
                     // Create VM with real service
-                    var vm = new ViewModels.DesktopWidgetViewModel(mainWin.UsageTracker);
+                    var vm = new ViewModels.DesktopWidgetViewModel(tracker);
                     _desktopWidget = new Views.DesktopWidgetWindow(vm);
                     _desktopWidget.Show();
                 }

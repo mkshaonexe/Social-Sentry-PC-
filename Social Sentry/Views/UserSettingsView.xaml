@@ -87,23 +87,126 @@
                                  Style="{StaticResource ToggleSwitchStyle}"/>
                     </Grid>
 
-                    <!-- Show Desktop Widget -->
+                    <!-- Show Desktop Widget Section -->
                     <Grid Margin="0,0,0,16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         
-                        <StackPanel>
-                            <TextBlock Text="Show Desktop Widget" FontSize="14"
-                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="Display a floating widget with screen time stats" 
-                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        <!-- Toggle Header -->
+                        <Grid Grid.Row="0" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Desktop Widget" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                <TextBlock Text="Display a floating widget with screen time stats" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                            </StackPanel>
+                            <CheckBox Grid.Column="1" IsChecked="{Binding ShowDesktopWidget}" VerticalAlignment="Center" Style="{StaticResource ToggleSwitchStyle}"/>
+                        </Grid>
+
+                        <!-- Widget Configuration (Visible only when enabled) -->
+                        <StackPanel Grid.Row="1" Visibility="{Binding ShowDesktopWidget, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="150"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <StackPanel>
+                                    <TextBlock Text="Widget Style" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    <TextBlock Text="Choose how the widget looks on your desktop" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                                </StackPanel>
+                                
+                                <ComboBox Grid.Column="1" 
+                                          ItemsSource="{Binding WidgetStyles}" 
+                                          SelectedItem="{Binding SelectedWidgetStyle}"
+                                          VerticalAlignment="Center"
+                                          Style="{StaticResource ModernComboBoxStyle}"/>
+                            </Grid>
+
+                            <!-- Preview Area -->
+                            <Border Background="#1A1C1E" CornerRadius="12" Padding="20" Margin="0,8,0,0" BorderBrush="#33FFFFFF" BorderThickness="1">
+                                <StackPanel>
+                                    <TextBlock Text="Preview" FontSize="12" Foreground="#808080" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+                                    
+                                    <!-- Minimal Preview -->
+                                    <Grid HorizontalAlignment="Center" Width="280">
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedWidgetStyle}" Value="Minimal">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+                                        
+                                        <Border Background="#2C2C2E" CornerRadius="20" Padding="16">
+                                             <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                                    <TextBlock Text="2h 45m" FontSize="22" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="Screen Time" FontSize="10" Foreground="#B0B3B8" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                                <Rectangle Grid.Column="1" Width="1" Fill="#33FFFFFF" Margin="8,4"/>
+                                                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                                    <TextBlock Text="15m" FontSize="22" FontWeight="Bold" Foreground="#FF5252" HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="Distracted" FontSize="10" Foreground="#B0B3B8" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Graph Preview -->
+                                    <Grid HorizontalAlignment="Center" Width="280">
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedWidgetStyle}" Value="Graph">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+                                        
+                                        <Border Background="#2C2C2E" CornerRadius="12" Padding="16">
+                                             <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="60"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                
+                                                <TextBlock Text="Total Screen Time: 2h 45m" Foreground="White" FontWeight="Bold" FontSize="14" Margin="0,0,0,8"/>
+                                                
+                                                <!-- Mock Graph -->
+                                                <Polygon Grid.Row="1" Points="0,60 40,40 80,50 120,20 160,30 200,10 240,40 280,60" Fill="#00E676" Opacity="0.8" Stretch="Fill"/>
+                                                
+                                                 <Grid Grid.Row="2" Margin="0,4,0,0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0" Text="00:00" FontSize="9" Foreground="#66FFFFFF"/>
+                                                    <TextBlock Grid.Column="2" Text="12:00" FontSize="9" Foreground="#66FFFFFF"/>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
-                        
-                        <CheckBox Grid.Column="1" IsChecked="{Binding ShowDesktopWidget}" 
-                                 VerticalAlignment="Center"
-                                 Style="{StaticResource ToggleSwitchStyle}"/>
                     </Grid>
 
                     <!-- Show Notifications -->

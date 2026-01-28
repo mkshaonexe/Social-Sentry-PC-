@@ -72,6 +72,12 @@ namespace Social_Sentry
 
             Closing += MainWindow_Closing;
 
+            // Auto-launch Desktop Widget if enabled (Do this before potential Hide() to ensure it launches)
+            if (_settings.ShowDesktopWidget)
+            {
+                App.ToggleDesktopWidget(true, UsageTracker);
+            }
+
             InitializeTrayIcon();
             
             // Handle startup minimized to tray
@@ -101,11 +107,7 @@ namespace Social_Sentry
                 _settingsService.SetStartWithWindows(true);
             }
 
-            // Auto-launch Desktop Widget if enabled
-            if (settings.ShowDesktopWidget)
-            {
-                App.ToggleDesktopWidget(true);
-            }
+
         }
 
         private void InitializeTrayIcon()

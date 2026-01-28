@@ -438,25 +438,28 @@ namespace Social_Sentry.Services
         public List<ChartDataPoint> GetChartData()
         {
             var points = new List<ChartDataPoint>();
-            // Assume 24h day or just "active hours"? 
-            // Dashboard shows ~5 bars. Let's return last 12 hours or strict 24h.
-            // The mockup had 8 PM, 9 PM... let's do a fixed range or dynamic.
+            // 24h format: 00:00 to 23:00 for the current day
+            // We want to show a graph of usage distribution today.
             
-            // Return full 24h for today, or valid range.
-            // Let's do 00:00 to 23:00
-            double max = _hourlyUsage.Values.DefaultIfEmpty(0).Max();
-            if (max == 0) max = 1;
+            // Get raw hourly data
+            var hourlyData = _hourlyUsage.ToDictionary(k => k.Key, v => v.Value);
 
-            for (int i = 0; i < 24; i++)
-            {
-                 // Filter for relevant hours if needed (e.g. only 6am to 12am)
-                 // But simply, we can just return all or a specific set.
-                 // let's just return a list. Logic in VM can filter for "view".
-            }
+             // Create points for every few hours to make the graph smooth but not too dense?
+             // Or just every hour. The mock shows a smooth area chart.
+             // We'll return 24 points (one for each hour).
+             
+             for (int hour = 0; hour < 24; hour++)
+             {
+                 double seconds = hourlyData.ContainsKey(hour) ? hourlyData[hour] : 0;
+                 points.Add(new ChartDataPoint 
+                 { 
+                     Label = $"{hour:00}:00", 
+                     Value = seconds / 60.0, // Minutes
+                     Timestamp = DateTime.Today.AddHours(hour)
+                 });
+             }
 
-            // To match mockup "Recent Hours" (or user preference):
-            // We'll return the whole list, let VM slice it.
-            return new List<ChartDataPoint>(); 
+            return points;
         }
 
         // Helper for raw hourly data

@@ -16,8 +16,10 @@ Download the latest version from our **[GitHub Releases](https://github.com/mksh
 
 ### 🖥️ Desktop Widget
 - **Stats at a Glance**: View Total Screen Time and Distracting Time directly on your desktop.
+- **New Graph View**: Visualize your daily usage trend with a beautiful screen time graph.
+- **Customizable**: Toggle visibility and switch between Minimal and Graph styles in Settings.
 - **Non-Intrusive**: Sits quietly in the background without interfering with other windows.
-- **Auto-Start**: launches automatically with the application.
+- **Auto-Start**: Launches automatically with the application.
 
 ### 🔍 Real-Time Activity Tracking
 - **Granular Monitoring**: Tracks every second of activity across applications and browsers.

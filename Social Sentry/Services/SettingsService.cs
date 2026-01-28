@@ -147,10 +147,17 @@ namespace Social_Sentry.Services
         public bool IsRankingEnabled { get; set; } = false;  // Default hidden
         public bool ShowDesktopWidget { get; set; } = true; // Default True
         public long RankingStartTimestamp { get; set; } = 0;
+        public WidgetStyle WidgetStyle { get; set; } = WidgetStyle.Graph; // Default to Graph
 
         // Hakari Check-In State
         public bool IsHakariNotificationEnabled { get; set; } = true;
         public int HakariLastNotifiedHour { get; set; } = 0;
         public long HakariLastNotifiedDate { get; set; } = 0;
+    }
+
+    public enum WidgetStyle
+    {
+        Minimal,
+        Graph
     }
 }
