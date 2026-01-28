@@ -44,6 +44,8 @@ namespace Social_Sentry.Services
         public TimeSpan TotalDistractingTime { get; private set; }
         public TimeSpan TotalProductiveTime { get; private set; }
 
+        private readonly ClassificationService _classificationService;
+
         public UsageTrackerService(Social_Sentry.Data.DatabaseService databaseService, MediaDetector mediaDetector)
         {
             _databaseService = databaseService;
@@ -51,6 +53,7 @@ namespace Social_Sentry.Services
             _activityTracker = new ActivityTracker();
             _blockerService = new BlockerService();
             _blockerService.Initialize(_databaseService);
+            _classificationService = new ClassificationService(_databaseService); // Initialize internal classification service
             _iconExtractionService = new IconExtractionService();
             _notificationService = new NotificationService();
 
@@ -201,7 +204,21 @@ namespace Social_Sentry.Services
             _currentProcessName = finalProcessName;
             _currentWindowTitle = newEvent.WindowTitle;
             _currentUrl = newEvent.Url;
-            _currentCategory = "Uncategorized"; // Reset category on native switch
+            
+            // Native Categorization (Uses ClassificationService)
+            _currentCategory = _classificationService.Categorize(_currentProcessName, _currentWindowTitle);
+
+            // Context-Aware Process Naming Override (Native)
+            // If it's a browser and categorized as special (Study/Productive), separate it.
+            if (_classificationService.IsBrowserProcess(_currentProcessName))
+            {
+                if ((_currentCategory == "Study" || _currentCategory == "Productive") && 
+                    !_currentProcessName.Contains($"({_currentCategory})"))
+                {
+                    _currentProcessName = $"{_currentProcessName} ({_currentCategory})";
+                }
+            }
+            
             _currentMetadata = ""; // Reset metadata on native switch
             _lastSwitchTime = DateTime.Now;
         }
@@ -223,10 +240,35 @@ namespace Social_Sentry.Services
             // Determine Category from Extension Data
             _currentCategory = DetermineCategory(data);
 
-            // Context-Aware Process Naming Override
-            if (_currentCategory == "Study" && !_currentProcessName.Contains("(Study)"))
+            // Context-Aware Process Naming Override (Extension)
+            // Rename if Study or Productive to ensure Dashboard separates it (e.g. "Chrome (Study)")
+            // Note: GetSmartProcessName might return "YouTube", which is not strictly a browser process name,
+            // but we treat it as a "Source".
+            bool isBrowserOrSmartSource = _classificationService.IsBrowserProcess(_currentProcessName) || _currentProcessName == "YouTube"; /* Simplified check */
+            
+            // Just check if the current name doesn't already have the tag
+            if ((_currentCategory == "Study" || _currentCategory == "Productive") && 
+                !_currentProcessName.Contains($"({_currentCategory})"))
             {
-                _currentProcessName = $"{_currentProcessName} (Study)";
+                 // Only append if it looks like a generic tool or browser
+                 // If it's "Visual Studio", we don't need "Visual Studio (Productive)".
+                 // But "Chrome" needs "Chrome (Productive)".
+                 // We can check if the base name is a browser.
+                 // Ideally we check if `GetSmartProcessName` result or original process was a browser.
+                 // For now, let's just apply it to everything that isn't obviously a Dev Tool?
+                 // Safer: Check if it's in the Browser list OR if it's "YouTube"/"Google" etc.
+                 // Let's use IsBrowserProcess check on the ORIGINAL process name if we had it, but here we only have _currentProcessName
+                 // which might be "YouTube Shorts".
+                 // "YouTube Shorts (Productive)"? Unlikely.
+                 // "Chrome (Productive)"? Yes.
+                 // Let's stick to the heuristic: if it contains "Chrome", "Edge", "Firefox" etc.
+                 
+                 // Simpler: Just do it. "YouTube (Study)" is fine. "Code (Productive)" is redundant but harmless.
+                 // Better: Check IsBrowserProcess on the RAW process name? We don't have it easily passed here except via implicit state.
+                 // Let's assume _currentProcessName is what we want to display.
+                 // IF we want to split "Antigravity" usage in Chrome from "Doom Scrolling" in Chrome, we MUST rename.
+                 // So we append.
+                 _currentProcessName = $"{_currentProcessName} ({_currentCategory})";
             }
 
             // Serialize Metadata
@@ -299,25 +341,18 @@ namespace Social_Sentry.Services
                 if (data.Url.Contains("tiktok.com")) return "Doom Scrolling";
             }
 
-            // 2. Study Context Check (Title based)
-            if (!string.IsNullOrEmpty(data.Title))
-            {
-                var lowerTitle = data.Title.ToLower();
-                var studyKeywords = new[] { "study", "lecture", "tutorial", "course", "assignment", "thesis", "research", "math", "physics", "chemistry", "exam" };
-                if (studyKeywords.Any(k => lowerTitle.Contains(k)))
-                {
-                    return "Study";
-                }
-            }
-
             // V2 Logic
             if (data.ContentType == "Video") return "Entertainment";
 
             // Fallback Logic
             if (data.ActivityType == "reels" || data.ActivityType == "shorts") return "Doom Scrolling";
-            if (!string.IsNullOrEmpty(data.Url) && data.Url.Contains("youtube.com")) return "Entertainment"; // Default, could be 'Education' based on title
-            
-            return "Browsing";
+            if (!string.IsNullOrEmpty(data.Url) && data.Url.Contains("youtube.com")) return "Entertainment"; // Generic YouTube fallback
+
+            // 2. Delegate to Rule Engine (Study, Productive, etc.)
+            // We pass the Title and the Smart Process Name (or Browser Name)
+            // Ideally use the Title for keyword matching.
+            string pName = GetSmartProcessName(data) ?? "Browser"; // Use smart name or generic
+            return _classificationService.Categorize(pName, data.Title ?? "");
         }
 
         private void UpdateCurrentSession()

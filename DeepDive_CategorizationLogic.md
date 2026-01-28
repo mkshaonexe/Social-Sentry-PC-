@@ -72,23 +72,53 @@ If an app falls into "Uncategorized" or a custom category (e.g., "Finance"), it 
 These are the rules currently baked into the system (`ClassificationService.cs`). If you reset the database, these are what load.
 
 ### 🔴 Doom Scrolling (Priority: 100 - Highest)
-*These rules are designed to catch distractions immediately.*
-*   `shorts`
-*   `reels`
-*   `tiktok`
+*These rules are designed to catch distractions immediately. IMPORTANT: These should ONLY trigger if the application is a **Web Browser** (e.g., Chrome, Edge, Firefox).*
+*   **Keywords**: `shorts`, `reels`, `tiktok`, `facebook watch`
+*   **Context Check**: MUST be within a browser process (`chrome`, `msedge`, `firefox`, `brave`, `opera`, `vivaldi`, `arc`). If found in `code` or `word`, it is IGNORED.
 
 ### 🟣 Study (Priority: 80-90)
-*   `study`, `lecture`, `tutorial`, `course`, `assignment`, `thesis`, `research`
-*   `math`, `physics`, `chemistry`
+**English Keywords**:
+*   `study`, `lecture`, `tutorial`, `course`, `assignment`, `thesis`, `research`, `syllabus`, `curriculum`, `exam`, `quiz`, `test`
+*   `math`, `physics`, `chemistry`, `biology`, `history`, `geography`, `literature`, `economics`, `computer science`, `programming`, `algebra`, `calculus`, `geometry`
+*   `university`, `college`, `school`, `academy`, `institute`, `classroom`, `blackboard`, `canvas`, `moodle`, `coursera`, `udemy`, `edx`, `khan academy`
+*   `pdf`, `textbook`, `slides`, `presentation`, `notes`, `summary`, `report`, `paper`, `journal`, `publication`
+
+**Bangla Keywords (Transliterated & Script)**:
+*   `porashona`, `odhyayon`, `class`, `gogeshona`, `gonit`, `biggan`, `itihaas`, `bhugol`, `sahitya`
+*   `assignment`, `poriksha`, `result`, `routine`, `syllabus`, `boi`, `path`, `shikkha`, `bisshobidyalay`
+*   `college`, `school`, `onushiloni`, `somadhan`, `proshno`, `uttor`, `thesis`
+*   `পড়াশোনা` (Porashona), `অধ্যয়ন` (Odhyayon), `ক্লাস` (Class), `গবেষণা` (Gobeshona), `গণিত` (Gonit), `বিজ্ঞান` (Biggan)
+*   `ইতিহাস` (Itihaas), `ভূগোল` (Bhugol), `সাহিত্য` (Sahitya), `অ্যাসাইনমেন্ট` (Assignment), `পরীক্ষা` (Poriksha)
+*   `ফলাফল` (Result), `রুটিন` (Routine), `সিলেবাস` (Syllabus), `বই` (Boi), `পাঠ` (Path), `শিক্ষা` (Shikkha)
+*   `বিশ্ববিদ্যালয়` (Bisshobidyalay), `কলেজ` (College), `স্কুল` (School), `অনুশীলনী` (Onushiloni), `সমাধান` (Somadhan)
+*   `প্রশ্ন` (Proshno), `উত্তর` (Uttor), `থিসিস` (Thesis)
 
 ### 🔵 Productive (Priority: 15-20)
-*   `visual studio`, `code`, `word`, `excel`, `powerpoint`, `notion`, `obsidian`, `trello`, `jira`, `slack`
+**Core Tools**:
+*   `visual studio`, `code`, `word`, `excel`, `powerpoint`, `notion`, `obsidian`, `trello`, `jira`, `slack`, `teams`
+
+**AI & Agents (Top 20+)**:
+*   `chatgpt`, `gpt`, `claude`, `gemini`, `copilot`, `bard`, `llama`, `midjourney`, `dall-e`, `stable diffusion`
+*   `jasper`, `copy.ai`, `character.ai`, `perplexity`, `bing chat`, `hugging face`, `tabnine`, `mistral`, `grok`
+*   `antigravity`, `deepmind`, `openai`, `anthropic`, `runwayml`, `sora`
+
+**IDEs & Development**:
+*   `cursor`, `windsurf`, `intellij`, `pycharm`, `webstorm`, `eclipse`, `netbeans`, `android studio`, `xcode`
+*   `sublime text`, `atom`, `vim`, `neovim`, `emacs`, `jupyter`, `rstudio`, `unity`, `unreal engine`, `godot`
+*   `figma`, `adobe`, `photoshop`, `illustrator`, `premiere`, `after effects`, `blender`, `autocad`
 
 ### 🟢 Communication (Priority: 15)
-*   `discord`, `whatsapp`, `telegram`, `messenger`, `skype`, `zoom`, `teams`, `outlook`
+*   `discord`, `whatsapp`, `telegram`, `messenger`, `skype`, `zoom`, `meet`, `outlook`, `thunderbird`, `signal`, `viber`
 
 ### 🟠 Entertainment (Priority: 5-10)
-*   `youtube`, `netflix`, `steam`, `game`
+**Streaming & Social**:
+*   `youtube`, `netflix`, `prime video`, `hulu`, `disney+`, `hbo`, `twitch`, `spotify`, `soundcloud`
+*   `facebook`, `instagram`, `reddit`, `twitter`, `x.com`, `tiktok`, `pinterest`, `tumblr`, `9gag`, `imgur`
+
+**Gaming**:
+*   `steam`, `epic games`, `origin`, `uplay`, `battle.net`, `gog`, `ubisoft connect`, `ea app`
+*   `game`, `play`, `player`, `roblox`, `minecraft`, `fortnite`, `league of legends`, `valorant`, `csgo`, `dota`
+*   `genshin`, `honkai`, `call of duty`, `overwatch`, `apex legends`, `cyberpunk`, `elden ring`
 *   **General Catch-All**: `(Media)` context detection.
 
 ---
@@ -106,7 +136,9 @@ These are the rules currently baked into the system (`ClassificationService.cs`)
 3.  **False "Doom Scrolling"**:
     *   **Issue**: If you work on a project with the file name `shorts_generator.py`, the filename contains "shorts".
     *   **Result**: VS Code might incorrectly be flagged as "Doom Scrolling".
-    *   **Fix**: The "Productive" rule for `visual studio` needs higher priority than `shorts`, OR matching should be smarter (Process Name vs Window Title).
+    *   **Fix**: The Doom Scrolling logic MUST check the Process Name.
+        *   **Rule**: `IF (Title contains "shorts") AND (ProcessName IN ["chrome", "msedge", "firefox", ...]) -> Doom Scrolling`
+        *   **Else**: `IF (Title contains "shorts") AND (ProcessName == "code") -> Productive`
 
 4.  **Browser Variance**:
     *   **Issue**: If the extension is disabled, we rely *only* on Window Titles. "Instagram" titles often don't say "Reels", so it might just show as generic "Instagram" (which might default to Communication or Entertainment, missing the "Doom Scrolling" nuance).
