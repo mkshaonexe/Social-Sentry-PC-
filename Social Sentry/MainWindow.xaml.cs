@@ -13,6 +13,7 @@ namespace Social_Sentry
         private readonly Social_Sentry.Data.DatabaseService _databaseService;
         private readonly Services.SettingsService _settingsService;
         private Services.UserSettings _settings;
+        private Services.SafetyService _safetyService;
         
         private Forms.NotifyIcon? _notifyIcon;
         private bool _isExplicitExit = false;
@@ -63,6 +64,9 @@ namespace Social_Sentry
 
             // Initialize Background Hakari Service
             App.InitializeHakariService(UsageTracker);
+
+            // Initialize Safety Service
+            _safetyService = new Services.SafetyService(UsageTracker, _settingsService);
 
             // Connect Extension Server to Usage Tracker if available
             if (App.Server != null)

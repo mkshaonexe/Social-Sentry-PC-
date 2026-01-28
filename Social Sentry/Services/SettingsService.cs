@@ -148,6 +148,7 @@ namespace Social_Sentry.Services
         public bool ShowDesktopWidget { get; set; } = true; // Default True
         public long RankingStartTimestamp { get; set; } = 0;
         public WidgetStyle WidgetStyle { get; set; } = WidgetStyle.Graph; // Default to Graph
+        public bool IsSafetyEnabled { get; set; } = false; // "Safety" feature (50m active / 30s break)
 
         // Hakari Check-In State
         public bool IsHakariNotificationEnabled { get; set; } = true;

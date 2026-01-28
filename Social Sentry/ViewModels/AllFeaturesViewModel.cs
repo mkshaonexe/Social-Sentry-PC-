@@ -43,6 +43,14 @@ namespace Social_Sentry.ViewModels
                     Icon = "🛡️",
                     AccentColor = "#2196F3",
                     Route = "AdultBlocker"
+                },
+                new FeatureItem
+                {
+                    Title = "Safety",
+                    Description = "Prevent eye strain with 50-20-20 rule breaks",
+                    Icon = "👁️",
+                    AccentColor = "#4CAF50",
+                    Route = "Safety"
                 }
             };
             
@@ -75,6 +83,10 @@ namespace Social_Sentry.ViewModels
                 else if (feature.Route == "AdultBlocker")
                 {
                     feature.IsActive = settings.IsAdultBlockerEnabled;
+                }
+                else if (feature.Route == "Safety")
+                {
+                    feature.IsActive = settings.IsSafetyEnabled;
                 }
                  else if (feature.Route == "Limit")
                 {
