@@ -12,6 +12,11 @@ namespace Social_Sentry.Services
         private CancellationTokenSource? _cancellationTokenSource;
 
         private const int CHECK_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+        
+        // State
+        private bool _hasWelcomed = false;
+        private DateTime _lastContextNotificationTime = DateTime.MinValue;
+        private DateTime _lastLateNightNotificationTime = DateTime.MinValue;
 
         public HakariCheckInService(
             SettingsService settingsService,
@@ -28,7 +33,13 @@ namespace Social_Sentry.Services
             if (_cancellationTokenSource != null) return;
             _cancellationTokenSource = new CancellationTokenSource();
 
-            Task.Run(() => MonitorLoop(_cancellationTokenSource.Token));
+            // Startup Greeting (Fire and Forget)
+            Task.Run(async () => 
+            {
+                await Task.Delay(2000); // Small delay to ensuring UI loaded
+                CheckStartupGreeting();
+                MonitorLoop(_cancellationTokenSource.Token);
+            });
         }
 
         public void Stop()
@@ -54,6 +65,21 @@ namespace Social_Sentry.Services
             }
         }
 
+        private void CheckStartupGreeting()
+        {
+            var settings = _settingsService.LoadSettings();
+            if (!settings.IsHakariNotificationEnabled || !settings.ShowNotifications) return;
+
+            if (!_hasWelcomed)
+            {
+                _hasWelcomed = true;
+                // Only show if it's the first run of the day or session?
+                // For now, simpler: Show on app start if enabled.
+                string msg = MessageGenerator.GetStartupMessage();
+                _notificationService.ShowHakariCheckIn(msg, "System Online");
+            }
+        }
+
         private void CheckAndNotify()
         {
             var settings = _settingsService.LoadSettings();
@@ -69,34 +95,19 @@ namespace Social_Sentry.Services
             int lastNotifiedHour = isNewDay ? 0 : settings.HakariLastNotifiedHour;
 
             // Get usage stats
-            // NOTE: UsageTrackerService returns total seconds for today
             string totalDurationStr = _usageTrackerService.GetTotalDurationString();
             TimeSpan totalDuration = ParseDurationString(totalDurationStr);
-            
+            // TimeSpan totalDuration = TimeSpan.Zero; // Dummy
             int totalHours = (int)totalDuration.TotalHours;
 
-            // Debug
-            System.Diagnostics.Debug.WriteLine($"[HakariCheckIn] TotalHours: {totalHours}, LastNotified: {lastNotifiedHour}");
-
-            if (totalHours < 1) return;
-
-            if (totalHours > lastNotifiedHour)
+            // 1. Hourly Usage Check
+            if (totalHours > lastNotifiedHour && totalHours >= 1)
             {
-                // Trigger Notification
+                 // Trigger Notification
                 string message = MessageGenerator.GetHourlyCheckInMessage(totalHours);
                 
                 // Get distracted stats
                 TimeSpan distracted = _usageTrackerService.TotalDistractingTime;
-                
-                // Port note: Android used average time too, skipped here for simplicity or add later
-                long totalMinutes = (long)totalDuration.TotalMinutes;
-                long distractedMinutes = (long)distracted.TotalMinutes;
-
-                // Personality passed or random/default? 
-                // MessageGenerator.GetHourlyCheckInMessage only takes hour currently in C# port.
-                // But GetTotalScreenTimeMessage uses it. Let's use GetTotalScreenTimeMessage?
-                // The Android code called showHakariCheckInNotification with message from `getHourlyCheckInMessage`.
-                // Let's stick to that for now.
                 
                 string stats = $"\n📊 Total: {FormatTimeSpan(totalDuration)}\n🎯 Distracted: {FormatTimeSpan(distracted)}";
 
@@ -107,6 +118,67 @@ namespace Social_Sentry.Services
                 settings.HakariLastNotifiedHour = totalHours;
                 _settingsService.SaveSettings(settings); // This saves and persists
             }
+
+            // 2. Context Intelligence Check
+            CheckContextIntelligence(totalDuration);
+
+            // 3. Late Night Check
+            CheckLateNight(now);
+        }
+
+        private void CheckContextIntelligence(TimeSpan totalDuration)
+        {
+            // Rate Limit: Only once every 90 minutes
+            if ((DateTime.Now - _lastContextNotificationTime).TotalMinutes < 90) return;
+
+            // Don't trigger if total usage is very low (< 30 mins)
+            if (totalDuration.TotalMinutes < 30) return;
+
+            string currentApp = _usageTrackerService.CurrentProcessName;
+            string category = _usageTrackerService.CurrentCategory;
+
+            if (string.IsNullOrEmpty(currentApp)) return;
+
+            string? message = null;
+
+            // Gaming / Entertainment Logic
+            if (category == "Games" || category == "Entertainment")
+            {
+                // 30% chance to trigger if browsing, higher if gaming
+                if (new Random().NextDouble() > 0.7)
+                {
+                    message = MessageGenerator.GetCampingMessage(currentApp);
+                }
+            }
+            // Productive logic
+            else if (category == "Productive" || category == "Study" || currentApp.Contains("Visual Studio") || currentApp.Contains("Code"))
+            {
+                 // 20% chance to Encourage
+                 if (new Random().NextDouble() > 0.8)
+                 {
+                     message = MessageGenerator.GetCodingMessage();
+                 }
+            }
+
+            if (message != null)
+            {
+                _notificationService.ShowHakariCheckIn(message, $"Active in: {currentApp}");
+                _lastContextNotificationTime = DateTime.Now;
+            }
+        }
+
+        private void CheckLateNight(DateTime now)
+        {
+             // Logic: If between 1 AM and 5 AM
+             if (now.Hour >= 1 && now.Hour < 5)
+             {
+                 // Rate Limit: Once every hour
+                 if ((DateTime.Now - _lastLateNightNotificationTime).TotalMinutes < 60) return;
+
+                 string msg = MessageGenerator.GetLateNightMessage();
+                 _notificationService.ShowHakariCheckIn(msg, "Sleep Deprivation Risk");
+                 _lastLateNightNotificationTime = DateTime.Now;
+             }
         }
 
         private bool IsSameDay(long time1, long time2)
@@ -118,14 +190,6 @@ namespace Social_Sentry.Services
 
         private TimeSpan ParseDurationString(string durationStr)
         {
-            // Parses "1h 30m", "45m", "30s" roughly
-            // UsageTracker returns exact string, but for logic we might want raw access.
-            // UsageTrackerService exposes internal but better to add a public property for raw TotalTimeSpan.
-            // But since I can't modify UsageTracker heavily right now without reading its full state,
-            // I'll parse the string or rely on calculation.
-            // Actually, querying DB or calculating from GetTotalDurationString is flaky.
-            // Let's rely on GetHourlyUsage().Values.Sum() which is public.
-            
             double totalSeconds = 0;
             var hourly = _usageTrackerService.GetHourlyUsage();
             foreach (var val in hourly.Values) totalSeconds += val;

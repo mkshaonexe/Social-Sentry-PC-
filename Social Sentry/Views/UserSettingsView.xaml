@@ -241,6 +241,33 @@
                 </StackPanel>
             </Border>
 
+            <!-- AI Assistant (Hakari) -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" 
+                   CornerRadius="12" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="AI Assistant" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,20"/>
+                    
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel>
+                            <TextBlock Text="Enable Hakari AI" FontSize="14"
+                                      Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Receive personalized check-ins and motivational reminders from Hakari" 
+                                      FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" TextWrapping="Wrap" MaxWidth="400" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        
+                        <CheckBox Grid.Column="1" IsChecked="{Binding IsHakariEnabled}" 
+                                 VerticalAlignment="Center"
+                                 Style="{StaticResource ToggleSwitchStyle}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
             <!-- Data Management -->
             <Border Background="{DynamicResource CardBackgroundBrush}" 
                    CornerRadius="12" Padding="24" Margin="0,0,0,20">

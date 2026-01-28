@@ -383,5 +383,57 @@ namespace Social_Sentry.Services
             }
             return messages[_random.Next(messages.Count)];
         }
+
+        public static string GetStartupMessage()
+        {
+            var messages = new List<string>
+            {
+                "System Online. Social Sentry is watching over you. 🛡️",
+                "Welcome back! Let's make today count. 💻",
+                "Boot sequence complete. Hakari is ready to keep you focused! 🚀",
+                "Another day, another opportunity to be productive. Let's go! ✨",
+                "I'm awake and tracking. Don't disappoint me! 👀"
+            };
+            return messages[_random.Next(messages.Count)];
+        }
+
+        public static string GetCampingMessage(string appName)
+        {
+             var messages = new List<string>
+            {
+                $"Are you camping in {appName}? Move it! ⛺",
+                $"Gaming is fun, but goals are forever. {appName} is distracting you. 🎮",
+                $"Tactical nuke incoming if you don't close {appName} soon. ☢️",
+                $"Ranked match or Career match? {appName} is eating your time. 📉",
+                $"You can't pause an online game, but you can pause your life. Quit {appName}. 🛑"
+            };
+            return messages[_random.Next(messages.Count)];
+        }
+
+        public static string GetCodingMessage()
+        {
+             var messages = new List<string>
+            {
+                "Compiling success! Keep writing that beautiful code. 💻",
+                "In the zone? Bug free code is a myth, but focused you is real. 🐛",
+                "You're building the future. Stay focused! 🏗️",
+                "Git commit, Git push, Get focused. You're doing great. 🌳",
+                "Is that C#? Java? Whatever it is, it looks productive! ☕"
+            };
+            return messages[_random.Next(messages.Count)];
+        }
+
+        public static string GetLateNightMessage()
+        {
+             var messages = new List<string>
+            {
+                "It's late. Go to sleep. Your code will be there tomorrow. 🌙",
+                "Sleep deprivation is not a flex. Turn off the PC. 🛌",
+                "You are functioning on 1% battery. Go recharge. 🔋",
+                "Nothing good happens after 2 AM. Go to bed. 🕑",
+                "Hakari says: Sleep is essential for compilation. Shutdown now. 😴"
+            };
+            return messages[_random.Next(messages.Count)];
+        }
     }
 }

@@ -43,6 +43,10 @@ namespace Social_Sentry.Services
         // Exposed metrics for Widget
         public TimeSpan TotalDistractingTime { get; private set; }
         public TimeSpan TotalProductiveTime { get; private set; }
+        
+        // Expose current context for AI/Logic
+        public string CurrentProcessName => _currentProcessName;
+        public string CurrentCategory => _currentCategory;
 
         private readonly ClassificationService _classificationService;
 

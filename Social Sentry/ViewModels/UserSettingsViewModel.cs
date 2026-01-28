@@ -125,6 +125,21 @@ namespace Social_Sentry.ViewModels
             }
         }
 
+        private bool _isHakariEnabled;
+        public bool IsHakariEnabled
+        {
+            get => _isHakariEnabled;
+            set
+            {
+                if (SetProperty(ref _isHakariEnabled, value))
+                {
+                    var settings = _settingsService.LoadSettings();
+                    settings.IsHakariNotificationEnabled = value;
+                    _settingsService.SaveSettings(settings);
+                }
+            }
+        }
+
         private Services.WidgetStyle _selectedWidgetStyle;
         public Services.WidgetStyle SelectedWidgetStyle
         {
@@ -165,6 +180,7 @@ namespace Social_Sentry.ViewModels
             _showNotifications = settings.ShowNotifications;
             _showDesktopWidget = settings.ShowDesktopWidget;
             _selectedWidgetStyle = settings.WidgetStyle;
+            _isHakariEnabled = settings.IsHakariNotificationEnabled;
 
             // Initialize Theme (Default to dark if not saved)
             _selectedTheme = settings.SelectedTheme; 
