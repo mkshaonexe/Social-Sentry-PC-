@@ -100,6 +100,12 @@ namespace Social_Sentry
                 // where the app was moved or the key was deleted.
                 _settingsService.SetStartWithWindows(true);
             }
+
+            // Auto-launch Desktop Widget if enabled
+            if (settings.ShowDesktopWidget)
+            {
+                App.ToggleDesktopWidget(true);
+            }
         }
 
         private void InitializeTrayIcon()

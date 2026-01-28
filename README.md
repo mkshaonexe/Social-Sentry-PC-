@@ -10,9 +10,14 @@ Download the latest version from our **[GitHub Releases](https://github.com/mksh
 - **Unified Branding**: Updated application logo across all components.
 - **UI Enhancements**: Improved Dark Mode consistency, sleek animations, and optimized dashboard.
 - **Performance**: Faster charts, reduced memory usage, and self-healing statistics.
-- **New Features**: Prime Mode, AI Hakari, Smart Reels Blocker, and Global Community Chat.
+- **New Features**: Prime Mode, AI Hakari, Smart Reels Blocker, Global Community Chat, and improved Desktop Widget.
 
 ## ✨ Features
+
+### 🖥️ Desktop Widget
+- **Stats at a Glance**: View Total Screen Time and Distracting Time directly on your desktop.
+- **Non-Intrusive**: Sits quietly in the background without interfering with other windows.
+- **Auto-Start**: launches automatically with the application.
 
 ### 🔍 Real-Time Activity Tracking
 - **Granular Monitoring**: Tracks every second of activity across applications and browsers.

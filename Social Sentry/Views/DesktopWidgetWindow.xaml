@@ -11,7 +11,7 @@
         AllowsTransparency="True"
         Background="Transparent"
         ShowInTaskbar="False"
-        Topmost="True"
+        Topmost="False"
         ResizeMode="NoResize"
         MouseDown="Window_MouseDown">
     
