@@ -214,17 +214,33 @@
                                 Style="{StaticResource ActionButtonStyle}" Padding="12,6"/>
                     </Grid>
 
+                        <Button Grid.Column="1" Content="Open Folder" Command="{Binding OpenDataFolderCommand}"
+                                Style="{StaticResource ActionButtonStyle}" Padding="12,6"/>
+                    </Grid>
+
+                    <!-- Feature Toggles -->
                      <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                          <StackPanel>
-                            <TextBlock Text="App Data Folder" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
-                            <TextBlock Text="Open the application data directory" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                            <TextBlock Text="Show Raw Data" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Show 'Raw Data' section in sidebar" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
                         </StackPanel>
-                        <Button Grid.Column="1" Content="Open Folder" Command="{Binding OpenDataFolderCommand}"
-                                Style="{StaticResource ActionButtonStyle}" Padding="12,6"/>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding IsRawDataEnabled}" Style="{StaticResource ToggleSwitchStyle}"/>
+                    </Grid>
+
+                     <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                         <StackPanel>
+                            <TextBlock Text="Show Ranking" FontSize="14" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                            <TextBlock Text="Show 'Ranking' section in sidebar" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding IsRankingEnabled}" Style="{StaticResource ToggleSwitchStyle}"/>
                     </Grid>
                 </StackPanel>
             </Border>

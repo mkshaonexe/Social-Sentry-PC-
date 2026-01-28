@@ -58,6 +58,10 @@ Download the latest version from our **[GitHub Releases](https://github.com/mksh
     - **Smart Check-ins**: Hourly notifications with varied personalities (Gentle to Tsundere) based on usage intensity.
     - **Rich Toast Notifications**: Native Windows toast notifications with actions and visual stats summaries.
     - **Roast & Praise**: Gets stricter as you waste more time, or praises you for staying productive.
+- **🚫 Smart Reels Blocker**:
+    - **Loop Prevention**: Intelligently handles browser history loops when blocking Shorts/Reels.
+    - **Instant Mute**: Immediately silences audio upon detection to ensure a distraction-free experience.
+    - **Smart Redirect**: Automatically redirects to the platform's home page if "Going Back" fails.
 
 ## 🛠️ How It Works (Technical Implementation)
 

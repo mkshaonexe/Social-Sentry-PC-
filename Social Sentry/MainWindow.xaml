@@ -147,7 +147,8 @@
                             Command="{Binding NavigateCommand}" 
                             CommandParameter="Ranking" 
                             Style="{StaticResource NavigationButtonStyle}"
-                            Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Ranking'}"/>
+                            Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Ranking'}"
+                            Visibility="{Binding IsRankingVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             
                     <Button Content="Usage Limits" 
                             Command="{Binding NavigateCommand}" 
@@ -160,7 +161,7 @@
                             CommandParameter="Raw" 
                             Style="{StaticResource NavigationButtonStyle}"
                             Tag="{Binding CurrentPageName, Converter={StaticResource EqualConverter}, ConverterParameter='Raw'}"
-                            Visibility="{Binding IsDeveloperModeEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            Visibility="{Binding IsRawDataVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             
                     <Button Content="Community" 
                             Command="{Binding NavigateCommand}" 

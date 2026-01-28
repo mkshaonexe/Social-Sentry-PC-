@@ -52,6 +52,20 @@ namespace Social_Sentry.ViewModels
             set => SetProperty(ref _isDeveloperModeEnabled, value);
         }
 
+        private bool _isRawDataVisible;
+        public bool IsRawDataVisible
+        {
+            get => _isRawDataVisible;
+            set => SetProperty(ref _isRawDataVisible, value);
+        }
+
+        private bool _isRankingVisible;
+        public bool IsRankingVisible
+        {
+            get => _isRankingVisible;
+            set => SetProperty(ref _isRankingVisible, value);
+        }
+
         public ICommand NavigateCommand { get; }
         public ICommand ToggleTrackingCommand { get; }
 
@@ -85,13 +99,18 @@ namespace Social_Sentry.ViewModels
 
             // Initialize Developer Mode state
             var settingsService = new Services.SettingsService();
-            IsDeveloperModeEnabled = settingsService.LoadSettings().IsDeveloperModeEnabled;
+            var settings = settingsService.LoadSettings();
+            IsDeveloperModeEnabled = settings.IsDeveloperModeEnabled;
+            IsRawDataVisible = settings.IsRawDataEnabled;
+            IsRankingVisible = settings.IsRankingEnabled;
             Services.SettingsService.SettingsChanged += OnSettingsChanged;
         }
 
         private void OnSettingsChanged(Services.UserSettings settings)
         {
             IsDeveloperModeEnabled = settings.IsDeveloperModeEnabled;
+            IsRawDataVisible = settings.IsRawDataEnabled;
+            IsRankingVisible = settings.IsRankingEnabled;
         }
 
 

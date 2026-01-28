@@ -17,6 +17,8 @@ namespace Social_Sentry.ViewModels
         private bool _showNotifications = true;
         private string _selectedTheme;
         private bool _isDeveloperModeEnabled;
+        private bool _isRawDataEnabled;
+        private bool _isRankingEnabled;
         private int _developerClicks = 0;
         private const int CLICKS_TO_UNLOCK = 7;
 
@@ -29,6 +31,30 @@ namespace Social_Sentry.ViewModels
             set
             {
                 if (SetProperty(ref _isDeveloperModeEnabled, value))
+                {
+                    SaveSettings();
+                }
+            }
+        }
+
+        public bool IsRawDataEnabled
+        {
+            get => _isRawDataEnabled;
+            set
+            {
+                if (SetProperty(ref _isRawDataEnabled, value))
+                {
+                    SaveSettings();
+                }
+            }
+        }
+
+        public bool IsRankingEnabled
+        {
+            get => _isRankingEnabled;
+            set
+            {
+                if (SetProperty(ref _isRankingEnabled, value))
                 {
                     SaveSettings();
                 }
@@ -140,6 +166,8 @@ namespace Social_Sentry.ViewModels
             };
 
             _isDeveloperModeEnabled = settings.IsDeveloperModeEnabled;
+            _isRawDataEnabled = settings.IsRawDataEnabled;
+            _isRankingEnabled = settings.IsRankingEnabled;
         }
 
         private void InstallExtension(string browserName)
@@ -236,7 +264,10 @@ namespace Social_Sentry.ViewModels
                 ShowDesktopWidget = _showDesktopWidget,
 
                 SelectedTheme = _selectedTheme,
-                IsDeveloperModeEnabled = _isDeveloperModeEnabled
+                SelectedTheme = _selectedTheme,
+                IsDeveloperModeEnabled = _isDeveloperModeEnabled,
+                IsRawDataEnabled = _isRawDataEnabled,
+                IsRankingEnabled = _isRankingEnabled
             };
             _settingsService.SaveSettings(settings);
         }
