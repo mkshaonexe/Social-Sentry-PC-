@@ -210,13 +210,13 @@ namespace Social_Sentry.Services
             _currentUrl = newEvent.Url;
             
             // Native Categorization (Uses ClassificationService)
-            _currentCategory = _classificationService.Categorize(_currentProcessName, _currentWindowTitle);
+            _currentCategory = _classificationService.Categorize(_currentProcessName, _currentWindowTitle, _currentUrl);
 
             // Context-Aware Process Naming Override (Native)
             // If it's a browser and categorized as special (Study/Productive), separate it.
             if (_classificationService.IsBrowserProcess(_currentProcessName))
             {
-                if ((_currentCategory == "Study" || _currentCategory == "Productive") && 
+                if ((_currentCategory == "Study" || _currentCategory == "Productive" || _currentCategory == "Doom Scrolling") && 
                     !_currentProcessName.Contains($"({_currentCategory})"))
                 {
                     _currentProcessName = $"{_currentProcessName} ({_currentCategory})";
@@ -251,7 +251,7 @@ namespace Social_Sentry.Services
             bool isBrowserOrSmartSource = _classificationService.IsBrowserProcess(_currentProcessName) || _currentProcessName == "YouTube"; /* Simplified check */
             
             // Just check if the current name doesn't already have the tag
-            if ((_currentCategory == "Study" || _currentCategory == "Productive") && 
+            if ((_currentCategory == "Study" || _currentCategory == "Productive" || _currentCategory == "Doom Scrolling") && 
                 !_currentProcessName.Contains($"({_currentCategory})"))
             {
                  // Only append if it looks like a generic tool or browser
@@ -356,7 +356,7 @@ namespace Social_Sentry.Services
             // We pass the Title and the Smart Process Name (or Browser Name)
             // Ideally use the Title for keyword matching.
             string pName = GetSmartProcessName(data) ?? "Browser"; // Use smart name or generic
-            return _classificationService.Categorize(pName, data.Title ?? "");
+            return _classificationService.Categorize(pName, data.Title ?? "", data.Url);
         }
 
         private void UpdateCurrentSession()

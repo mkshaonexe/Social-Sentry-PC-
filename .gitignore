@@ -389,3 +389,11 @@ temp_build/
 **/temp_build/
 Installer/source/
 *.wixpdb
+
+# SECURITY: Secrets and Environments
+.env*
+!.env.example
+*.pem
+*.key
+*.p12
+*.crt

@@ -20,7 +20,7 @@ Social Sentry PC is a robust, native Windows application designed for digital we
 *   **Safety & Eye Health**: Enforces the 50/30 rule (30-second break every 50 minutes) with a full-screen overlay to prevent eye strain.
 *   **Hakari AI Companion**: A context-aware AI that roasts or praises you based on your activity and gives you reminders.
 *   **Smart Blocking**:
-    *   **Reels & Shorts Blocker**: Stops doom-scrolling loops on YouTube, Instagram, and Facebook.
+    *   **Reels & Shorts Blocker**: Stops doom-scrolling loops on YouTube, Instagram, and Facebook. **[Improved Logic]**
     *   **Adult Content Blocker**: Filters 150,000+ adult domains.
     *   **App Blocking**: Restricts access to distracting applications.
 *   **Desktop Widget**: A non-intrusive widget showing live screen time and productivity stats.

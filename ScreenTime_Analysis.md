@@ -32,8 +32,8 @@ Time is not just a counter; it is calculated using a **Session-based** approach:
 This is the "Brain" of the system. It takes the raw data and assigns it a category (e.g., "Productive", "Doom Scrolling").
 
 1.  **Input Normalization**:
-    The system concatenates the Process Name and Window Title:
-    > `Input = (ProcessName + " " + WindowTitle).ToLower()`
+    The system concatenates the Process Name, Window Title, and **URL** (if available):
+    > `Input = (ProcessName + " " + WindowTitle + " " + URL).ToLower()`
 
 2.  **Rule-Based Matching**:
     The input is checked against a database of **Classification Rules**. Each rule has a:
@@ -59,7 +59,7 @@ This is the "Brain" of the system. It takes the raw data and assigns it a catego
 The current implementation is **Robust and Production-Ready** for 95% of use cases. It is significantly more advanced than basic time trackers.
 
 ### Strengths
-*   **Context-Aware**: Unlike basic trackers that just see "Chrome", Social Sentry sees "YouTube Shorts" vs. "Coursera". This is achieved by the "Smart Process Naming" logic in `UsageTrackerService`.
+*   **Context-Aware**: Unlike basic trackers that just see "Chrome", Social Sentry sees "YouTube Shorts" vs. "Coursera". This is achieved by the "Smart Process Naming" logic in `UsageTrackerService` and **URL-based categorization**.
 *   **High Accuracy**: The combination of `WinEventHook` (low latency) and Idle Detection eliminates "fake" screen time.
 *   **Smart Defaults**: The seed rules cover the most common use cases immediately (VS Code, Office, Social Media, Games).
 *   **Priority System**: The implementation of a priority integer allows for nuanced rules where specific contexts (Study) can correctly override general ones (Entertainment).

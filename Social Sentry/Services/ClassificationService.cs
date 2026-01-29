@@ -34,6 +34,7 @@ namespace Social_Sentry.Services
                 new() { Pattern = "reels", Category = "Doom Scrolling", MatchType = "Contains", Priority = 100 },
                 new() { Pattern = "tiktok", Category = "Doom Scrolling", MatchType = "Contains", Priority = 100 },
                 new() { Pattern = "facebook watch", Category = "Doom Scrolling", MatchType = "Contains", Priority = 100 },
+                new() { Pattern = "(Doom Scrolling)", Category = "Doom Scrolling", MatchType = "Contains", Priority = 100 }, /* Persistence Rule */
 
                 // Study Category (Priority: 80-90)
                 // Bangla Keywords (Transliterated & Script)
@@ -225,12 +226,13 @@ namespace Social_Sentry.Services
             {
                 "chrome", "msedge", "firefox", "brave", "opera", "vivaldi", "arc", "safari", "iexplore"
             };
-            return browsers.Contains(processName.ToLower());
+            var pNameLower = processName.ToLower();
+            return browsers.Any(b => pNameLower.Contains(b));
         }
 
-        public string Categorize(string processName, string windowTitle)
+        public string Categorize(string processName, string windowTitle, string? url = null)
         {
-            string input = (processName + " " + windowTitle).ToLower();
+            string input = (processName + " " + windowTitle + " " + (url ?? "")).ToLower();
             string pName = processName.ToLower();
 
             // Store high priority match
