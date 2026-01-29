@@ -69,5 +69,17 @@ namespace Social_Sentry.Services
                 .AddText($"7-Day Average: {averageUsage}")
                 .Show();
         }
+        public void ShowReelsLimitWarning()
+        {
+             new ToastContentBuilder()
+                .AddText("⚠️ Reels Limit Warning")
+                .AddText("You've been doom scrolling for 10 minutes!")
+                .AddText("Turn on Reels Blocker to regain control.")
+                .AddButton(new ToastButton()
+                    .SetContent("Open Settings")
+                    .AddArgument("action", "open_settings")
+                    .AddArgument("target", "reels_blocker"))
+                .Show();
+        }
     }
 }

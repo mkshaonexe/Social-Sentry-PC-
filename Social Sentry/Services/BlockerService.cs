@@ -12,6 +12,10 @@ namespace Social_Sentry.Services
         private Social_Sentry.Data.DatabaseService? _dbService;
         private bool _isReelsBlockerEnabled;
         private bool _isAdultBlockerEnabled;
+        
+        // Soft Block State
+        public bool IsReelsLimitEnforced { get; set; } = false;
+        private DateTime _snoozeUntil = DateTime.MinValue;
 
         // Simple rules list for now (Phase 2). Later verify against DB.
         private readonly List<string> _blockedKeywords = new() { "porn", "xxx", "sex" }; 
@@ -226,6 +230,12 @@ namespace Social_Sentry.Services
                 return false; // Skip blocking
             }
 
+            // CHECK: Global Snooze (for Reels Limit Enforcement)
+            if (DateTime.Now < _snoozeUntil)
+            {
+                 return false; 
+            }
+
             var reason = ShouldBlock(title, url);
             if (reason != BlockReason.None)
             {
@@ -290,7 +300,7 @@ namespace Social_Sentry.Services
             }
 
             // 2. Check Shorts/Reels (URL segments)
-            if (_isReelsBlockerEnabled)
+            if (_isReelsBlockerEnabled || IsReelsLimitEnforced)
             {
                 foreach (var segment in _blockedUrlSegments)
                 {
@@ -308,6 +318,12 @@ namespace Social_Sentry.Services
             }
 
             return BlockReason.None;
+        }
+
+        public void SnoozeBlock(int minutes)
+        {
+            _snoozeUntil = DateTime.Now.AddMinutes(minutes);
+            Debug.WriteLine($"BlockerService: Snoozed for {minutes} minutes.");
         }
 
         public void ShowOverlay(BlockReason reason)

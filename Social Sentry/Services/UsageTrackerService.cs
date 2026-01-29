@@ -27,6 +27,11 @@ namespace Social_Sentry.Services
         private string _lastLoggedProcessName = "";
         private DateTime _lastLoggedEndTime = DateTime.MinValue;
 
+        // Doom Scrolling Enforcement
+        private TimeSpan _currentSessionDoomScrollingDuration = TimeSpan.Zero;
+        private TimeSpan _dailyDoomScrollingTotal = TimeSpan.Zero;
+        private bool _hasWarnedReelsLimitSession = false;
+
         // Key: ProcessName
 
         // Key: ProcessName
@@ -81,6 +86,7 @@ namespace Social_Sentry.Services
             }
 
             // CRITICAL FIX: Load Hourly Stats on startup
+            CalculateInitialDailyDoomScrolling();
             var hourly = _databaseService.GetHourlyUsage(DateTime.Today);
             foreach (var kvp in hourly)
             {
@@ -168,6 +174,16 @@ namespace Social_Sentry.Services
             }
         }
 
+        private void CalculateInitialDailyDoomScrolling()
+        {
+            // Calculate total Doom Scrolling from today's usage to initialize _dailyDoomScrollingTotal
+            var catUsage = _databaseService.GetTodayCategoryUsage();
+            if (catUsage.TryGetValue("Doom Scrolling", out double seconds))
+            {
+                _dailyDoomScrollingTotal = TimeSpan.FromSeconds(seconds);
+            }
+        }
+
         public void Start()
         {
             _lastSwitchTime = DateTime.Now;
@@ -225,6 +241,13 @@ namespace Social_Sentry.Services
             
             _currentMetadata = ""; // Reset metadata on native switch
             _lastSwitchTime = DateTime.Now;
+
+            // Reset session tracking if category changed
+            if (_currentCategory != "Doom Scrolling")
+            {
+                _currentSessionDoomScrollingDuration = TimeSpan.Zero;
+                _hasWarnedReelsLimitSession = false;
+            }
         }
 
         public void HandleExtensionActivity(ExtensionActivityData data)
@@ -408,6 +431,12 @@ namespace Social_Sentry.Services
 
             CheckNotifications();
 
+            // Doom Scrolling Enforcement Logic
+            if (_currentCategory == "Doom Scrolling")
+            {
+                 UpdateDoomScrollingLimits(duration);
+            }
+
             OnUsageUpdated?.Invoke();
         }
 
@@ -519,6 +548,39 @@ namespace Social_Sentry.Services
                 var avg = _databaseService.GetLast7DaysAverageUsage();
                 _notificationService.ShowDailyReport(FormatDuration(totalDuration), FormatDuration(avg));
             }
+        }
+
+        private void UpdateDoomScrollingLimits(TimeSpan duration)
+        {
+             // 1. Update Counters
+             _currentSessionDoomScrollingDuration += duration;
+             _dailyDoomScrollingTotal += duration;
+
+             // 2. Load Settings to check if Blocker is OFF
+             var settings = new SettingsService().LoadSettings(); // Potentially cache this? But safe to load.
+             if (!settings.IsReelsBlockerEnabled)
+             {
+                 // 3. Check 10 Minute Session Warning
+                 if (_currentSessionDoomScrollingDuration.TotalMinutes > 10 && !_hasWarnedReelsLimitSession)
+                 {
+                     _hasWarnedReelsLimitSession = true;
+                     _notificationService.ShowReelsLimitWarning();
+                 }
+
+                 // 4. Check 30 Minute Daily Limit -> SOFT BLOCK
+                 if (_dailyDoomScrollingTotal.TotalMinutes > 30) // > 30 min daily
+                 {
+                     if (!_blockerService.IsReelsLimitEnforced)
+                     {
+                         _blockerService.IsReelsLimitEnforced = true;
+                     }
+                 }
+             }
+        }
+
+        public void SnoozeReelsBlocker(int minutes)
+        {
+            _blockerService.SnoozeBlock(minutes);
         }
     }
 }

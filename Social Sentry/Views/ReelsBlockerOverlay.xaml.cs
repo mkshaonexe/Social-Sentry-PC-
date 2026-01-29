@@ -42,16 +42,27 @@ namespace Social_Sentry.Views
         {
             try
             {
-                // Set the override duration in ViewModel
-                ViewModels.ReelsBlockerViewModel.TempDisableMinutes = minutes;
-
+                // Use BlockerService Snooze logic
+                // Assuming access to the service via App.xaml.cs or similar global access
+                // Since we don't have DI container visible here easily, we need to find the active instance.
+                // NOTE: Phase 2 refactor should introduce IoC.
+                // For now, let's try to access it via App.Current if exposed, OR 
+                // modify DisableBlocker to use a static event or shared state/singleton access.
+                
+                // Hack/Fix: Access UsageTracker via MainWindow
+                if (System.Windows.Application.Current.MainWindow is MainWindow mainWin && mainWin.UsageTracker != null)
+                {
+                    mainWin.UsageTracker.SnoozeReelsBlocker(minutes);
+                }
+                
+                // Remove legacy settings modification
+                /*
                 var settingsService = new SettingsService();
                 var settings = settingsService.LoadSettings();
                 settings.IsReelsBlockerEnabled = false;
                 settingsService.SaveSettings(settings); 
-                
-                // Optional: Show feedback or just close
-                // System.Windows.MessageBox.Show($"Reels Blocker paused for {minutes} minutes.", "Social Sentry", MessageBoxButton.OK, MessageBoxImage.Information);
+                */
+
                 this.Close();
             }
             catch (Exception ex)
