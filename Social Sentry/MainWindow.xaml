@@ -236,6 +236,9 @@
                           <DataTemplate DataType="{x:Type vm:RankingViewModel}">
                               <views:RankingView/>
                           </DataTemplate>
+                          <DataTemplate DataType="{x:Type vm:SafetyViewModel}">
+                              <views:SafetyView/>
+                          </DataTemplate>
                       </ContentControl.Resources>
                  </ContentControl>
             </Border>
